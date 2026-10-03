@@ -1,0 +1,11 @@
+{
+  "name": "ano-crzs",
+  "main": "worker.js",
+  "compatibility_date": "2024-11-01",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./out",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application"
+  }
+}
