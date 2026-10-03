@@ -34,7 +34,13 @@ export const Header: React.FC = () => {
 
   const navLinks = [
     { 
-      label: 'Организация', 
+      label: 'Carve CUP 🔥', 
+      href: 'https://ano-crzs.pages.dev/#carvecup',
+      isRed: true,
+      isExternal: true,
+    },
+    { 
+      label: 'О нас', 
       href: '/about',
       hasSubmenu: true,
       subItems: [
@@ -142,6 +148,22 @@ export const Header: React.FC = () => {
             scrolled ? 'text-xs' : 'text-[13px]'
           }`}>
             {navLinks.map((item) => {
+              if (item.isRed) {
+                return (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      className={`inline-flex items-center gap-1.5 rounded font-black tracking-wide bg-red-600 hover:bg-red-500 text-white transition-all shadow-xs ${
+                        scrolled ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-xs sm:text-[13px]'
+                      }`}
+                    >
+                      <span>Carve CUP</span>
+                      <span>🔥</span>
+                    </a>
+                  </li>
+                );
+              }
+
               const active = isActive(item.href);
               
               if (item.hasSubmenu) {
@@ -212,6 +234,26 @@ export const Header: React.FC = () => {
         <div className="lg:hidden bg-[#0A2540] border-t border-slate-800 px-4 pt-3 pb-6 shadow-xl">
           <div className="space-y-1">
             {navLinks.map((item) => {
+              if (item.isRed) {
+                return (
+                  <div key={item.href} className="py-1">
+                    <a
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-3 py-2 rounded-md text-sm font-black bg-red-600 text-white hover:bg-red-500 shadow-sm"
+                    >
+                      <span className="flex items-center gap-1.5">
+                        <span>Carve CUP</span>
+                        <span>🔥</span>
+                      </span>
+                      <span className="text-[10px] uppercase font-bold tracking-wider bg-white/20 px-2 py-0.5 rounded">
+                        Кубок 2028
+                      </span>
+                    </a>
+                  </div>
+                );
+              }
+
               const active = isActive(item.href);
               return (
                 <div key={item.href} className="py-1">

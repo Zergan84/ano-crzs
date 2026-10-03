@@ -27,6 +27,7 @@ import { EVENTS_DATA } from '@/data/events';
 import { DOCUMENTS_DATA } from '@/data/documents';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
 import { SponsorSlider } from '@/components/SponsorSlider';
+import { HeroSlider } from '@/components/HeroSlider';
 
 export default function HomePage() {
   const recentSpecialists = SPECIALISTS_DATA.slice(0, 5);
@@ -37,77 +38,12 @@ export default function HomePage() {
   return (
     <div className="space-y-12 pb-16">
       
-      {/* 1. HERO SECTION: Clean White Institutional Banner with Script-Generated Guilloche */}
-      <section className="bg-white text-slate-900 py-12 lg:py-16 border-b border-slate-200 relative overflow-hidden">
-        {/* Parametric Script-Generated Guilloche Background Curves */}
-        <GuillochePattern variant="full" theme="light" opacity={1.15} />
+      {/* 1. HERO SLIDER (3 Dynamic Slides with Guilloche curves) */}
+      <HeroSlider />
 
-        {/* Subtle geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            <div className="lg:col-span-7">
-              {/* Временно скрыто:
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold uppercase tracking-wider mb-4">
-                <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse"></span>
-                Официальный отраслевой портал
-              </div>
-              */}
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
-                Развитие стандартов, экспертных компетенций и технологий зимнего спорта в России
-              </h1>
-
-              <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-                АНО «ЦРЗС» осуществляет профессиональную аттестацию специалистов, разработку отраслевых стандартов безопасности горнолыжных комплексов, научно-методическое сопровождение и внедрение современных спортивно-инженерных технологий.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-3 sm:gap-4">
-                <Link
-                  href="/specialists"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow"
-                >
-                  <Users className="w-4 h-4 text-blue-300" />
-                  <span>Единый Реестр специалистов</span>
-                </Link>
-
-                <Link
-                  href="/documents"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors"
-                >
-                  <FileText className="w-4 h-4 text-slate-500" />
-                  <span>Нормативная база и стандарты</span>
-                </Link>
-
-                <Link
-                  href="/education"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
-                >
-                  <GraduationCap className="w-4 h-4 text-blue-700" />
-                  <span>Программы аттестации</span>
-                </Link>
-              </div>
-            </div>
-
-            <div className="lg:col-span-5 flex justify-center lg:justify-end items-end">
-              <div className="relative max-w-sm sm:max-w-md w-full flex justify-center lg:justify-end">
-                <Image
-                  src="/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png"
-                  alt="Аттестованный специалист"
-                  width={768}
-                  height={1024}
-                  className="w-auto h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[490px] object-contain drop-shadow-md select-none pointer-events-none"
-                  priority
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Registry Search Bar Strip inside Hero */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-          <div className="bg-slate-50 p-4 sm:p-5 rounded-lg border border-slate-200 shadow-xs text-slate-900">
+      {/* Quick Registry Search Bar Strip */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 relative z-20">
+        <div className="bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200 shadow-sm text-slate-900">
             <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded bg-blue-100 text-blue-900 flex items-center justify-center shrink-0">
@@ -139,7 +75,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </section>
 
       {/* 2. STATISTICAL INDICATORS BAR */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

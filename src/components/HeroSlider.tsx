@@ -1,0 +1,340 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { 
+  Users, 
+  FileText, 
+  GraduationCap, 
+  ChevronLeft, 
+  ChevronRight, 
+  Trophy, 
+  Building2, 
+  Calendar,
+  Sparkles,
+  ArrowRight,
+  Flame
+} from 'lucide-react';
+import { GuillochePattern } from '@/components/ui/GuillochePattern';
+
+interface Slide {
+  id: string;
+  badge?: string;
+  title: string;
+  description: string;
+  primaryBtn: {
+    label: string;
+    href: string;
+    icon: React.ReactNode;
+    isExternal?: boolean;
+    isHot?: boolean;
+  };
+  secondaryBtn?: {
+    label: string;
+    href: string;
+    icon: React.ReactNode;
+  };
+  tertiaryBtn?: {
+    label: string;
+    href: string;
+    icon: React.ReactNode;
+  };
+  rightContent: React.ReactNode;
+}
+
+export function HeroSlider() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const slides: Slide[] = [
+    {
+      id: 'standards',
+      title: 'Развитие стандартов, экспертных компетенций и технологий зимнего спорта в России',
+      description: 'АНО «ЦРЗС» осуществляет профессиональную аттестацию специалистов, разработку отраслевых стандартов безопасности горнолыжных комплексов, научно-методическое сопровождение и внедрение современных спортивно-инженерных технологий.',
+      primaryBtn: {
+        label: 'Единый Реестр специалистов',
+        href: '/specialists',
+        icon: <Users className="w-4 h-4 text-blue-300" />
+      },
+      secondaryBtn: {
+        label: 'Нормативная база и стандарты',
+        href: '/documents',
+        icon: <FileText className="w-4 h-4 text-slate-500" />
+      },
+      tertiaryBtn: {
+        label: 'Программы аттестации',
+        href: '/education',
+        icon: <GraduationCap className="w-4 h-4 text-blue-700" />
+      },
+      rightContent: (
+        <div className="relative max-w-sm sm:max-w-md w-full flex justify-center lg:justify-end">
+          <Image
+            src="/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png"
+            alt="Аттестованный специалист АНО ЦЗСТ"
+            width={768}
+            height={1024}
+            className="w-auto h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[490px] object-contain drop-shadow-md select-none pointer-events-none"
+            priority
+          />
+        </div>
+      )
+    },
+    {
+      id: 'carve-cup',
+      badge: 'Всероссийский спортивный кубок',
+      title: 'Carve Cup 2028: соревнования в разных дисциплинах',
+      description: 'Масштабный турнир по спортивному карвингу и горнолыжным дисциплинам. Состязания сильнейших райдеров страны в слаломе-гиганте, скоростном ведении дуг и точности прохождения трассы по официальным стандартам.',
+      primaryBtn: {
+        label: 'Участвовать в Carve CUP 🔥',
+        href: 'https://ano-crzs.pages.dev/#carvecup',
+        icon: <Flame className="w-4 h-4 text-yellow-300" />,
+        isExternal: true,
+        isHot: true
+      },
+      secondaryBtn: {
+        label: 'Регламент и правила кубка',
+        href: '/documents',
+        icon: <FileText className="w-4 h-4 text-slate-500" />
+      },
+      tertiaryBtn: {
+        label: 'Календарь этапов',
+        href: '/events',
+        icon: <Calendar className="w-4 h-4 text-red-600" />
+      },
+      rightContent: (
+        <div className="relative max-w-md w-full flex justify-center lg:justify-end">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group">
+            <Image
+              src="/carve-cup.jpg"
+              alt="Carve Cup 2028 — соревнования по карвингу"
+              width={1200}
+              height={800}
+              className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
+            />
+            {/* Overlay badge */}
+            <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Trophy className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold flex items-center gap-1.5">
+                    Carve Cup 2028
+                    <span className="text-xs">🔥</span>
+                  </div>
+                  <div className="text-[11px] text-slate-300">
+                    Официальный зачет • Горные лыжи и сноуборд
+                  </div>
+                </div>
+              </div>
+              <span className="text-[10px] bg-red-600/90 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                Скоро старт
+              </span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'open-doors',
+      badge: 'Официальное событие Московской области',
+      title: 'День открытых дверей в здании Правительства Московской области',
+      description: 'Ежегодная встреча руководства АНО «ЦРЗС», представителей профильных министерств, федераций и директоров горнолыжных курортов в Доме Правительства Московской области. Презентация стандартов безопасности и кадровых программ.',
+      primaryBtn: {
+        label: 'Программа мероприятия',
+        href: '/events',
+        icon: <Calendar className="w-4 h-4 text-blue-300" />
+      },
+      secondaryBtn: {
+        label: 'Регистрация делегатов',
+        href: '/contacts',
+        icon: <Users className="w-4 h-4 text-slate-500" />
+      },
+      tertiaryBtn: {
+        label: 'Схема проезда в Дом Правительства',
+        href: '/contacts',
+        icon: <Building2 className="w-4 h-4 text-blue-700" />
+      },
+      rightContent: (
+        <div className="relative max-w-md w-full flex justify-center lg:justify-end">
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group">
+            <Image
+              src="/mosreg-gov.jpg"
+              alt="Дом Правительства Московской области, Красногорск"
+              width={1200}
+              height={800}
+              className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
+            />
+            {/* Overlay badge */}
+            <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold">
+                    Дом Правительства Московской области
+                  </div>
+                  <div className="text-[11px] text-slate-300">
+                    г. Красногорск • День открытых дверей
+                  </div>
+                </div>
+              </div>
+              <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                Отраслевой форум
+              </span>
+            </div>
+          </div>
+        </div>
+      )
+    }
+  ];
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  }, [slides.length]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  // Auto-advance slides every 8 seconds when not paused
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [isPaused, nextSlide]);
+
+  const slide = slides[currentSlide];
+
+  return (
+    <section 
+      className="bg-white text-slate-900 pt-10 pb-12 lg:pt-14 lg:pb-16 border-b border-slate-200 relative overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Parametric Script-Generated Guilloche Background Curves */}
+      <GuillochePattern variant="full" theme="light" opacity={1.15} />
+
+      {/* Subtle geometric pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Slide Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[460px]">
+          {/* Left Column: Text & Actions */}
+          <div className="lg:col-span-7 transition-all duration-300">
+            {slide.badge && (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold uppercase tracking-wider mb-4">
+                <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse" />
+                {slide.badge}
+              </div>
+            )}
+
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight min-h-[2.6em] flex items-center">
+              {slide.title}
+            </h1>
+
+            <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed min-h-[4.5em]">
+              {slide.description}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3 sm:gap-4 items-center">
+              {slide.primaryBtn.isExternal ? (
+                <a
+                  href={slide.primaryBtn.href}
+                  className={`inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm transition-all shadow-sm hover:shadow ${
+                    slide.primaryBtn.isHot
+                      ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200'
+                      : 'bg-[#0A2540] hover:bg-[#123962] text-white'
+                  }`}
+                >
+                  {slide.primaryBtn.icon}
+                  <span>{slide.primaryBtn.label}</span>
+                </a>
+              ) : (
+                <Link
+                  href={slide.primaryBtn.href}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow"
+                >
+                  {slide.primaryBtn.icon}
+                  <span>{slide.primaryBtn.label}</span>
+                </Link>
+              )}
+
+              {slide.secondaryBtn && (
+                <Link
+                  href={slide.secondaryBtn.href}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors"
+                >
+                  {slide.secondaryBtn.icon}
+                  <span>{slide.secondaryBtn.label}</span>
+                </Link>
+              )}
+
+              {slide.tertiaryBtn && (
+                <Link
+                  href={slide.tertiaryBtn.href}
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
+                >
+                  {slide.tertiaryBtn.icon}
+                  <span>{slide.tertiaryBtn.label}</span>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Visual Showcase */}
+          <div className="lg:col-span-5 flex justify-center lg:justify-end items-end transition-opacity duration-300">
+            {slide.rightContent}
+          </div>
+        </div>
+
+        {/* Slider Controls & Progress Indicators */}
+        <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Dot & Slide Selectors */}
+          <div className="flex items-center gap-2">
+            {slides.map((s, idx) => (
+              <button
+                key={s.id}
+                onClick={() => setCurrentSlide(idx)}
+                aria-label={`Перейти к слайду ${idx + 1}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  currentSlide === idx
+                    ? 'bg-[#0A2540] text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span>0{idx + 1}</span>
+                <span className="hidden md:inline font-normal truncate max-w-[140px]">
+                  {idx === 0 ? 'Стандарты и Реестр' : idx === 1 ? 'Carve CUP 🔥' : 'Правительство МО'}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Navigation Arrows */}
+          <div className="flex items-center gap-2 self-end sm:self-center">
+            <button
+              onClick={prevSlide}
+              aria-label="Предыдущий слайд"
+              className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={nextSlide}
+              aria-label="Следующий слайд"
+              className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
