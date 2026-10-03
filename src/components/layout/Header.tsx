@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import { 
-  Phone, 
-  Mail, 
   Menu, 
   X, 
   Users, 
@@ -19,6 +17,16 @@ export const Header: React.FC = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 25);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const isActive = (path: string) => {
     return pathname.startsWith(path);
@@ -45,48 +53,19 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <header className="w-full bg-[#0A2540] text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
-      {/* Top Official Info Bar */}
-      <div className="bg-[#071A2E] text-slate-300 text-xs py-1.5 px-4 sm:px-6 lg:px-8 border-b border-slate-800/80">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center space-x-3">
-            <span className="inline-flex items-center gap-1.5 font-medium text-slate-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-600 inline-block animate-pulse"></span>
-              Официальный портал отраслевой некоммерческой организации РФ
-            </span>
-            <span className="hidden md:inline text-slate-600">|</span>
-            <span className="hidden md:inline text-slate-400">ОГРН: {ORGANIZATION.ogrn}</span>
-            <span className="hidden lg:inline text-slate-400">ИНН: {ORGANIZATION.inn}</span>
-          </div>
-
-          <div className="flex items-center space-x-4 text-slate-300">
-            <a 
-              href={`tel:${ORGANIZATION.phone.replace(/[^0-9+]/g, '')}`} 
-              className="inline-flex items-center gap-1 hover:text-white transition-colors"
-            >
-              <Phone className="w-3.5 h-3.5 text-blue-400" />
-              <span>{ORGANIZATION.phone}</span>
-            </a>
-            <span className="text-slate-600 hidden sm:inline">•</span>
-            <a 
-              href={`mailto:${ORGANIZATION.receptionEmail}`} 
-              className="inline-flex items-center gap-1 hover:text-white transition-colors hidden sm:inline-flex"
-            >
-              <Mail className="w-3.5 h-3.5 text-blue-400" />
-              <span>{ORGANIZATION.receptionEmail}</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
+    <header className="w-full bg-[#0A2540] text-white border-b border-slate-800 sticky top-0 z-50 shadow-md transition-all duration-300">
       {/* Main Branding Bar (Deep Navy with subtle Guilloche security ribbon) */}
-      <div className="bg-gradient-to-r from-[#0A2540] via-[#0D2E50] to-[#0A2540] py-3.5 px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden">
+      <div 
+        className={`bg-gradient-to-r from-[#0A2540] via-[#0D2E50] to-[#0A2540] px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden transition-all duration-300 ${
+          scrolled ? 'py-1 sm:py-1.5' : 'py-1.5 sm:py-3.5'
+        }`}
+      >
         {/* Subtle dark security guilloche curves */}
         <GuillochePattern variant="ribbon" theme="dark" opacity={0.35} />
 
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 relative z-10">
           {/* Logo & Organization Titles */}
-          <NextLink href="/" className="flex items-center gap-4 group">
+          <NextLink href="/" className="flex items-center gap-3 sm:gap-4 group">
             {/* Official Logo on Dark Navy */}
             <div className="shrink-0 flex items-center">
               <Image
@@ -94,65 +73,92 @@ export const Header: React.FC = () => {
                 alt="АНО ЦЗСТ — Winter Sports Technologies"
                 width={210}
                 height={33}
-                className="h-9 sm:h-10 w-auto object-contain drop-shadow-sm"
+                className={`w-auto object-contain drop-shadow-sm transition-all duration-300 ${
+                  scrolled 
+                    ? 'h-6 sm:h-7' 
+                    : 'h-7 sm:h-9 lg:h-10'
+                }`}
                 priority
               />
             </div>
 
-            <div className="h-9 w-px bg-slate-700/60 hidden sm:block"></div>
+            {/* Divider (Hidden on mobile) */}
+            <div className={`w-px bg-slate-700/60 hidden sm:block transition-all duration-300 ${
+              scrolled ? 'h-6' : 'h-9'
+            }`} />
 
-            <div className="flex flex-col">
+            {/* Text block: COMPLETELY HIDDEN ON MOBILE */}
+            <div className="hidden sm:flex flex-col transition-all duration-300">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold tracking-wider uppercase text-blue-200 bg-blue-900/60 px-2 py-0.5 rounded border border-blue-400/30">
+                <span className="text-[10px] font-bold tracking-wider uppercase text-blue-200 bg-blue-900/60 px-1.5 py-0.5 rounded border border-blue-400/30">
                   {ORGANIZATION.shortName}
                 </span>
-                <span className="text-[11px] text-slate-400 hidden sm:inline">
-                  Основана в {ORGANIZATION.establishedYear} году
-                </span>
+                {!scrolled && (
+                  <span className="text-[11px] text-slate-400 hidden md:inline">
+                    Основана в {ORGANIZATION.establishedYear} году
+                  </span>
+                )}
               </div>
-              <h1 className="text-xs sm:text-sm lg:text-[14px] font-bold text-white leading-snug tracking-tight max-w-xl group-hover:text-blue-200 transition-colors">
-                {ORGANIZATION.fullName}
-              </h1>
-              <p className="text-[11px] text-slate-300 hidden md:block">
-                Официальный реестр кадров, стандарты безопасности и научно-методическое сопровождение
-              </p>
+
+              {!scrolled ? (
+                <>
+                  <h1 className="text-xs sm:text-sm lg:text-[14px] font-bold text-white leading-snug tracking-tight max-w-xl group-hover:text-blue-200 transition-colors">
+                    {ORGANIZATION.fullName}
+                  </h1>
+                  <p className="text-[11px] text-slate-300 hidden md:block">
+                    Официальный реестр кадров, стандарты безопасности и научно-методическое сопровождение
+                  </p>
+                </>
+              ) : (
+                <div className="text-xs text-slate-300 font-medium truncate max-w-md hidden md:block">
+                  {ORGANIZATION.fullName}
+                </div>
+              )}
             </div>
           </NextLink>
 
           {/* Quick Action Badges */}
-          <div className="hidden lg:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2.5">
             <NextLink
               href="/specialists"
-              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold rounded-md border border-blue-400/30 bg-blue-950/60 text-blue-200 hover:bg-blue-900/80 hover:text-white transition-colors shadow-2xs"
+              className={`inline-flex items-center gap-2 font-semibold rounded-md border border-blue-400/30 bg-blue-950/60 text-blue-200 hover:bg-blue-900/80 hover:text-white transition-all shadow-2xs ${
+                scrolled ? 'px-2.5 py-1 text-[11px]' : 'px-3 py-2 text-xs'
+              }`}
             >
-              <Users className="w-4 h-4 text-blue-400" />
+              <Users className={`${scrolled ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-blue-400`} />
               <span>Единый реестр специалистов</span>
             </NextLink>
             <NextLink
               href="/membership"
-              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-2xs"
+              className={`inline-flex items-center gap-2 font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-500 transition-all shadow-2xs ${
+                scrolled ? 'px-3 py-1 text-[11px]' : 'px-3.5 py-2 text-xs'
+              }`}
             >
               <span>Подать заявление</span>
             </NextLink>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button - Minimal height */}
           <div className="flex items-center lg:hidden gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-slate-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-1.5 rounded-md text-slate-200 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Открыть главное меню"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
       </div>
 
       {/* Primary Navigation Menu (Deep Navy / Slate) */}
-      <nav className="hidden lg:block bg-[#071E36] border-t border-slate-800/90 px-4 sm:px-6 lg:px-8">
+      <nav className={`hidden lg:block bg-[#071E36] border-t border-slate-800/90 px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
+        scrolled ? 'py-0' : 'py-0'
+      }`}>
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <ul className="flex items-center space-x-1 text-[13px] font-medium text-slate-200">
+          <ul className={`flex items-center space-x-1 font-medium text-slate-200 transition-all duration-300 ${
+            scrolled ? 'text-xs' : 'text-[13px]'
+          }`}>
             {navLinks.map((item) => {
               const active = isActive(item.href);
               
@@ -166,7 +172,9 @@ export const Header: React.FC = () => {
                   >
                     <NextLink
                       href={item.href}
-                      className={`inline-flex items-center gap-1 px-3.5 py-2.5 transition-colors border-b-2 ${
+                      className={`inline-flex items-center gap-1 transition-all border-b-2 ${
+                        scrolled ? 'px-3 py-1.5' : 'px-3.5 py-2.5'
+                      } ${
                         active
                           ? 'border-blue-400 text-white font-semibold bg-white/10'
                           : 'border-transparent text-slate-200 hover:text-white hover:bg-white/5'
@@ -197,7 +205,9 @@ export const Header: React.FC = () => {
                 <li key={item.href}>
                   <NextLink
                     href={item.href}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-2.5 transition-colors border-b-2 ${
+                    className={`inline-flex items-center gap-1.5 transition-all border-b-2 ${
+                      scrolled ? 'px-3 py-1.5' : 'px-3.5 py-2.5'
+                    } ${
                       active
                         ? 'border-blue-400 text-white font-semibold bg-white/10'
                         : item.highlight

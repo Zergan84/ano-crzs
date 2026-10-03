@@ -48,10 +48,12 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-7">
+              {/* Временно скрыто:
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold uppercase tracking-wider mb-4">
                 <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse"></span>
                 Официальный отраслевой портал
               </div>
+              */}
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
                 Развитие стандартов, экспертных компетенций и технологий зимнего спорта в России
