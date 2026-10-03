@@ -87,37 +87,16 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 flex justify-center lg:justify-end">
-              <div className="relative max-w-sm w-full">
-                {/* Official specialist photo showcase */}
-                <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200/80 bg-white">
-                  <Image
-                    src="/hero-specialist.jpg"
-                    alt="Аттестованный специалист АНО ЦЗСТ"
-                    width={768}
-                    height={1024}
-                    className="w-full h-auto object-cover max-h-[460px] sm:max-h-[500px]"
-                    priority
-                  />
-                  {/* Subtle gradient vignette at bottom */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none" />
-                  
-                  {/* Floating verification badge */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-white/60 shadow-lg flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                        Аттестованный специалист
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      </div>
-                      <div className="text-[11px] text-slate-500">
-                        Единый Реестр инструкторов и экспертов
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div className="lg:col-span-5 flex justify-center lg:justify-end items-end">
+              <div className="relative max-w-sm sm:max-w-md w-full flex justify-center lg:justify-end">
+                <Image
+                  src="/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png"
+                  alt="Аттестованный специалист"
+                  width={768}
+                  height={1024}
+                  className="w-auto h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[490px] object-contain drop-shadow-md select-none pointer-events-none"
+                  priority
+                />
               </div>
             </div>
           </div>
