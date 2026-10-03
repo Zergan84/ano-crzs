@@ -66,13 +66,13 @@ export const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 relative z-10">
           {/* Logo & Organization Titles */}
           <NextLink href="/" className="flex items-center gap-3 sm:gap-4 group">
-            {/* Official Logo on Dark Navy */}
+            {/* Official Logo on Dark Navy / Sign on Scroll */}
             <div className="shrink-0 flex items-center">
               <Image
-                src="/logo.png"
+                src={scrolled ? "/logo_sign.png" : "/logo.png"}
                 alt="АНО ЦЗСТ — Winter Sports Technologies"
-                width={210}
-                height={33}
+                width={scrolled ? 100 : 210}
+                height={scrolled ? 50 : 33}
                 className={`w-auto object-contain drop-shadow-sm transition-all duration-300 ${
                   scrolled 
                     ? 'h-6 sm:h-7' 
@@ -84,36 +84,18 @@ export const Header: React.FC = () => {
 
             {/* Divider (Hidden on mobile) */}
             <div className={`w-px bg-slate-700/60 hidden sm:block transition-all duration-300 ${
-              scrolled ? 'h-6' : 'h-9'
+              scrolled ? 'h-6' : 'h-8'
             }`} />
 
             {/* Text block: COMPLETELY HIDDEN ON MOBILE */}
-            <div className="hidden sm:flex flex-col transition-all duration-300">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold tracking-wider uppercase text-blue-200 bg-blue-900/60 px-1.5 py-0.5 rounded border border-blue-400/30">
-                  {ORGANIZATION.shortName}
-                </span>
-                {!scrolled && (
-                  <span className="text-[11px] text-slate-400 hidden md:inline">
-                    Основана в {ORGANIZATION.establishedYear} году
-                  </span>
-                )}
-              </div>
-
-              {!scrolled ? (
-                <>
-                  <h1 className="text-xs sm:text-sm lg:text-[14px] font-bold text-white leading-snug tracking-tight max-w-xl group-hover:text-blue-200 transition-colors">
-                    {ORGANIZATION.fullName}
-                  </h1>
-                  <p className="text-[11px] text-slate-300 hidden md:block">
-                    Официальный реестр кадров, стандарты безопасности и научно-методическое сопровождение
-                  </p>
-                </>
-              ) : (
-                <div className="text-xs text-slate-300 font-medium truncate max-w-md hidden md:block">
-                  {ORGANIZATION.fullName}
-                </div>
-              )}
+            <div className="hidden sm:flex flex-col transition-all duration-300 justify-center">
+              <h1 className={`font-bold text-white transition-colors group-hover:text-blue-200 ${
+                scrolled 
+                  ? 'text-xs truncate max-w-md' 
+                  : 'text-xs sm:text-sm lg:text-[14px] leading-snug tracking-tight max-w-xl'
+              }`}>
+                {ORGANIZATION.fullName}
+              </h1>
             </div>
           </NextLink>
 
