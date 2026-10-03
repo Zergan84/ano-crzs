@@ -26,6 +26,7 @@ import { NEWS_DATA } from '@/data/news';
 import { EVENTS_DATA } from '@/data/events';
 import { DOCUMENTS_DATA } from '@/data/documents';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
+import { SponsorSlider } from '@/components/SponsorSlider';
 
 export default function HomePage() {
   const recentSpecialists = SPECIALISTS_DATA.slice(0, 5);
@@ -476,28 +477,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 8. COOPERATION & INSTITUTIONAL PARTNERS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-100 rounded-lg p-6 border border-slate-200 text-center">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">
-            Отраслевое научно-методическое и межрегиональное взаимодействие
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-medium text-slate-700">
-            <div className="p-3 bg-white rounded border border-slate-200">
-              Региональные спортивные федерации и союзы
-            </div>
-            <div className="p-3 bg-white rounded border border-slate-200">
-              Горнолыжные комплексы и курорты РФ
-            </div>
-            <div className="p-3 bg-white rounded border border-slate-200">
-              Профильные кафедры спортивных вузов
-            </div>
-            <div className="p-3 bg-white rounded border border-slate-200">
-              Службы спасения и противолавинной защиты
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* 8. OFFICIAL SPONSORS & PARTNERS SLIDER */}
+      <SponsorSlider />
 
     </div>
   );
