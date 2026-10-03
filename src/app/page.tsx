@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   ShieldCheck, 
   Users, 
@@ -44,44 +45,80 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]"></div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold uppercase tracking-wider mb-4">
-              <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse"></span>
-              Официальный отраслевой портал
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="lg:col-span-7">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold uppercase tracking-wider mb-4">
+                <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse"></span>
+                Официальный отраслевой портал
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
+                Развитие стандартов, экспертных компетенций и технологий зимнего спорта в России
+              </h1>
+
+              <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed">
+                АНО «ЦРЗС» осуществляет профессиональную аттестацию специалистов, разработку отраслевых стандартов безопасности горнолыжных комплексов, научно-методическое сопровождение и внедрение современных спортивно-инженерных технологий.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3 sm:gap-4">
+                <Link
+                  href="/specialists"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow"
+                >
+                  <Users className="w-4 h-4 text-blue-300" />
+                  <span>Единый Реестр специалистов</span>
+                </Link>
+
+                <Link
+                  href="/documents"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors"
+                >
+                  <FileText className="w-4 h-4 text-slate-500" />
+                  <span>Нормативная база и стандарты</span>
+                </Link>
+
+                <Link
+                  href="/education"
+                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
+                >
+                  <GraduationCap className="w-4 h-4 text-blue-700" />
+                  <span>Программы аттестации</span>
+                </Link>
+              </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight">
-              Развитие стандартов, экспертных компетенций и технологий зимнего спорта в России
-            </h1>
-
-            <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed">
-              АНО «ЦРЗС» осуществляет профессиональную аттестацию специалистов, разработку отраслевых стандартов безопасности горнолыжных комплексов, научно-методическое сопровождение и внедрение современных спортивно-инженерных технологий.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3 sm:gap-4">
-              <Link
-                href="/specialists"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow"
-              >
-                <Users className="w-4 h-4 text-blue-300" />
-                <span>Единый Реестр специалистов</span>
-              </Link>
-
-              <Link
-                href="/documents"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors"
-              >
-                <FileText className="w-4 h-4 text-slate-500" />
-                <span>Нормативная база и стандарты</span>
-              </Link>
-
-              <Link
-                href="/education"
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
-              >
-                <GraduationCap className="w-4 h-4 text-blue-700" />
-                <span>Программы аттестации</span>
-              </Link>
+            <div className="lg:col-span-5 flex justify-center lg:justify-end">
+              <div className="relative max-w-sm w-full">
+                {/* Official specialist photo showcase */}
+                <div className="relative rounded-2xl overflow-hidden shadow-xl border border-slate-200/80 bg-white">
+                  <Image
+                    src="/hero-specialist.jpg"
+                    alt="Аттестованный специалист АНО ЦЗСТ"
+                    width={768}
+                    height={1024}
+                    className="w-full h-auto object-cover max-h-[460px] sm:max-h-[500px]"
+                    priority
+                  />
+                  {/* Subtle gradient vignette at bottom */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none" />
+                  
+                  {/* Floating verification badge */}
+                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3 rounded-xl border border-white/60 shadow-lg flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                        Аттестованный специалист
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      </div>
+                      <div className="text-[11px] text-slate-500">
+                        Единый Реестр инструкторов и экспертов
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
