@@ -20,7 +20,11 @@ import {
   Menu, 
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  SlidersHorizontal,
+  Layers,
+  Type,
+  LayoutTemplate
 } from 'lucide-react';
 import './globals.css';
 
@@ -32,18 +36,24 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard, href: '/admin' },
+  { id: 'header', label: 'Меню', icon: Menu, href: '/admin/header' },
+  { id: 'hero', label: 'Главный экран', icon: Sliders, href: '/admin/hero' },
+  { id: 'sections', label: 'Разделы', icon: LayoutDashboard, href: '/admin/sections' },
+  { id: 'section-order', label: 'Порядок', icon: SlidersHorizontal, href: '/admin/section-order' },
+  { id: 'pages', label: 'Страницы', icon: Layers, href: '/admin/pages' },
   { id: 'organization', label: 'Организация', icon: Building2, href: '/admin/organization' },
-  { id: 'hero', label: 'Слайдер Hero', icon: Sliders, href: '/admin/hero' },
+  { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists' },
   { id: 'news', label: 'Новости', icon: Newspaper, href: '/admin/news' },
   { id: 'events', label: 'Мероприятия', icon: Calendar, href: '/admin/events' },
-  { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists' },
   { id: 'documents', label: 'Документы', icon: FileText, href: '/admin/documents' },
   { id: 'directions', label: 'Направления', icon: Compass, href: '/admin/directions' },
   { id: 'partners', label: 'Партнёры', icon: Handshake, href: '/admin/partners' },
   { id: 'contacts', label: 'Контакты', icon: Phone, href: '/admin/contacts' },
-  { id: 'media', label: 'Медиатека R2', icon: ImageIcon, href: '/admin/media' },
+  { id: 'media', label: 'Медиа', icon: ImageIcon, href: '/admin/media' },
+  { id: 'fonts', label: 'Шрифты', icon: Type, href: '/admin/fonts' },
+  { id: 'footer', label: 'Подвал', icon: LayoutTemplate, href: '/admin/footer' },
 ];
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();

@@ -72,9 +72,97 @@ export const DEFAULT_PARTNERS = [
   { id: 'alpika', name: 'Альпика', category: 'Курорт Газпром Поляна', logo: '/sponsors/alpika.png' },
 ];
 
+export const DEFAULT_HEADER = {
+  navLinks: [
+    { 
+      label: 'Carve CUP 🔥', 
+      href: 'https://ano-crzs.pages.dev/#carvecup',
+      isRed: true,
+      isExternal: true,
+    },
+    { 
+      label: 'О нас', 
+      href: '/about',
+      hasSubmenu: true,
+      subItems: [
+        { label: 'Общие сведения и цели', href: '/about' },
+        { label: 'Руководство и структура', href: '/about/structure' },
+        { label: 'Учредительные документы', href: '/documents?cat=Учредительные+документы' },
+      ]
+    },
+    { label: 'Направления', href: '/activities' },
+    { label: 'Реестр', href: '/specialists', highlight: true },
+    { label: 'Обучение', href: '/education' },
+    { label: 'Мероприятия', href: '/events' },
+    { label: 'Документы', href: '/documents' },
+    { label: 'Членство', href: '/membership' },
+    { label: 'Контакты', href: '/contacts' },
+  ],
+  phone: '+7 (495) 109-01-28',
+  phoneTel: '+74951090128',
+  ctaButtonText: 'Подать заявление',
+  ctaButtonHref: '/membership',
+  registryButtonText: 'Единый реестр специалистов',
+  registryButtonHref: '/specialists',
+};
+
+export const DEFAULT_SECTION_ORDER = [
+  'hero',
+  'search',
+  'stats',
+  'notice',
+  'directions',
+  'specialists',
+  'news-events',
+  'documents',
+  'partners',
+];
+
+export const DEFAULT_FONTS = {
+  siteHeadingFont: 'Inter',
+  siteBodyFont: 'Inter',
+  adminFont: 'Inter',
+  uppercaseHeadings: false,
+};
+
+export const DEFAULT_FOOTER = {
+  description: 'Автономная некоммерческая организация «Центр развития зимнего спорта, современных спортивных технологий и туризма»',
+  shortName: 'АНО «ЦРЗС»',
+  ogrn: '1127799018432',
+  inn: '7704281900',
+  kpp: '770401001',
+  okpo: '11543820',
+  phone: '+7 (495) 109-01-28',
+  email: 'info@ano-crzs.ru',
+  workHours: 'Пн–Пт: 09:00 – 18:00 (МСК)',
+  address: '119048, г. Москва, Лужнецкая набережная, д. 8, стр. 1',
+  copyright: '© 2012–2026 АНО «ЦРЗС». Все права защищены.',
+};
+
+export const DEFAULT_PAGES = {
+  items: [] as Array<{
+    id: string;
+    label: string;
+    heading: string;
+    text: string;
+    image: string;
+    layout: 'left' | 'center' | 'right';
+    showButton: boolean;
+    buttonText: string;
+    buttonHref: string;
+    socialLinks: Array<{ label: string; href: string; type: string }>;
+  }>,
+};
+
 export const DEFAULT_CONTENT = {
   organization: ORGANIZATION,
   hero: { slides: DEFAULT_HERO_SLIDES },
+  header: DEFAULT_HEADER,
+  'section-order': { order: DEFAULT_SECTION_ORDER },
+  sectionOrder: { order: DEFAULT_SECTION_ORDER },
+  fonts: DEFAULT_FONTS,
+  footer: DEFAULT_FOOTER,
+  pages: DEFAULT_PAGES,
   news: { items: NEWS_DATA },
   events: { items: EVENTS_DATA },
   specialists: { items: SPECIALISTS_DATA },
@@ -85,3 +173,4 @@ export const DEFAULT_CONTENT = {
 };
 
 export type SiteContent = typeof DEFAULT_CONTENT;
+

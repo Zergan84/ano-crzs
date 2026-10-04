@@ -1,10 +1,18 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ORGANIZATION } from '@/data/organization';
 import { Phone, Mail, MapPin, Clock, ShieldCheck, FileCheck, ExternalLink } from 'lucide-react';
+import { useSiteContent } from '@/lib/content';
+import { DEFAULT_FOOTER } from '@/data/defaultContent';
 
 export const Footer: React.FC = () => {
+  const { content } = useSiteContent();
+  const footer = content?.footer || DEFAULT_FOOTER;
+  const org = content?.organization || ORGANIZATION;
+
   return (
     <footer className="bg-[#0A192F] text-slate-300 border-t-4 border-blue-700">
       {/* Upper Main Footer Grid */}
@@ -23,7 +31,7 @@ export const Footer: React.FC = () => {
               />
               <div>
                 <span className="font-bold text-white text-sm tracking-wide block">
-                  {ORGANIZATION.shortName}
+                  {footer.shortName || org.shortName}
                 </span>
                 <span className="text-[11px] text-slate-400">
                   Автономная некоммерческая организация
@@ -32,15 +40,16 @@ export const Footer: React.FC = () => {
             </div>
 
             <p className="text-slate-300 leading-relaxed text-[12px]">
-              {ORGANIZATION.fullName}
+              {footer.description || org.fullName}
             </p>
 
             <div className="pt-2 border-t border-slate-800 space-y-1 text-slate-400 text-[11px]">
-              <p>ОГРН: <span className="text-slate-300 font-mono">{ORGANIZATION.ogrn}</span></p>
-              <p>ИНН: <span className="text-slate-300 font-mono">{ORGANIZATION.inn}</span> / КПП: <span className="text-slate-300 font-mono">{ORGANIZATION.kpp}</span></p>
-              <p>ОКПО: <span className="text-slate-300 font-mono">{ORGANIZATION.okpo}</span></p>
+              <p>ОГРН: <span className="text-slate-300 font-mono">{footer.ogrn || org.ogrn}</span></p>
+              <p>ИНН: <span className="text-slate-300 font-mono">{footer.inn || org.inn}</span> / КПП: <span className="text-slate-300 font-mono">{footer.kpp || org.kpp}</span></p>
+              <p>ОКПО: <span className="text-slate-300 font-mono">{footer.okpo || org.okpo}</span></p>
             </div>
           </div>
+
 
           {/* Column 2: Core Areas & Registries */}
           <div className="space-y-3">
@@ -142,23 +151,23 @@ export const Footer: React.FC = () => {
             <div className="space-y-2.5 text-slate-300">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                <span>{ORGANIZATION.actualAddress}</span>
+                <span>{footer.address || org.actualAddress}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                <a href={`tel:${ORGANIZATION.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white transition-colors">
-                  {ORGANIZATION.phone}
+                <a href={`tel:${(footer.phone || org.phone).replace(/[^0-9+]/g, '')}`} className="hover:text-white transition-colors">
+                  {footer.phone || org.phone}
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                <a href={`mailto:${ORGANIZATION.receptionEmail}`} className="hover:text-white transition-colors">
-                  {ORGANIZATION.receptionEmail}
+                <a href={`mailto:${footer.email || org.receptionEmail}`} className="hover:text-white transition-colors">
+                  {footer.email || org.receptionEmail}
                 </a>
               </div>
               <div className="flex items-center gap-2 text-slate-400">
                 <Clock className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>{ORGANIZATION.workHours}</span>
+                <span>{footer.workHours || org.workHours}</span>
               </div>
             </div>
 
@@ -179,11 +188,12 @@ export const Footer: React.FC = () => {
       <div className="bg-[#050D18] py-5 px-4 sm:px-6 lg:px-8 border-t border-slate-800 text-[11px] text-slate-500">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
           <div>
-            <p>© 2012–2026 {ORGANIZATION.fullName}. Все права защищены.</p>
+            <p>{footer.copyright || `© 2012–2026 ${org.fullName}. Все права защищены.`}</p>
             <p className="mt-1 text-slate-600">
               Официальный сайт некоммерческой организации. Деятельность осуществляется в соответствии с законодательством Российской Федерации.
             </p>
           </div>
+
           <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400">
             <Link href="/documents" className="hover:text-slate-200 transition-colors">
               Политика обработки персональных данных (152-ФЗ)

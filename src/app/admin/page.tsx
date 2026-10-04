@@ -33,6 +33,46 @@ export default function AdminDashboardPage() {
 
   const cards: DashboardCard[] = [
     {
+      id: 'header',
+      title: 'Меню и навигация',
+      description: 'Главное меню сайта, порядок Drag & Drop, подсветка Carve CUP 🔥, телефоны и кнопки',
+      countLabel: `${(content.header?.navLinks || []).length} пунктов`,
+      href: '/admin/header',
+      icon: Building2,
+    },
+    {
+      id: 'hero',
+      title: 'Главный экран (Hero)',
+      description: '3 главных слайда на стартовом экране: тексты, слоганы, ссылки перехода, фото и плашки',
+      countLabel: `${content.hero.slides.length} слайда`,
+      href: '/admin/hero',
+      icon: Sliders,
+    },
+    {
+      id: 'sections',
+      title: 'Каталог разделов',
+      description: 'Обзор и быстрый переход ко всем модулям управления контентом сайта',
+      countLabel: '15 модулей',
+      href: '/admin/sections',
+      icon: Building2,
+    },
+    {
+      id: 'section-order',
+      title: 'Порядок разделов',
+      description: 'Drag & Drop изменение порядка модулей на главной странице сайта',
+      countLabel: 'Настройка порядка',
+      href: '/admin/section-order',
+      icon: Sliders,
+    },
+    {
+      id: 'pages',
+      title: 'Страницы и модули',
+      description: 'Создание произвольных информационных страниц, акций и разделов',
+      countLabel: `${((content as any).pages?.items || []).length} страниц`,
+      href: '/admin/pages',
+      icon: FileText,
+    },
+    {
       id: 'organization',
       title: 'Организация',
       description: 'Реквизиты, официальное наименование, слоган, год основания, статистика организации',
@@ -41,12 +81,12 @@ export default function AdminDashboardPage() {
       icon: Building2,
     },
     {
-      id: 'hero',
-      title: 'Слайдер Hero',
-      description: '3 главных слайда на стартовом экране: тексты, слоганы, ссылки перехода, фото и плашки',
-      countLabel: `${content.hero.slides.length} слайда`,
-      href: '/admin/hero',
-      icon: Sliders,
+      id: 'specialists',
+      title: 'Реестр специалистов',
+      description: 'Единый публичный реестр инструкторов и тренеров: ФИО, категории, номера, дисциплины, регионы',
+      countLabel: `${content.specialists.items.length} специалистов`,
+      href: '/admin/specialists',
+      icon: Users,
     },
     {
       id: 'news',
@@ -63,14 +103,6 @@ export default function AdminDashboardPage() {
       countLabel: `${content.events.items.length} событий`,
       href: '/admin/events',
       icon: Calendar,
-    },
-    {
-      id: 'specialists',
-      title: 'Реестр специалистов',
-      description: 'Единый публичный реестр инструкторов и тренеров: ФИО, категории, номера, дисциплины, регионы',
-      countLabel: `${content.specialists.items.length} специалистов`,
-      href: '/admin/specialists',
-      icon: Users,
     },
     {
       id: 'documents',
@@ -112,7 +144,24 @@ export default function AdminDashboardPage() {
       href: '/admin/media',
       icon: ImageIcon,
     },
+    {
+      id: 'fonts',
+      title: 'Шрифты Google Fonts',
+      description: 'Выбор шрифтов из каталога Google Fonts с поддержкой кириллицы и предпросмотром',
+      countLabel: '30+ шрифтов',
+      href: '/admin/fonts',
+      icon: FileText,
+    },
+    {
+      id: 'footer',
+      title: 'Подвал сайта (Footer)',
+      description: 'Юридические реквизиты, режим работы, копирайт и ссылки в нижней части сайта',
+      countLabel: 'Подвал',
+      href: '/admin/footer',
+      icon: Building2,
+    },
   ];
+
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">

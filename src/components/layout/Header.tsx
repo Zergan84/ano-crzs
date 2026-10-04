@@ -12,12 +12,15 @@ import {
 } from 'lucide-react';
 import { ORGANIZATION } from '@/data/organization';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
+import { useSiteContent } from '@/lib/content';
+import { DEFAULT_HEADER } from '@/data/defaultContent';
 
 export const Header: React.FC = () => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [aboutDropdownOpen, setAboutDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { content } = useSiteContent();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,31 +35,11 @@ export const Header: React.FC = () => {
     return pathname.startsWith(path);
   };
 
-  const navLinks = [
-    { 
-      label: 'Carve CUP 🔥', 
-      href: 'https://ano-crzs.pages.dev/#carvecup',
-      isRed: true,
-      isExternal: true,
-    },
-    { 
-      label: 'О нас', 
-      href: '/about',
-      hasSubmenu: true,
-      subItems: [
-        { label: 'Общие сведения и цели', href: '/about' },
-        { label: 'Руководство и структура', href: '/about/structure' },
-        { label: 'Учредительные документы', href: '/documents?cat=Учредительные+документы' },
-      ]
-    },
-    { label: 'Направления', href: '/activities' },
-    { label: 'Реестр', href: '/specialists', highlight: true },
-    { label: 'Обучение', href: '/education' },
-    { label: 'Мероприятия', href: '/events' },
-    { label: 'Документы', href: '/documents' },
-    { label: 'Членство', href: '/membership' },
-    { label: 'Контакты', href: '/contacts' },
-  ];
+  const headerData = content?.header || DEFAULT_HEADER;
+  const navLinks = (headerData.navLinks && headerData.navLinks.length > 0)
+    ? headerData.navLinks
+    : DEFAULT_HEADER.navLinks;
+
 
   return (
     <header className="w-full bg-[#0A2540] text-white border-b border-slate-800 sticky top-0 z-50 shadow-md transition-all duration-300">
@@ -108,23 +91,24 @@ export const Header: React.FC = () => {
           {/* Quick Action Badges */}
           <div className="hidden lg:flex items-center gap-2.5">
             <NextLink
-              href="/specialists"
+              href={headerData.registryButtonHref || "/specialists"}
               className={`inline-flex items-center gap-2 font-semibold rounded-md border border-blue-400/30 bg-blue-950/60 text-blue-200 hover:bg-blue-900/80 hover:text-white transition-all shadow-2xs ${
                 scrolled ? 'px-2.5 py-1 text-[11px]' : 'px-3 py-2 text-xs'
               }`}
             >
               <Users className={`${scrolled ? 'w-3.5 h-3.5' : 'w-4 h-4'} text-blue-400`} />
-              <span>Единый реестр специалистов</span>
+              <span>{headerData.registryButtonText || 'Единый реестр специалистов'}</span>
             </NextLink>
             <NextLink
-              href="/membership"
+              href={headerData.ctaButtonHref || "/membership"}
               className={`inline-flex items-center gap-2 font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-500 transition-all shadow-2xs ${
                 scrolled ? 'px-3 py-1 text-[11px]' : 'px-3.5 py-2 text-xs'
               }`}
             >
-              <span>Подать заявление</span>
+              <span>{headerData.ctaButtonText || 'Подать заявление'}</span>
             </NextLink>
           </div>
+
 
           {/* Mobile Menu Button - Minimal height */}
           <div className="flex items-center lg:hidden gap-2">

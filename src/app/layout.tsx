@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { SiteShell } from '@/components/layout/SiteShell';
+import FontProvider from '@/components/FontProvider';
 import { ORGANIZATION } from '@/data/organization';
 
 export const metadata: Metadata = {
@@ -24,10 +25,13 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-blue-900 selection:text-white">
-        <SiteShell>
-          {children}
-        </SiteShell>
+        <FontProvider>
+          <SiteShell>
+            {children}
+          </SiteShell>
+        </FontProvider>
       </body>
     </html>
   );
 }
+
