@@ -199,98 +199,110 @@ export function HeroSlider() {
     const dyn = dynamicHeroSlides?.[idx];
     if (!dyn) return base;
 
-    const dynamicImg = dyn.image ? resolveMediaUrl(dyn.image) : '';
-    let rightContent = base.rightContent;
+    const dynamicImg = (dyn.image ? resolveMediaUrl(dyn.image) : '') ||
+      (idx === 0 ? '/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png' : idx === 1 ? '/carve-cup.jpg' : '/mosreg-gov.jpg');
 
-    if (dynamicImg) {
-      if (idx === 0) {
-        // Slide 1 cutout / character style
-        rightContent = (
-          <div className="relative max-w-sm sm:max-w-md w-full flex justify-center lg:justify-end">
+    // Check display mode: 'image' (отдельное изображение) vs 'card' (отдельный блок)
+    const isCardMode = dyn.displayMode
+      ? dyn.displayMode === 'card'
+      : (idx > 0); // fallback for existing content: slide 0 is image, others card
+
+    // Block size
+    const blockSize = dyn.blockSize || 'md';
+    const sizeConfig = {
+      sm: { container: 'max-w-xs sm:max-w-sm', imgH: 'max-h-[300px] sm:max-h-[340px]' },
+      md: { container: 'max-w-md', imgH: 'max-h-[380px] sm:max-h-[440px]' },
+      lg: { container: 'max-w-lg', imgH: 'max-h-[440px] sm:max-h-[500px]' },
+    }[blockSize as 'sm' | 'md' | 'lg'] || { container: 'max-w-md', imgH: 'max-h-[380px] sm:max-h-[440px]' };
+
+    let rightContent: React.ReactNode;
+
+    if (!isCardMode) {
+      // 1. Separate free image (Отдельное изображение без рамки и плашек)
+      rightContent = (
+        <div className={`relative ${sizeConfig.container} w-full flex justify-center lg:justify-end`}>
+          <img
+            src={dynamicImg}
+            alt={dyn.title || base.title}
+            className={`w-auto h-auto ${sizeConfig.imgH} object-contain drop-shadow-md select-none pointer-events-none`}
+          />
+        </div>
+      );
+    } else {
+      // 2. Separate card block (Отдельный блок с рамкой, плашкой, текстом и кнопкой)
+      const blockTitle = dyn.blockTitle !== undefined && dyn.blockTitle !== ''
+        ? dyn.blockTitle
+        : (idx === 1 ? 'Carve Cup 2028 🔥' : idx === 2 ? 'Дом Правительства Московской области' : dyn.title || '');
+
+      const blockSubtitle = dyn.blockSubtitle !== undefined && dyn.blockSubtitle !== ''
+        ? dyn.blockSubtitle
+        : (idx === 1 ? 'Официальный зачет • Горные лыжи и сноуборд' : idx === 2 ? 'г. Красногорск • День открытых дверей' : '');
+
+      const blockBtnText = dyn.blockBtnText !== undefined && dyn.blockBtnText !== ''
+        ? dyn.blockBtnText
+        : (idx === 1 ? 'Скоро старт' : idx === 2 ? 'Отраслевой форум' : '');
+
+      const blockBtnHref = dyn.blockBtnHref || '';
+      const blockColor = dyn.blockBtnColor || (idx === 1 ? 'red' : 'blue');
+
+      const colorMap: Record<string, { bg: string; badge: string }> = {
+        red: { bg: 'bg-red-600', badge: 'bg-red-600/90 text-white hover:bg-red-500' },
+        blue: { bg: 'bg-blue-600', badge: 'bg-blue-600/90 text-white hover:bg-blue-500' },
+        emerald: { bg: 'bg-emerald-600', badge: 'bg-emerald-600/90 text-white hover:bg-emerald-500' },
+        amber: { bg: 'bg-amber-600', badge: 'bg-amber-600/90 text-white hover:bg-amber-500' },
+        slate: { bg: 'bg-slate-700', badge: 'bg-slate-700/90 text-white hover:bg-slate-600' },
+      };
+      const theme = colorMap[blockColor] || colorMap.blue;
+
+      rightContent = (
+        <div className={`relative ${sizeConfig.container} w-full flex justify-center lg:justify-end`}>
+          <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group w-full">
             <img
               src={dynamicImg}
               alt={dyn.title || base.title}
-              className="w-auto h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[490px] object-contain drop-shadow-md select-none pointer-events-none"
+              className={`w-full h-auto object-cover ${sizeConfig.imgH}`}
             />
-          </div>
-        );
-      } else if (idx === 1) {
-        // Slide 2 Carve Cup card
-        rightContent = (
-          <div className="relative max-w-md w-full flex justify-center lg:justify-end">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group">
-              <img
-                src={dynamicImg}
-                alt={dyn.title || base.title}
-                className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
-              />
-              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <Trophy className="w-4 h-4" />
+            {/* Overlay badge with text and action button */}
+            {(blockTitle || blockSubtitle || blockBtnText) && (
+              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-8 h-8 rounded-lg ${theme.bg} text-white flex items-center justify-center shrink-0 shadow-xs`}>
+                    {idx === 1 ? <Trophy className="w-4 h-4" /> : idx === 2 ? <Building2 className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
                   </div>
-                  <div>
-                    <div className="text-xs font-bold flex items-center gap-1.5">
-                      Carve Cup 2028
-                      <span className="text-xs">🔥</span>
-                    </div>
-                    <div className="text-[11px] text-slate-300">
-                      Официальный зачет • Горные лыжи и сноуборд
-                    </div>
+                  <div className="min-w-0">
+                    {blockTitle && (
+                      <div className="text-xs font-bold truncate">
+                        {blockTitle}
+                      </div>
+                    )}
+                    {blockSubtitle && (
+                      <div className="text-[11px] text-slate-300 truncate">
+                        {blockSubtitle}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <span className="text-[10px] bg-red-600/90 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-                  Скоро старт
-                </span>
+                {blockBtnText && (
+                  blockBtnHref ? (
+                    <a
+                      href={blockBtnHref}
+                      target={blockBtnHref.startsWith('http') ? '_blank' : undefined}
+                      rel={blockBtnHref.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      className={`text-[10px] ${theme.badge} px-2.5 py-1 rounded font-bold uppercase tracking-wider transition-colors shrink-0 shadow-xs`}
+                    >
+                      {blockBtnText}
+                    </a>
+                  ) : (
+                    <span className={`text-[10px] ${theme.badge} px-2 py-0.5 rounded font-bold uppercase tracking-wider shrink-0`}>
+                      {blockBtnText}
+                    </span>
+                  )
+                )}
               </div>
-            </div>
+            )}
           </div>
-        );
-      } else if (idx === 2) {
-        // Slide 3 Govt card
-        rightContent = (
-          <div className="relative max-w-md w-full flex justify-center lg:justify-end">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group">
-              <img
-                src={dynamicImg}
-                alt={dyn.title || base.title}
-                className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
-              />
-              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                    <Building2 className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold">
-                      {dyn.tag || 'Дом Правительства Московской области'}
-                    </div>
-                    <div className="text-[11px] text-slate-300">
-                      г. Красногорск • День открытых дверей
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-                  Отраслевой форум
-                </span>
-              </div>
-            </div>
-          </div>
-        );
-      } else {
-        // Fallback for custom added slides
-        rightContent = (
-          <div className="relative max-w-md w-full flex justify-center lg:justify-end">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
-              <img
-                src={dynamicImg}
-                alt={dyn.title || base.title}
-                className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
-              />
-            </div>
-          </div>
-        );
-      }
+        </div>
+      );
     }
 
     return {

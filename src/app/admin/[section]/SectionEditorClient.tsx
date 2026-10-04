@@ -505,6 +505,152 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               </div>
             )}
           </div>
+
+          {/* Режим отображения визуала: Отдельное изображение vs Отдельный блок */}
+          <div className="pt-4 border-t border-[#222] space-y-4">
+            <div>
+              <label className="admin-label mb-2 block font-bold text-slate-200">
+                Формат отображения визуала слайда:
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className={`flex items-start gap-3 p-3.5 rounded-lg border cursor-pointer transition-all ${
+                  (slide.displayMode === 'image' || (!slide.displayMode && i === 0))
+                    ? 'border-red-500 bg-red-950/20 text-white shadow-xs'
+                    : 'border-[#2a2a2a] bg-[#0c0f16] text-slate-400 hover:border-slate-700'
+                }`}>
+                  <input
+                    type="radio"
+                    name={`displayMode-${i}`}
+                    checked={(slide.displayMode === 'image' || (!slide.displayMode && i === 0))}
+                    onChange={() => updateSlide(i, 'displayMode', 'image')}
+                    className="mt-1 text-red-600 focus:ring-0"
+                  />
+                  <div>
+                    <div className="font-bold text-xs text-slate-200">Отдельное изображение</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                      Изображение свободно лежит на фоне Main hero без рамки и плашек (как на Слайде 1)
+                    </div>
+                  </div>
+                </label>
+
+                <label className={`flex items-start gap-3 p-3.5 rounded-lg border cursor-pointer transition-all ${
+                  (slide.displayMode === 'card' || (!slide.displayMode && i > 0))
+                    ? 'border-red-500 bg-red-950/20 text-white shadow-xs'
+                    : 'border-[#2a2a2a] bg-[#0c0f16] text-slate-400 hover:border-slate-700'
+                }`}>
+                  <input
+                    type="radio"
+                    name={`displayMode-${i}`}
+                    checked={(slide.displayMode === 'card' || (!slide.displayMode && i > 0))}
+                    onChange={() => updateSlide(i, 'displayMode', 'card')}
+                    className="mt-1 text-red-600 focus:ring-0"
+                  />
+                  <div>
+                    <div className="font-bold text-xs text-slate-200">Отдельный блок с текстом и кнопкой</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                      Карточка в рамке с плашкой, описанием и кнопкой-бейджем (как на Слайдах 2 и 3)
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Настройки блока, если выбран отдельный блок */}
+            {(slide.displayMode === 'card' || (!slide.displayMode && i > 0)) && (
+              <div className="rounded-xl border border-[#1e293b] bg-[#0b0f19] p-4 sm:p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-[#1e293b] pb-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                    Параметры блока (карточки с текстом и кнопкой)
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-mono">Слайды 2, 3</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Размер блока */}
+                  <div>
+                    <label className="admin-label">Размер блока</label>
+                    <select
+                      value={slide.blockSize || 'md'}
+                      onChange={(e) => updateSlide(i, 'blockSize', e.target.value)}
+                      className="admin-input"
+                    >
+                      <option value="sm">Компактный (высота ~320px)</option>
+                      <option value="md">Стандартный (высота ~400px)</option>
+                      <option value="lg">Крупный (высота ~480px)</option>
+                    </select>
+                  </div>
+
+                  {/* Цвет бейджа/кнопки */}
+                  <div>
+                    <label className="admin-label">Цвет кнопки / бейджа</label>
+                    <select
+                      value={slide.blockBtnColor || (i === 1 ? 'red' : 'blue')}
+                      onChange={(e) => updateSlide(i, 'blockBtnColor', e.target.value)}
+                      className="admin-input"
+                    >
+                      <option value="red">Красный 🔥 (Carve Cup)</option>
+                      <option value="blue">Синий 🏛 (Форум / Отраслевой)</option>
+                      <option value="emerald">Зеленый 🌲 (Спорт / Зима)</option>
+                      <option value="amber">Янтарный ⭐ (Премиум)</option>
+                      <option value="slate">Темно-серый (Нейтральный)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Заголовок внутри блока */}
+                  <div>
+                    <label className="admin-label">Заголовок внутри блока</label>
+                    <input
+                      type="text"
+                      value={slide.blockTitle ?? (i === 1 ? 'Carve Cup 2028 🔥' : i === 2 ? 'Дом Правительства Московской области' : '')}
+                      onChange={(e) => updateSlide(i, 'blockTitle', e.target.value)}
+                      placeholder="Например: Carve Cup 2028 🔥"
+                      className="admin-input font-semibold"
+                    />
+                  </div>
+
+                  {/* Текст / подзаголовок внутри блока */}
+                  <div>
+                    <label className="admin-label">Текст / описание внутри блока</label>
+                    <input
+                      type="text"
+                      value={slide.blockSubtitle ?? (i === 1 ? 'Официальный зачет • Горные лыжи и сноуборд' : i === 2 ? 'г. Красногорск • День открытых дверей' : '')}
+                      onChange={(e) => updateSlide(i, 'blockSubtitle', e.target.value)}
+                      placeholder="Например: Официальный зачет • Горные лыжи"
+                      className="admin-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Текст кнопки */}
+                  <div>
+                    <label className="admin-label">Текст кнопки / плашки блока</label>
+                    <input
+                      type="text"
+                      value={slide.blockBtnText ?? (i === 1 ? 'Скоро старт' : i === 2 ? 'Отраслевой форум' : 'Подробнее')}
+                      onChange={(e) => updateSlide(i, 'blockBtnText', e.target.value)}
+                      placeholder="Например: Скоро старт"
+                      className="admin-input font-bold"
+                    />
+                  </div>
+
+                  {/* Ссылка кнопки */}
+                  <div>
+                    <label className="admin-label">Ссылка кнопки блока (URL, опционально)</label>
+                    <input
+                      type="text"
+                      value={slide.blockBtnHref ?? (i === 1 ? 'https://ano-crzs.pages.dev/#carvecup' : i === 2 ? '/events' : '')}
+                      onChange={(e) => updateSlide(i, 'blockBtnHref', e.target.value)}
+                      placeholder="https://... или /events"
+                      className="admin-input font-mono text-xs"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       ))}
     </div>
