@@ -63,7 +63,7 @@ export const Header: React.FC = () => {
       {/* Main Branding Bar (Deep Navy with subtle Guilloche security ribbon) */}
       <div 
         className={`bg-gradient-to-r from-[#0A2540] via-[#0D2E50] to-[#0A2540] px-4 sm:px-6 lg:px-8 border-b border-slate-800 relative overflow-hidden transition-all duration-300 ${
-          scrolled ? 'py-1 sm:py-1.5' : 'py-1.5 sm:py-3.5'
+          scrolled ? 'py-2 sm:py-2.5' : 'py-3 sm:py-4.5 lg:py-5'
         }`}
       >
         {/* Subtle dark security guilloche curves */}
@@ -76,13 +76,13 @@ export const Header: React.FC = () => {
             <div className="shrink-0 flex items-center">
               <Image
                 src={scrolled ? "/logo_sign.png" : "/logo.png"}
-                alt="АНО ЦЗСТ — Winter Sports Technologies"
+                alt="АНО «Центр развития зимнего спорта, современных спортивных технологий и туризма»"
                 width={scrolled ? 100 : 210}
                 height={scrolled ? 50 : 33}
                 className={`w-auto object-contain drop-shadow-sm transition-all duration-300 ${
                   scrolled 
                     ? 'h-6 sm:h-7' 
-                    : 'h-7 sm:h-9 lg:h-10'
+                    : 'h-8 sm:h-10 lg:h-11'
                 }`}
                 priority
               />
@@ -90,7 +90,7 @@ export const Header: React.FC = () => {
 
             {/* Divider (Hidden on mobile) */}
             <div className={`w-px bg-slate-700/60 hidden sm:block transition-all duration-300 ${
-              scrolled ? 'h-6' : 'h-8'
+              scrolled ? 'h-6' : 'h-9'
             }`} />
 
             {/* Text block: COMPLETELY HIDDEN ON MOBILE */}
@@ -100,7 +100,7 @@ export const Header: React.FC = () => {
                   ? 'text-xs truncate max-w-md' 
                   : 'text-xs sm:text-sm lg:text-[14px] leading-snug tracking-tight max-w-xl'
               }`}>
-                {ORGANIZATION.fullName}
+                АНО «Центр развития зимнего спорта, современных спортивных технологий и туризма»
               </h1>
             </div>
           </NextLink>
