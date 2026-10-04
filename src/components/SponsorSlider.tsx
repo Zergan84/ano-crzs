@@ -26,7 +26,7 @@ const SPONSORS: Sponsor[] = [
   { id: 'alpika', name: 'Альпика', category: 'Курорт Газпром Поляна', logo: '/sponsors/alpika.png' },
 ];
 
-import { useSiteContent } from '@/lib/content';
+import { useSiteContent, resolveMediaUrl } from '@/lib/content';
 
 export function SponsorSlider() {
   const { content } = useSiteContent();
@@ -117,11 +117,9 @@ export function SponsorSlider() {
                 >
                   {/* Logo Container */}
                   <div className="h-16 w-full flex items-center justify-center p-2 relative">
-                    <Image
-                      src={sponsor.logo}
+                    <img
+                      src={resolveMediaUrl(sponsor.logo)}
                       alt={sponsor.name}
-                      width={140}
-                      height={56}
                       className="max-h-12 max-w-[130px] w-auto h-auto object-contain transition-transform duration-200 group-hover:scale-105 filter group-hover:brightness-105"
                     />
                   </div>

@@ -17,7 +17,7 @@ import {
   Flame
 } from 'lucide-react';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
-import { useSiteContent } from '@/lib/content';
+import { useSiteContent, resolveMediaUrl } from '@/lib/content';
 
 interface Slide {
   id: string;
@@ -198,11 +198,107 @@ export function HeroSlider() {
   const activeSlides: Slide[] = slides.map((base, idx) => {
     const dyn = dynamicHeroSlides?.[idx];
     if (!dyn) return base;
+
+    const dynamicImg = dyn.image ? resolveMediaUrl(dyn.image) : '';
+    let rightContent = base.rightContent;
+
+    if (dynamicImg) {
+      if (idx === 0) {
+        // Slide 1 cutout / character style
+        rightContent = (
+          <div className="relative max-w-sm sm:max-w-md w-full flex justify-center lg:justify-end">
+            <img
+              src={dynamicImg}
+              alt={dyn.title || base.title}
+              className="w-auto h-auto max-h-[420px] sm:max-h-[460px] lg:max-h-[490px] object-contain drop-shadow-md select-none pointer-events-none"
+            />
+          </div>
+        );
+      } else if (idx === 1) {
+        // Slide 2 Carve Cup card
+        rightContent = (
+          <div className="relative max-w-md w-full flex justify-center lg:justify-end">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group">
+              <img
+                src={dynamicImg}
+                alt={dyn.title || base.title}
+                className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
+              />
+              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Trophy className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold flex items-center gap-1.5">
+                      Carve Cup 2028
+                      <span className="text-xs">🔥</span>
+                    </div>
+                    <div className="text-[11px] text-slate-300">
+                      Официальный зачет • Горные лыжи и сноуборд
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-red-600/90 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                  Скоро старт
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      } else if (idx === 2) {
+        // Slide 3 Govt card
+        rightContent = (
+          <div className="relative max-w-md w-full flex justify-center lg:justify-end">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white group">
+              <img
+                src={dynamicImg}
+                alt={dyn.title || base.title}
+                className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
+              />
+              <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Building2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold">
+                      {dyn.tag || 'Дом Правительства Московской области'}
+                    </div>
+                    <div className="text-[11px] text-slate-300">
+                      г. Красногорск • День открытых дверей
+                    </div>
+                  </div>
+                </div>
+                <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                  Отраслевой форум
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      } else {
+        // Fallback for custom added slides
+        rightContent = (
+          <div className="relative max-w-md w-full flex justify-center lg:justify-end">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-slate-200 bg-white">
+              <img
+                src={dynamicImg}
+                alt={dyn.title || base.title}
+                className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
+              />
+            </div>
+          </div>
+        );
+      }
+    }
+
     return {
       ...base,
       title: dyn.title || base.title,
       description: dyn.desc || base.description,
       badge: dyn.tag || base.badge,
+      rightContent,
       primaryBtn: {
         ...base.primaryBtn,
         label: dyn.ctaText || base.primaryBtn.label,
