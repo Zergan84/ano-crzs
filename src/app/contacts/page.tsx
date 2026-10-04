@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { ORGANIZATION } from '@/data/organization';
+import { useSiteContent } from '@/lib/content';
 import { 
   MapPin, 
   Phone, 
@@ -17,6 +18,10 @@ import {
 } from 'lucide-react';
 
 export default function ContactsPage() {
+  const { content } = useSiteContent();
+  const org = content?.organization || ORGANIZATION;
+  const bank = org.bankRequisites || ORGANIZATION.bankRequisites;
+
   const [copied, setCopied] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [feedback, setFeedback] = useState({
@@ -29,16 +34,16 @@ export default function ContactsPage() {
 
   const copyRequisites = () => {
     const text = `
-Наименование: ${ORGANIZATION.fullName}
-ОГРН: ${ORGANIZATION.ogrn}
-ИНН: ${ORGANIZATION.inn}
-КПП: ${ORGANIZATION.kpp}
-ОКПО: ${ORGANIZATION.okpo}
-Адрес: ${ORGANIZATION.legalAddress}
-Банк: ${ORGANIZATION.bankRequisites.bankName}
-БИК: ${ORGANIZATION.bankRequisites.bik}
-Р/с: ${ORGANIZATION.bankRequisites.checkingAccount}
-К/с: ${ORGANIZATION.bankRequisites.correspondentAccount}
+Наименование: ${org.fullName || ORGANIZATION.fullName}
+ОГРН: ${org.ogrn || ORGANIZATION.ogrn}
+ИНН: ${org.inn || ORGANIZATION.inn}
+КПП: ${org.kpp || ORGANIZATION.kpp}
+ОКПО: ${org.okpo || ORGANIZATION.okpo}
+Адрес: ${org.legalAddress || ORGANIZATION.legalAddress}
+Банк: ${bank.bankName}
+БИК: ${bank.bik}
+Р/с: ${bank.checkingAccount}
+К/с: ${bank.correspondentAccount}
     `.trim();
 
     navigator.clipboard.writeText(text);
@@ -77,7 +82,7 @@ export default function ContactsPage() {
               <MapPin className="w-4 h-4" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Центральный офис</h3>
-            <p className="text-slate-600 leading-snug">{ORGANIZATION.actualAddress}</p>
+            <p className="text-slate-600 leading-snug">{org.actualAddress || ORGANIZATION.actualAddress}</p>
             <p className="text-[11px] text-slate-400">Пропускной режим, 4 этаж</p>
           </div>
 
@@ -86,7 +91,7 @@ export default function ContactsPage() {
               <Phone className="w-4 h-4" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Телефоны</h3>
-            <p className="font-semibold text-slate-800">{ORGANIZATION.phone}</p>
+            <p className="font-semibold text-slate-800">{org.phone || ORGANIZATION.phone}</p>
             <p className="text-[11px] text-slate-500">Многоканальная приемная</p>
           </div>
 
@@ -96,10 +101,10 @@ export default function ContactsPage() {
             </div>
             <h3 className="font-bold text-slate-900 text-sm">Электронная почта</h3>
             <p className="text-slate-800">
-              <a href={`mailto:${ORGANIZATION.receptionEmail}`} className="hover:underline">{ORGANIZATION.receptionEmail}</a>
+              <a href={`mailto:${org.receptionEmail || ORGANIZATION.receptionEmail}`} className="hover:underline">{org.receptionEmail || ORGANIZATION.receptionEmail}</a>
             </p>
             <p className="text-[11px] text-slate-500">
-              Пресс-служба: {ORGANIZATION.pressEmail}
+              Пресс-служба: {org.pressEmail || ORGANIZATION.pressEmail}
             </p>
           </div>
 
@@ -108,7 +113,7 @@ export default function ContactsPage() {
               <Clock className="w-4 h-4" />
             </div>
             <h3 className="font-bold text-slate-900 text-sm">График работы</h3>
-            <p className="text-slate-800 font-medium">{ORGANIZATION.workHours}</p>
+            <p className="text-slate-800 font-medium">{org.workHours || ORGANIZATION.workHours}</p>
             <p className="text-[11px] text-slate-500">Суббота, воскресенье — выходные</p>
           </div>
         </div>
@@ -136,43 +141,43 @@ export default function ContactsPage() {
               <tbody>
                 <tr>
                   <td className="w-1/3 font-semibold text-slate-600">Полное наименование:</td>
-                  <td className="text-slate-900">{ORGANIZATION.fullName}</td>
+                  <td className="text-slate-900">{org.fullName || ORGANIZATION.fullName}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">Сокращенное наименование:</td>
-                  <td className="font-bold text-blue-900">{ORGANIZATION.shortName}</td>
+                  <td className="font-bold text-blue-900">{org.shortName || ORGANIZATION.shortName}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">ОГРН:</td>
-                  <td className="font-mono text-slate-900">{ORGANIZATION.ogrn}</td>
+                  <td className="font-mono text-slate-900">{org.ogrn || ORGANIZATION.ogrn}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">ИНН / КПП:</td>
-                  <td className="font-mono text-slate-900">{ORGANIZATION.inn} / {ORGANIZATION.kpp}</td>
+                  <td className="font-mono text-slate-900">{org.inn || ORGANIZATION.inn} / {org.kpp || ORGANIZATION.kpp}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">ОКПО:</td>
-                  <td className="font-mono text-slate-900">{ORGANIZATION.okpo}</td>
+                  <td className="font-mono text-slate-900">{org.okpo || ORGANIZATION.okpo}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">Юридический адрес:</td>
-                  <td className="text-slate-900">{ORGANIZATION.legalAddress}</td>
+                  <td className="text-slate-900">{org.legalAddress || ORGANIZATION.legalAddress}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">Банк:</td>
-                  <td className="text-slate-900">{ORGANIZATION.bankRequisites.bankName}</td>
+                  <td className="text-slate-900">{bank.bankName}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">БИК банка:</td>
-                  <td className="font-mono text-slate-900">{ORGANIZATION.bankRequisites.bik}</td>
+                  <td className="font-mono text-slate-900">{bank.bik}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">Расчетный счет:</td>
-                  <td className="font-mono text-slate-900">{ORGANIZATION.bankRequisites.checkingAccount}</td>
+                  <td className="font-mono text-slate-900">{bank.checkingAccount}</td>
                 </tr>
                 <tr>
                   <td className="font-semibold text-slate-600">Корреспондентский счет:</td>
-                  <td className="font-mono text-slate-900">{ORGANIZATION.bankRequisites.correspondentAccount}</td>
+                  <td className="font-mono text-slate-900">{bank.correspondentAccount}</td>
                 </tr>
               </tbody>
             </table>

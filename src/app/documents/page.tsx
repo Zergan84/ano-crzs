@@ -4,6 +4,7 @@ import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { DOCUMENTS_DATA } from '@/data/documents';
+import { useSiteContent } from '@/lib/content';
 import { DocumentItem } from '@/types';
 import { 
   FileText, 
@@ -18,6 +19,11 @@ import {
 function DocumentsContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('cat') || 'Все';
+  const { content } = useSiteContent();
+
+  const docsList = (content?.documents?.items && content.documents.items.length > 0)
+    ? (content.documents.items as DocumentItem[])
+    : DOCUMENTS_DATA;
 
   const [category, setCategory] = useState<string>(initialCategory);
   const [search, setSearch] = useState<string>('');
@@ -32,7 +38,7 @@ function DocumentsContent() {
   ];
 
   const filteredDocs = useMemo(() => {
-    return DOCUMENTS_DATA.filter((doc) => {
+    return docsList.filter((doc) => {
       const matchCat = category === 'Все' || doc.category === category;
       const matchSearch = 
         !search ||

@@ -48,7 +48,10 @@ export default function SectionEditorClient({ section }: { section: string }) {
     setLoading(true);
     setStatusMessage(null);
     try {
-      const res = await fetch(`/api/admin/content/${section}`);
+      const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
+        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${section}`
+        : `/api/admin/content/${section}`;
+      const res = await fetch(apiEndpoint);
       if (res.ok) {
         const json = await res.json();
         setData(json);
@@ -68,18 +71,22 @@ export default function SectionEditorClient({ section }: { section: string }) {
     setSaving(true);
     setStatusMessage(null);
     try {
-      const res = await fetch(`/api/admin/content/${section}`, {
+      const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
+        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${section}`
+        : `/api/admin/content/${section}`;
+
+      const res = await fetch(apiEndpoint, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
 
       if (res.ok) {
-        setStatusMessage({ type: 'success', text: 'Изменения успешно сохранены в Cloudflare R2!' });
+        setStatusMessage({ type: 'success', text: 'Изменения успешно сохранены и отображаются на сайте!' });
         setTimeout(() => setStatusMessage(null), 4000);
       } else {
         const err = await res.json();
-        setStatusMessage({ type: 'error', text: err.error || 'Ошибка при сохранении в R2' });
+        setStatusMessage({ type: 'error', text: err.error || 'Ошибка при сохранении' });
       }
     } catch (e) {
       setStatusMessage({ type: 'error', text: 'Ошибка сети: ' + String(e) });
@@ -95,7 +102,7 @@ export default function SectionEditorClient({ section }: { section: string }) {
   if (loading) {
     return (
       <div className="flex h-60 items-center justify-center text-slate-500 text-sm">
-        Загрузка данных раздела из R2...
+        Загрузка данных раздела...
       </div>
     );
   }
@@ -128,7 +135,7 @@ export default function SectionEditorClient({ section }: { section: string }) {
             className="flex items-center gap-2 rounded-lg bg-red-600 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-red-500 transition-all shadow-lg shadow-red-950/20 disabled:opacity-50"
           >
             <Save className={`h-4 w-4 ${saving ? 'animate-spin' : ''}`} />
-            <span>{saving ? 'Сохранение...' : 'Сохранить в R2'}</span>
+            <span>{saving ? 'Сохранение...' : 'Сохранить изменения'}</span>
           </button>
         </div>
       </div>
@@ -188,6 +195,26 @@ export default function SectionEditorClient({ section }: { section: string }) {
         {section === 'contacts' && (
           <ContactsEditor data={data} setData={setData} />
         )}
+      </div>
+
+      {/* Bottom Save Action Bar */}
+      <div className="flex items-center justify-between pt-6 border-t border-[#222]">
+        <NextLink
+          href="/admin"
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Назад к дашборду</span>
+        </NextLink>
+
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center gap-2 rounded-lg bg-red-600 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-red-500 transition-all shadow-lg shadow-red-950/20 disabled:opacity-50"
+        >
+          <Save className={`h-4 w-4 ${saving ? 'animate-spin' : ''}`} />
+          <span>{saving ? 'Сохранение...' : 'Сохранить изменения'}</span>
+        </button>
       </div>
 
       {/* Media Picker Modal */}

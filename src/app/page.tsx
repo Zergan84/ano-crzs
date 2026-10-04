@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -12,7 +14,7 @@ import {
   Search, 
   Download, 
   Building2, 
-  AlertCircle,
+  AlertCircle, 
   ExternalLink,
   ChevronRight,
   Cpu,
@@ -28,12 +30,29 @@ import { DOCUMENTS_DATA } from '@/data/documents';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
 import { SponsorSlider } from '@/components/SponsorSlider';
 import { HeroSlider } from '@/components/HeroSlider';
+import { useSiteContent } from '@/lib/content';
 
 export default function HomePage() {
-  const recentSpecialists = SPECIALISTS_DATA.slice(0, 5);
-  const latestNews = NEWS_DATA.slice(0, 3);
-  const upcomingEvents = EVENTS_DATA.slice(0, 3);
-  const featuredDocs = DOCUMENTS_DATA.slice(0, 4);
+  const { content } = useSiteContent();
+
+  const specialists = (content?.specialists?.items && content.specialists.items.length > 0)
+    ? content.specialists.items
+    : SPECIALISTS_DATA;
+  const news = (content?.news?.items && content.news.items.length > 0)
+    ? content.news.items
+    : NEWS_DATA;
+  const events = (content?.events?.items && content.events.items.length > 0)
+    ? content.events.items
+    : EVENTS_DATA;
+  const documents = (content?.documents?.items && content.documents.items.length > 0)
+    ? content.documents.items
+    : DOCUMENTS_DATA;
+  const organization = content?.organization || ORGANIZATION;
+
+  const recentSpecialists = specialists.slice(0, 5);
+  const latestNews = news.slice(0, 3);
+  const upcomingEvents = events.slice(0, 3);
+  const featuredDocs = documents.slice(0, 4);
 
   return (
     <div className="space-y-12 pb-16">
@@ -79,7 +98,7 @@ export default function HomePage() {
       {/* 2. STATISTICAL INDICATORS BAR */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg border border-slate-200 shadow-xs grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200">
-          {ORGANIZATION.stats.map((stat, idx) => (
+          {(organization.stats || ORGANIZATION.stats).map((stat, idx) => (
             <div key={idx} className="p-4 sm:p-6 text-center">
               <div className="text-2xl sm:text-3xl font-extrabold text-[#0A2540] font-mono tracking-tight">
                 {stat.value}
@@ -130,7 +149,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {ORGANIZATION.directions.map((dir) => (
+          {(organization.directions || ORGANIZATION.directions).map((dir) => (
             <div 
               key={dir.id}
               className="bg-white rounded-md border border-slate-200 p-5 hover:border-blue-400 hover:shadow-xs transition-all flex flex-col justify-between"

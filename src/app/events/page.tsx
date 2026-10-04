@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { EVENTS_DATA } from '@/data/events';
+import { useSiteContent } from '@/lib/content';
 import { 
   Calendar, 
   MapPin, 
@@ -17,6 +18,11 @@ import {
 } from 'lucide-react';
 
 export default function EventsPage() {
+  const { content } = useSiteContent();
+  const eventsList = (content?.events?.items && content.events.items.length > 0)
+    ? (content.events.items as any[])
+    : EVENTS_DATA;
+
   const [selectedType, setSelectedType] = useState<string>('Все');
   const [selectedStatus, setSelectedStatus] = useState<string>('Все');
 
@@ -24,12 +30,12 @@ export default function EventsPage() {
   const statuses = ['Все', 'Открыта регистрация', 'Идет прием заявок', 'Завершено'];
 
   const filteredEvents = useMemo(() => {
-    return EVENTS_DATA.filter((evt) => {
+    return eventsList.filter((evt) => {
       const matchType = selectedType === 'Все' || evt.type === selectedType;
       const matchStatus = selectedStatus === 'Все' || evt.status === selectedStatus;
       return matchType && matchStatus;
     });
-  }, [selectedType, selectedStatus]);
+  }, [selectedType, selectedStatus, eventsList]);
 
   return (
     <div>

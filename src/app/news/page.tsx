@@ -3,21 +3,27 @@
 import React, { useState, useMemo } from 'react';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { NEWS_DATA } from '@/data/news';
+import { useSiteContent } from '@/lib/content';
 import { NewsItem } from '@/types';
 import { Calendar, Tag, ChevronRight, X, Newspaper, Share2 } from 'lucide-react';
 
 export default function NewsPage() {
+  const { content } = useSiteContent();
+  const newsList = (content?.news?.items && content.news.items.length > 0)
+    ? (content.news.items as NewsItem[])
+    : NEWS_DATA;
+
   const [selectedCategory, setSelectedCategory] = useState<string>('Все');
   const [activeArticle, setActiveArticle] = useState<NewsItem | null>(null);
 
   const categories = ['Все', 'Официально', 'Мероприятия', 'Образование', 'Стандарты', 'Регионы'];
 
   const filteredNews = useMemo(() => {
-    return NEWS_DATA.filter((item) => {
+    return newsList.filter((item) => {
       if (selectedCategory === 'Все') return true;
       return item.category === selectedCategory;
     });
-  }, [selectedCategory]);
+  }, [selectedCategory, newsList]);
 
   return (
     <div>

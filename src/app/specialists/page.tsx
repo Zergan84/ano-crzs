@@ -4,6 +4,7 @@ import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { SPECIALISTS_DATA } from '@/data/specialists';
+import { useSiteContent } from '@/lib/content';
 import { Specialist } from '@/types';
 import { 
   Search, 
@@ -24,6 +25,11 @@ import { GuillochePattern } from '@/components/ui/GuillochePattern';
 function SpecialistsRegistryContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
+  const { content } = useSiteContent();
+
+  const specialistsList = (content?.specialists?.items && content.specialists.items.length > 0)
+    ? (content.specialists.items as Specialist[])
+    : SPECIALISTS_DATA;
 
   const [query, setQuery] = useState(initialQuery);
   const [selectedDiscipline, setSelectedDiscipline] = useState<string>('Все');
@@ -44,7 +50,7 @@ function SpecialistsRegistryContent() {
   const statuses = ['Все', 'Действителен', 'На продлении', 'Архив'];
 
   const filteredSpecialists = useMemo(() => {
-    return SPECIALISTS_DATA.filter((sp) => {
+    return specialistsList.filter((sp) => {
       const matchQuery = 
         !query || 
         sp.fullName.toLowerCase().includes(query.toLowerCase()) ||
@@ -90,7 +96,7 @@ function SpecialistsRegistryContent() {
             </div>
 
             <div className="bg-blue-50 border border-blue-200 p-3 rounded-md text-xs text-blue-900 shrink-0">
-              <p className="font-semibold">Всего в базе: {SPECIALISTS_DATA.length} записей</p>
+              <p className="font-semibold">Всего в базе: {specialistsList.length} записей</p>
               <p className="text-[11px] text-blue-700 mt-0.5">Данные синхронизированы: Сезон 2025/2026</p>
             </div>
           </div>
