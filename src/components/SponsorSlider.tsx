@@ -26,9 +26,14 @@ const SPONSORS: Sponsor[] = [
   { id: 'alpika', name: 'Альпика', category: 'Курорт Газпром Поляна', logo: '/sponsors/alpika.png' },
 ];
 
+import { useSiteContent } from '@/lib/content';
+
 export function SponsorSlider() {
+  const { content } = useSiteContent();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
+
+  const sponsors = (content?.partners?.items && content.partners.items.length > 0) ? content.partners.items : SPONSORS;
 
   // Manual scroll buttons
   const scroll = (direction: 'left' | 'right') => {
@@ -39,7 +44,7 @@ export function SponsorSlider() {
   };
 
   // Duplicate sponsors for seamless infinite CSS loop
-  const displaySponsors = [...SPONSORS, ...SPONSORS, ...SPONSORS];
+  const displaySponsors = [...sponsors, ...sponsors, ...sponsors];
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

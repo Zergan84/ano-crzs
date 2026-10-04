@@ -2,10 +2,23 @@
   "name": "ano-crzs",
   "main": "worker.js",
   "compatibility_date": "2024-11-01",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "assets": {
     "binding": "ASSETS",
     "directory": "./out",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "single-page-application"
+  },
+  "r2_buckets": [
+    {
+      "binding": "R2_BUCKET",
+      "bucket_name": "ano-crzs"
+    }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_SITE_NAME": "АНО «ЦРЗС»",
+    "NEXT_PUBLIC_SITE_URL": "https://ano-crzs.101filmstudio.workers.dev"
   }
 }

@@ -1,0 +1,42 @@
+/* Admin Dark Theme Styles */
+.admin-input,
+.admin-textarea,
+.admin-select {
+  background-color: #16191f;
+  border: 1px solid #2d3442;
+  color: #f1f5f9;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.admin-input:focus,
+.admin-textarea:focus,
+.admin-select:focus {
+  border-color: #ef4444;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.admin-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.375rem;
+  display: block;
+}
+
+.admin-card {
+  background-color: #0f141c;
+  border: 1px solid #1e293b;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.admin-card:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+}

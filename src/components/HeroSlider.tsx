@@ -17,6 +17,7 @@ import {
   Flame
 } from 'lucide-react';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
+import { useSiteContent } from '@/lib/content';
 
 interface Slide {
   id: string;
@@ -44,6 +45,7 @@ interface Slide {
 }
 
 export function HeroSlider() {
+  const { content } = useSiteContent();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -191,13 +193,31 @@ export function HeroSlider() {
     }
   ];
 
+  // Merge dynamic slides if available from R2 content
+  const dynamicHeroSlides = content?.hero?.slides;
+  const activeSlides: Slide[] = slides.map((base, idx) => {
+    const dyn = dynamicHeroSlides?.[idx];
+    if (!dyn) return base;
+    return {
+      ...base,
+      title: dyn.title || base.title,
+      description: dyn.desc || base.description,
+      badge: dyn.tag || base.badge,
+      primaryBtn: {
+        ...base.primaryBtn,
+        label: dyn.ctaText || base.primaryBtn.label,
+        href: dyn.ctaHref || base.primaryBtn.href,
+      },
+    };
+  });
+
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  }, [slides.length]);
+    setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
+  }, [activeSlides.length]);
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  }, [slides.length]);
+    setCurrentSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
+  }, [activeSlides.length]);
 
   // Auto-advance slides every 8 seconds when not paused
   useEffect(() => {
@@ -208,7 +228,7 @@ export function HeroSlider() {
     return () => clearInterval(interval);
   }, [isPaused, nextSlide]);
 
-  const slide = slides[currentSlide];
+  const slide = activeSlides[currentSlide % activeSlides.length] || activeSlides[0];
 
   return (
     <section 
@@ -297,7 +317,7 @@ export function HeroSlider() {
         <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Dot & Slide Selectors */}
           <div className="flex items-center gap-2">
-            {slides.map((s, idx) => (
+            {activeSlides.map((s, idx) => (
               <button
                 key={s.id}
                 onClick={() => setCurrentSlide(idx)}
