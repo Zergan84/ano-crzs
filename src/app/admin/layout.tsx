@@ -45,24 +45,33 @@ const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard, href: '/admin', modes: ['landing', 'portal'] },
   { id: 'settings', label: 'Настройки', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'] },
   { id: 'themes', label: 'Темы', icon: Palette, href: '/admin/themes', modes: ['landing', 'portal'] },
-  { id: 'hero', label: 'Слайдер Hero', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
-  // Landing-only blocks
-  { id: 'landing-hero', label: 'Шапка лендинга', icon: Menu, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },
-  { id: 'landing-ideology', label: 'Методология и Ведомства', icon: Landmark, href: '/admin/landing-ideology', modes: ['landing'], badge: 'Лендинг' },
-  // Portal-only blocks
+  // 1. Шапка сайта (Лендинг)
+  { id: 'landing-hero', label: '1. Шапка сайта', icon: Menu, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },
+  // 2. Главный экран (Main Hero / Слайдер)
+  { id: 'hero', label: '2. Главный экран (Hero)', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
+  // 3. О центре (#about)
+  { id: 'organization', label: '3. О центре (#about)', icon: Building2, href: '/admin/organization', modes: ['landing', 'portal'] },
+  // 4. Проекты и программы (#projects)
+  { id: 'directions', label: '4. Проекты и программы', icon: Compass, href: '/admin/directions', modes: ['landing', 'portal'] },
+  // 5. Новости (#news)
+  { id: 'news', label: '5. Новости (#news)', icon: Newspaper, href: '/admin/news', modes: ['landing', 'portal'] },
+  // 6. Документы и отчёты (#documents)
+  { id: 'documents', label: '6. Документы и отчёты', icon: FileText, href: '/admin/documents', modes: ['landing', 'portal'] },
+  // 7. Партнёры (#partners)
+  { id: 'partners', label: '7. Партнёры (#partners)', icon: Handshake, href: '/admin/partners', modes: ['landing', 'portal'] },
+  // 8. Сотрудничество (#partnership)
+  { id: 'landing-ideology', label: '8. Сотрудничество', icon: Landmark, href: '/admin/landing-ideology', modes: ['landing'], badge: 'Лендинг' },
+  // 9. Контакты (#contacts)
+  { id: 'contacts', label: '9. Контакты (#contacts)', icon: Phone, href: '/admin/contacts', modes: ['landing', 'portal'] },
+  // 10. Подвал (Footer)
+  { id: 'footer', label: '10. Подвал (Footer)', icon: LayoutTemplate, href: '/admin/footer', modes: ['landing', 'portal'] },
+  // Portal-only blocks (скрыты в режиме Лендинга)
   { id: 'header', label: 'Меню портала', icon: Menu, href: '/admin/header', modes: ['portal'], badge: 'Портал' },
   { id: 'section-order', label: 'Порядок разделов', icon: SlidersHorizontal, href: '/admin/section-order', modes: ['portal'], badge: 'Портал' },
   { id: 'pages', label: 'Страницы портала', icon: Layers, href: '/admin/pages', modes: ['portal'], badge: 'Портал' },
   { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists', modes: ['portal'], badge: 'Портал' },
-  { id: 'news', label: 'Новости', icon: Newspaper, href: '/admin/news', modes: ['portal'], badge: 'Портал' },
   { id: 'events', label: 'Мероприятия', icon: Calendar, href: '/admin/events', modes: ['portal'], badge: 'Портал' },
-  // Shared Cross-blocks (Перекрестные блоки для Лендинга и Портала)
-  { id: 'organization', label: 'О нас и Философия', icon: Building2, href: '/admin/organization', modes: ['landing', 'portal'] },
-  { id: 'directions', label: 'Направления', icon: Compass, href: '/admin/directions', modes: ['landing', 'portal'] },
-  { id: 'documents', label: 'Документы', icon: FileText, href: '/admin/documents', modes: ['landing', 'portal'] },
-  { id: 'partners', label: 'Партнёры и спонсоры', icon: Handshake, href: '/admin/partners', modes: ['landing', 'portal'] },
-  { id: 'contacts', label: 'Контакты и реквизиты', icon: Phone, href: '/admin/contacts', modes: ['landing', 'portal'] },
-  { id: 'footer', label: 'Подвал (Footer)', icon: LayoutTemplate, href: '/admin/footer', modes: ['landing', 'portal'] },
+  // Медиатека и Шрифты
   { id: 'media', label: 'Медиатека R2', icon: ImageIcon, href: '/admin/media', modes: ['landing', 'portal'] },
   { id: 'fonts', label: 'Шрифты', icon: Type, href: '/admin/fonts', modes: ['landing', 'portal'] },
 ];

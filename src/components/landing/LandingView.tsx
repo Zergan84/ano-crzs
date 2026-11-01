@@ -521,13 +521,164 @@ export function LandingView() {
       : ORGANIZATION.directions;
 
   // =========================================================================
-  // 1-IN-1 BOLT STYLE RENDERING (exact match to sports-development-c-z4rl.bolt.host)
+  // 1-IN-1 BOLT STYLE RENDERING (exact match to sports-development-c-z4rl.bolt.host, fully editable via Admin)
   // =========================================================================
   if (isBoltStyle) {
+    const boltNavLinks =
+      Array.isArray(header.navLinks) && header.navLinks.length > 0
+        ? header.navLinks
+        : BOLT_NAV_LINKS;
+
+    const boltLogoUrl = resolveMediaUrl((header as any).logoUrl) || '/logo.png';
+    const boltHeaderCtaText = header.ctaText || 'Стать партнёром';
+    const boltHeaderCtaHref = header.ctaHref || '#partnership';
+
+    const aboutEyebrow = (org as any).aboutEyebrow || 'О центре';
+    const aboutTitle = (org as any).aboutTitle || 'Миссия: спорт доступен каждому';
+    const aboutDescription =
+      org.tagline ||
+      org.missionRole ||
+      'Центр развития спорта создан для того, чтобы физическая культура стала частью жизни каждого человека, а регионы получили устойчивую систему подготовки спортсменов и тренеров.';
+
+    const aboutBullets: string[] =
+      Array.isArray(principles) && principles.length > 0
+        ? principles.map((p: any) => p.title || p.description || '').filter(Boolean)
+        : BOLT_ABOUT_BULLETS;
+
+    const aboutImgUrl =
+      resolveMediaUrl((org as any).aboutImage) ||
+      boltAboutImg ||
+      'https://discover.moscow/media/images/DSC00979_1-min.min-1920x1920.webp';
+
+    const projectsEyebrow = (org as any).projectsEyebrow || 'Проекты и программы';
+    const projectsTitle =
+      (org as any).projectsTitle || 'Спортивные и социальные проекты центра';
+    const projectsSubtitle =
+      (org as any).projectsSubtitle ||
+      'Каждый проект направлен на конкретный результат: больше участников, лучшая инфраструктура и подготовленные кадры.';
+
+    const projectIconList = [Users, HeartHandshake, Trophy, GraduationCap, Landmark, Medal];
+    const boltProjects =
+      Array.isArray(directions) && directions.length > 0
+        ? directions.map((dir: any, idx: number) => {
+            const icName = String(dir.icon || '').toLowerCase();
+            let IconComp: any = projectIconList[idx % projectIconList.length];
+            if (icName.includes('users')) IconComp = Users;
+            else if (icName.includes('heart')) IconComp = HeartHandshake;
+            else if (icName.includes('trophy')) IconComp = Trophy;
+            else if (icName.includes('grad')) IconComp = GraduationCap;
+            else if (icName.includes('landmark') || icName.includes('building'))
+              IconComp = Landmark;
+            else if (icName.includes('medal') || icName.includes('award')) IconComp = Medal;
+            return {
+              id: dir.id || `proj-${idx}`,
+              title: dir.title || BOLT_PROJECTS[idx]?.title || 'Проект',
+              description:
+                dir.description || BOLT_PROJECTS[idx]?.description || '',
+              category:
+                dir.category ||
+                dir.topics?.[0] ||
+                BOLT_PROJECTS[idx]?.category ||
+                'Программа',
+              icon: IconComp,
+            };
+          })
+        : BOLT_PROJECTS;
+
+    const newsItems =
+      Array.isArray(content?.news?.items) && content.news.items.length > 0
+        ? content.news.items.map((n: any, idx: number) => ({
+            id: n.id || `news-${idx}`,
+            date: n.date || '',
+            category: n.category || 'Новости',
+            title: n.title || '',
+            excerpt: n.excerpt || n.summary || (Array.isArray(n.content) ? n.content[0] : n.content) || '',
+          }))
+        : BOLT_NEWS;
+
+    const rawDocs =
+      Array.isArray(documents) && documents.length > 0 ? documents : BOLT_DOCUMENTS;
+    const mappedDocs = rawDocs.map((d: any, idx: number) => {
+      const cat = d.category || 'Учредительные';
+      const yr =
+        d.year ||
+        (d.date && String(d.date).match(/\d{4}/)?.[0]) ||
+        d.date ||
+        '2026';
+      let DocIcon: any = FileText;
+      if (cat.toLowerCase().includes('отчёт') || cat.toLowerCase().includes('отчет')) {
+        DocIcon = BarChart3;
+      } else if (String(d.title || '').toLowerCase().includes('свидетельство')) {
+        DocIcon = ShieldCheck;
+      }
+      return {
+        id: d.id || `doc-${idx}`,
+        title: d.title || 'Документ',
+        category: cat,
+        year: yr,
+        fileUrl: d.fileUrl || (d.downloadUrl && d.downloadUrl !== '#' ? d.downloadUrl : ''),
+        icon: DocIcon,
+      };
+    });
+
+    const dynamicDocCategories = [
+      'Все',
+      ...Array.from(new Set(mappedDocs.map((d: any) => d.category).filter(Boolean))),
+    ];
+    const docTabs =
+      dynamicDocCategories.length > 1 ? dynamicDocCategories : BOLT_DOC_CATEGORIES;
+
     const filteredBoltDocs =
       docCategoryFilter === 'Все'
-        ? BOLT_DOCUMENTS
-        : BOLT_DOCUMENTS.filter((d) => d.category === docCategoryFilter);
+        ? mappedDocs
+        : mappedDocs.filter((d: any) => d.category === docCategoryFilter);
+
+    // Group partners by category
+    const partnerGroupIcons = [Landmark, Medal, HeartHandshake];
+    const boltPartnerGroups = (() => {
+      if (!Array.isArray(partners) || partners.length === 0) {
+        return BOLT_PARTNER_GROUPS;
+      }
+      const groupMap = new Map<string, string[]>();
+      partners.forEach((p: any) => {
+        const cat = p.category || 'Спонсоры и партнёры';
+        if (!groupMap.has(cat)) groupMap.set(cat, []);
+        if (p.name) groupMap.get(cat)!.push(p.name);
+      });
+      return Array.from(groupMap.entries()).map(([title, members], idx) => ({
+        title,
+        icon: partnerGroupIcons[idx % partnerGroupIcons.length],
+        members,
+      }));
+    })();
+
+    const partnershipIconList = [Landmark, Waves, FileText, TrendingUp];
+    const partnershipItems =
+      Array.isArray(ideology.govBlocks) && ideology.govBlocks.length > 0
+        ? ideology.govBlocks.map((b: any, idx: number) => ({
+            title: b.title || BOLT_PARTNERSHIP_ITEMS[idx]?.title || '',
+            text: b.desc || BOLT_PARTNERSHIP_ITEMS[idx]?.text || '',
+            icon: partnershipIconList[idx % partnershipIconList.length],
+          }))
+        : BOLT_PARTNERSHIP_ITEMS;
+
+    const partnershipBadge = ideology.govBadge || 'Сотрудничество';
+    const partnershipTitle = ideology.govTitle || 'Станьте партнёром центра';
+    const partnershipSubtitle =
+      ideology.govSubtitle ||
+      'Спонсорство, гранты и совместные проекты. Расскажите о своей организации, и мы предложим формат участия.';
+    const partnershipCtaText =
+      (ideology as any).govCtaText || 'Оставить заявку на партнёрство';
+    const partnershipModalTitle =
+      (ideology as any).govModalTitle || 'Заявка на партнёрство';
+
+    const contactsEyebrow = (org as any).contactsEyebrow || 'Контакты';
+    const contactsTitle = (org as any).contactsTitle || 'Свяжитесь с нами';
+    const contactsSubtitle =
+      (org as any).contactsSubtitle ||
+      'Ответим на вопросы о программах, документах и формах сотрудничества.';
+
+    const footerLogoUrl = resolveMediaUrl((footer as any).logoUrl) || boltLogoUrl;
 
     return (
       <div className="min-h-screen bg-white text-[#475569]">
@@ -543,19 +694,19 @@ export function LandingView() {
             <a
               href="#top"
               className="flex shrink-0 items-center"
-              aria-label="Центр развития спорта, на главную"
+              aria-label={`${header.logoTitle || 'Центр развития спорта'}, на главную`}
             >
               <img
-                src="/logo.png"
-                alt="Центр развития спорта"
+                src={boltLogoUrl}
+                alt={header.logoTitle || 'Центр развития спорта'}
                 className="h-9 w-auto sm:h-10"
               />
             </a>
 
             <nav aria-label="Основная навигация" className="hidden items-center gap-1 lg:flex">
-              {BOLT_NAV_LINKS.map((item) => (
+              {boltNavLinks.map((item: any) => (
                 <a
-                  key={item.href}
+                  key={item.href + item.label}
                   href={item.href}
                   className="rounded-md px-3 py-2 text-sm text-[#D9E4F0] transition-colors hover:bg-white/10 hover:text-white"
                 >
@@ -566,10 +717,10 @@ export function LandingView() {
 
             <div className="hidden items-center lg:flex">
               <a
-                href="#partnership"
+                href={boltHeaderCtaHref}
                 className="group inline-flex items-center gap-2 rounded-full bg-[#E8B93E] px-5 py-2.5 text-sm font-semibold text-[#071A33] shadow-sm transition-all hover:bg-[#F0CF6A] hover:shadow-md"
               >
-                <span>Стать партнёром</span>
+                <span>{boltHeaderCtaText}</span>
                 <ArrowRight
                   className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
                   aria-hidden="true"
@@ -599,9 +750,9 @@ export function LandingView() {
                 aria-label="Мобильная навигация"
                 className="mx-auto flex max-w-7xl flex-col px-6 py-4"
               >
-                {BOLT_NAV_LINKS.map((item) => (
+                {boltNavLinks.map((item: any) => (
                   <a
-                    key={item.href}
+                    key={item.href + item.label}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className="rounded-md px-3 py-3 text-base text-[#D9E4F0] transition-colors hover:bg-white/10 hover:text-white"
@@ -610,11 +761,11 @@ export function LandingView() {
                   </a>
                 ))}
                 <a
-                  href="#partnership"
+                  href={boltHeaderCtaHref}
                   onClick={() => setMobileMenuOpen(false)}
                   className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-5 py-3 text-sm font-semibold text-[#071A33]"
                 >
-                  <span>Стать партнёром</span>
+                  <span>{boltHeaderCtaText}</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </a>
               </nav>
@@ -635,19 +786,19 @@ export function LandingView() {
                 <div>
                   <div className="max-w-2xl">
                     <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
-                      О центре
+                      {aboutEyebrow}
                     </p>
                     <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
-                      Миссия: спорт доступен каждому
+                      {aboutTitle}
                     </h2>
                     <p className="mt-4 text-base text-slate-600 sm:text-lg">
-                      Центр развития спорта создан для того, чтобы физическая культура стала частью жизни каждого человека, а регионы получили устойчивую систему подготовки спортсменов и тренеров.
+                      {aboutDescription}
                     </p>
                   </div>
 
                   <ul className="mt-8 space-y-4">
-                    {BOLT_ABOUT_BULLETS.map((item) => (
-                      <li key={item} className="flex items-start gap-3 text-slate-700">
+                    {aboutBullets.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-slate-700">
                         <CheckCircle2
                           className="mt-0.5 h-5 w-5 shrink-0 text-[#0F7B7A]"
                           aria-hidden="true"
@@ -659,8 +810,8 @@ export function LandingView() {
                 </div>
 
                 <img
-                  src={boltAboutImg}
-                  alt="Занятия спортом в современном зале"
+                  src={aboutImgUrl}
+                  alt={aboutTitle}
                   loading="lazy"
                   className="aspect-[4/3] w-full rounded-2xl object-cover shadow-[0_2px_4px_rgba(7,26,51,0.06),0_20px_40px_-16px_rgba(7,26,51,0.25)]"
                 />
@@ -673,22 +824,22 @@ export function LandingView() {
             <div id="directions" className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="max-w-2xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
-                  Проекты и программы
+                  {projectsEyebrow}
                 </p>
                 <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
-                  Спортивные и социальные проекты центра
+                  {projectsTitle}
                 </h2>
                 <p className="mt-4 text-base text-slate-600 sm:text-lg">
-                  Каждый проект направлен на конкретный результат: больше участников, лучшая инфраструктура и подготовленные кадры.
+                  {projectsSubtitle}
                 </p>
               </div>
 
               <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {BOLT_PROJECTS.map((proj) => {
+                {boltProjects.map((proj: any, idx: number) => {
                   const IconComp = proj.icon;
                   return (
                     <article
-                      key={proj.title}
+                      key={proj.id || idx}
                       className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_1px_2px_rgba(7,26,51,0.04),0_8px_24px_-12px_rgba(7,26,51,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-[#0F7B7A]/40 hover:shadow-[0_2px_4px_rgba(7,26,51,0.06),0_20px_40px_-16px_rgba(7,26,51,0.25)]"
                     >
                       <div className="flex items-start justify-between gap-4">
@@ -721,9 +872,9 @@ export function LandingView() {
               </div>
 
               <ul className="mt-12 flex flex-col divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-[#F8FAFC]">
-                {BOLT_NEWS.map((item) => (
+                {newsItems.map((item: any, idx: number) => (
                   <li
-                    key={item.title}
+                    key={item.id || idx}
                     className="group flex flex-col gap-3 px-6 py-7 transition-colors hover:bg-white sm:px-8"
                   >
                     <div className="flex flex-wrap items-center gap-3">
@@ -747,136 +898,158 @@ export function LandingView() {
           </section>
 
           {/* 6. DOCUMENTS (#documents — Hp) */}
-          <section id="documents" className="scroll-mt-20 bg-[#F8FAFC] py-20 sm:py-24">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="max-w-2xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
-                  Документы и отчёты
-                </p>
-                <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
-                  Открытость в каждой детали
-                </h2>
-                <p className="mt-4 text-base text-slate-600 sm:text-lg">
-                  Устав, отчётность и внутренние положения центра. Все документы доступны для ознакомления.
-                </p>
-              </div>
+          {settings.showDocumentsOnLanding !== false && (
+            <section id="documents" className="scroll-mt-20 bg-[#F8FAFC] py-20 sm:py-24">
+              <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                <div className="max-w-2xl">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
+                    Документы и отчёты
+                  </p>
+                  <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
+                    Открытость в каждой детали
+                  </h2>
+                  <p className="mt-4 text-base text-slate-600 sm:text-lg">
+                    Устав, отчётность и внутренние положения центра. Все документы доступны для ознакомления.
+                  </p>
+                </div>
 
-              <div
-                role="tablist"
-                aria-label="Категории документов"
-                className="mt-10 flex flex-wrap gap-2"
-              >
-                {BOLT_DOC_CATEGORIES.map((cat) => {
-                  const active = cat === docCategoryFilter;
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => setDocCategoryFilter(cat)}
-                      className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
-                        active
-                          ? 'bg-[#071A33] text-white'
-                          : 'bg-white text-[#13325A] ring-1 ring-inset ring-slate-200 hover:bg-[#EEF3F9]'
-                      }`}
-                    >
-                      {cat}
-                    </button>
-                  );
-                })}
-              </div>
+                <div
+                  role="tablist"
+                  aria-label="Категории документов"
+                  className="mt-10 flex flex-wrap gap-2"
+                >
+                  {docTabs.map((cat) => {
+                    const active = cat === docCategoryFilter;
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => setDocCategoryFilter(cat)}
+                        className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+                          active
+                            ? 'bg-[#071A33] text-white'
+                            : 'bg-white text-[#13325A] ring-1 ring-inset ring-slate-200 hover:bg-[#EEF3F9]'
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    );
+                  })}
+                </div>
 
-              <ul className="mt-8 grid gap-4 md:grid-cols-2">
-                {filteredBoltDocs.map((doc) => {
-                  const DocIcon = doc.icon;
-                  return (
-                    <li
-                      key={doc.title}
-                      className="bolt-keep-bg flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(7,26,51,0.04),0_8px_24px_-12px_rgba(7,26,51,0.12)] transition-all duration-300 hover:border-[#0F7B7A]/40 hover:shadow-[0_2px_4px_rgba(7,26,51,0.06),0_20px_40px_-16px_rgba(7,26,51,0.25)]"
-                    >
-                      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#EEF3F9] text-[#13325A]">
-                        <DocIcon className="h-6 w-6" aria-hidden="true" />
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-bold text-[#071A33]">{doc.title}</h3>
-                        <p className="mt-1 flex flex-wrap items-center gap-x-3 text-sm text-slate-500">
-                          <span>{doc.category}</span>
-                          <span aria-hidden="true">•</span>
-                          <span>{doc.year}</span>
-                        </p>
-                      </div>
-                      <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 sm:inline-flex">
-                        PDF
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </section>
+                <ul className="mt-8 grid gap-4 md:grid-cols-2">
+                  {filteredBoltDocs.map((doc: any, idx: number) => {
+                    const DocIcon = doc.icon;
+                    const resolvedUrl = doc.fileUrl ? resolveMediaUrl(doc.fileUrl) : '';
+                    const inner = (
+                      <>
+                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#EEF3F9] text-[#13325A]">
+                          <DocIcon className="h-6 w-6" aria-hidden="true" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-bold text-[#071A33]">{doc.title}</h3>
+                          <p className="mt-1 flex flex-wrap items-center gap-x-3 text-sm text-slate-500">
+                            <span>{doc.category}</span>
+                            <span aria-hidden="true">•</span>
+                            <span>{doc.year}</span>
+                          </p>
+                        </div>
+                        <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 sm:inline-flex">
+                          PDF
+                        </span>
+                      </>
+                    );
+
+                    return (
+                      <li
+                        key={doc.id || idx}
+                        className="bolt-keep-bg rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(7,26,51,0.04),0_8px_24px_-12px_rgba(7,26,51,0.12)] transition-all duration-300 hover:border-[#0F7B7A]/40 hover:shadow-[0_2px_4px_rgba(7,26,51,0.06),0_20px_40px_-16px_rgba(7,26,51,0.25)]"
+                      >
+                        {resolvedUrl ? (
+                          <a
+                            href={resolvedUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-5"
+                          >
+                            {inner}
+                          </a>
+                        ) : (
+                          <div className="flex items-center gap-4 p-5">{inner}</div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </section>
+          )}
 
           {/* 7. PARTNERS (#partners — Vp) */}
-          <section id="partners" className="scroll-mt-20 bg-white py-20 sm:py-24">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="max-w-2xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
-                  Партнёры
-                </p>
-                <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
-                  Министерства, федерации и спонсоры
-                </h2>
-                <p className="mt-4 text-base text-slate-600 sm:text-lg">
-                  Мы работаем с органами власти, спортивными федерациями и бизнесом, чтобы программы доходили до каждого региона.
-                </p>
-              </div>
+          {settings.showPartnersOnLanding !== false && (
+            <section id="partners" className="scroll-mt-20 bg-white py-20 sm:py-24">
+              <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                <div className="max-w-2xl">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
+                    Партнёры
+                  </p>
+                  <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
+                    Министерства, федерации и спонсоры
+                  </h2>
+                  <p className="mt-4 text-base text-slate-600 sm:text-lg">
+                    Мы работаем с органами власти, спортивными федерациями и бизнесом, чтобы программы доходили до каждого региона.
+                  </p>
+                </div>
 
-              <div className="mt-14 grid gap-6 lg:grid-cols-3">
-                {BOLT_PARTNER_GROUPS.map((group) => {
-                  const GroupIcon = group.icon;
-                  return (
-                    <div
-                      key={group.title}
-                      className="rounded-2xl border border-slate-200 bg-[#F8FAFC] p-8"
-                    >
-                      <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#071A33] text-[#F0CF6A]">
-                        <GroupIcon className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                      <h3 className="mt-5 text-lg font-bold text-[#071A33]">{group.title}</h3>
-                      <ul className="mt-5 divide-y divide-slate-200">
-                        {group.members.map((member) => (
-                          <li key={member} className="py-3 text-slate-700">
-                            {member}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
+                <div className="mt-14 grid gap-6 lg:grid-cols-3">
+                  {boltPartnerGroups.map((group) => {
+                    const GroupIcon = group.icon;
+                    return (
+                      <div
+                        key={group.title}
+                        className="rounded-2xl border border-slate-200 bg-[#F8FAFC] p-8"
+                      >
+                        <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#071A33] text-[#F0CF6A]">
+                          <GroupIcon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                        <h3 className="mt-5 text-lg font-bold text-[#071A33]">{group.title}</h3>
+                        <ul className="mt-5 divide-y divide-slate-200">
+                          {group.members.map((member) => (
+                            <li key={member} className="py-3 text-slate-700">
+                              {member}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* 8. PARTNERSHIP (#partnership — ev) */}
           <section id="partnership" className="scroll-mt-20 bg-[#071A33] py-20 sm:py-24">
             <div id="gov-support" className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mx-auto max-w-2xl text-center">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#F0CF6A]">
-                  Сотрудничество
+                  {partnershipBadge}
                 </p>
                 <h2 className="mt-3 text-3xl font-bold text-white sm:text-4xl">
-                  Станьте партнёром центра
+                  {partnershipTitle}
                 </h2>
                 <p className="mt-4 text-base text-[#D9E4F0] sm:text-lg">
-                  Спонсорство, гранты и совместные проекты. Расскажите о своей организации, и мы предложим формат участия.
+                  {partnershipSubtitle}
                 </p>
               </div>
 
               <ul className="mt-14 divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-                {BOLT_PARTNERSHIP_ITEMS.map((item) => {
+                {partnershipItems.map((item: any, idx: number) => {
                   const ItemIcon = item.icon;
                   return (
-                    <li key={item.title} className="flex items-start gap-5 px-6 py-6 sm:px-8">
+                    <li key={item.title || idx} className="flex items-start gap-5 px-6 py-6 sm:px-8">
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/10 text-[#F0CF6A]">
                         <ItemIcon className="h-5 w-5" aria-hidden="true" />
                       </span>
@@ -895,7 +1068,7 @@ export function LandingView() {
                   onClick={() => setPartnerModalOpen(true)}
                   className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-8 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]"
                 >
-                  <span>Оставить заявку на партнёрство</span>
+                  <span>{partnershipCtaText}</span>
                   <ArrowRight
                     className="h-5 w-5 transition-transform group-hover:translate-x-1"
                     aria-hidden="true"
@@ -919,7 +1092,7 @@ export function LandingView() {
                 >
                   <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-slate-200 bg-[#F8FAFC] px-6 py-5 sm:px-8">
                     <h2 id="modal-title" className="text-xl font-bold text-[#071A33]">
-                      Заявка на партнёрство
+                      {partnershipModalTitle}
                     </h2>
                     <button
                       type="button"
@@ -947,21 +1120,23 @@ export function LandingView() {
             <div id="appeal-form" className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mx-auto max-w-2xl text-center">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0F7B7A]">
-                  Контакты
+                  {contactsEyebrow}
                 </p>
                 <h2 className="mt-3 text-3xl font-bold text-[#071A33] sm:text-4xl">
-                  Свяжитесь с нами
+                  {contactsTitle}
                 </h2>
                 <p className="mt-4 text-base text-slate-600 sm:text-lg">
-                  Ответим на вопросы о программах, документах и формах сотрудничества.
+                  {contactsSubtitle}
                 </p>
               </div>
 
               <div className="mt-14">
                 <BoltForm
-                  submitLabel="Отправить обращение"
-                  messageLabel="Ваш вопрос или обращение"
-                  messagePlaceholder="Опишите, что вас интересует"
+                  submitLabel={(org as any).contactsFormSubmitLabel || 'Отправить обращение'}
+                  messageLabel={(org as any).contactsFormMessageLabel || 'Ваш вопрос или обращение'}
+                  messagePlaceholder={
+                    (org as any).contactsFormMessagePlaceholder || 'Опишите, что вас интересует'
+                  }
                 />
               </div>
             </div>
@@ -972,9 +1147,14 @@ export function LandingView() {
         <footer className="bg-[#071A33] text-[#B3C9E0]">
           <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr] lg:px-8">
             <div>
-              <img src="/logo.png" alt="Центр развития спорта" className="h-10 w-auto" />
+              <img
+                src={footerLogoUrl}
+                alt={footer.shortName || 'Центр развития спорта'}
+                className="h-10 w-auto"
+              />
               <p className="mt-6 max-w-sm text-sm leading-relaxed text-[#7EA3C9]">
-                Автономная некоммерческая организация. Реализуем программы развития массового и высшего спорта, поддерживаем тренеров и спортивную инфраструктуру регионов.
+                {footer.description ||
+                  'Автономная некоммерческая организация. Реализуем программы развития массового и высшего спорта, поддерживаем тренеров и спортивную инфраструктуру регионов.'}
               </p>
             </div>
 
@@ -983,8 +1163,8 @@ export function LandingView() {
                 Разделы
               </h2>
               <ul className="mt-5 grid grid-cols-2 gap-3 text-sm">
-                {BOLT_NAV_LINKS.map((link) => (
-                  <li key={link.href}>
+                {boltNavLinks.map((link: any) => (
+                  <li key={link.href + link.label}>
                     <a href={link.href} className="transition-colors hover:text-white">
                       {link.label}
                     </a>
@@ -998,32 +1178,35 @@ export function LandingView() {
                 Контакты
               </h2>
               <ul className="mt-5 space-y-3 text-sm">
-                <li>{footer.address || 'г. Москва, ул. Спортивная, д. 1, стр. 2'}</li>
+                <li>{footer.address || org.legalAddress || 'г. Москва, ул. Спортивная, д. 1, стр. 2'}</li>
                 <li>
                   <a
-                    href={`tel:${(footer.phone || '+7 (495) 000-00-00').replace(/[^+\d]/g, '')}`}
+                    href={`tel:${(footer.phone || org.phone || '+7 (495) 000-00-00').replace(/[^+\d]/g, '')}`}
                     className="transition-colors hover:text-white"
                   >
-                    {footer.phone || '+7 (495) 000-00-00'}
+                    {footer.phone || org.phone || '+7 (495) 000-00-00'}
                   </a>
                 </li>
                 <li>
                   <a
-                    href={`mailto:${footer.email || 'info@centr-razvitiya-sporta.ru'}`}
+                    href={`mailto:${footer.email || org.receptionEmail || 'info@centr-razvitiya-sporta.ru'}`}
                     className="transition-colors hover:text-white"
                   >
-                    {footer.email || 'info@centr-razvitiya-sporta.ru'}
+                    {footer.email || org.receptionEmail || 'info@centr-razvitiya-sporta.ru'}
                   </a>
                 </li>
-                <li>{footer.workHours || 'Пн–Пт, 09:00–18:00'}</li>
+                <li>{footer.workHours || org.workHours || 'Пн–Пт, 09:00–18:00'}</li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-white/10">
             <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6 text-xs text-[#7EA3C9] sm:flex-row sm:items-center sm:justify-between lg:px-8">
-              <p>© 2026 Центр развития спорта. Все права защищены.</p>
-              <p>Информация о деятельности организации раскрывается в разделе «Документы».</p>
+              <p>{footer.copyright || '© 2026 Центр развития спорта. Все права защищены.'}</p>
+              <p>
+                {(footer as any).disclosureNote ||
+                  'Информация о деятельности организации раскрывается в разделе «Документы».'}
+              </p>
             </div>
           </div>
         </footer>

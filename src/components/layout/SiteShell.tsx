@@ -9,7 +9,7 @@ import { useSiteContent } from '@/lib/content';
 import { DEFAULT_THEMES_LIST, ThemeConfig } from '@/data/defaultContent';
 import { getFontUrl } from '@/lib/google-fonts';
 
-const loadedThemeFonts = new Set<string>();
+const loadedThemeFonts = new Set<string>(['Onest', 'Inter']);
 
 function ensureGoogleFont(family: string) {
   if (!family || typeof document === 'undefined') return;
@@ -19,6 +19,16 @@ function ensureGoogleFont(family: string) {
   link.rel = 'stylesheet';
   link.href = getFontUrl(family);
   document.head.appendChild(link);
+}
+
+function resolveCssFontStack(family: string): string {
+  if (family === 'Onest') {
+    return 'var(--font-onest), "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  }
+  if (family === 'Inter') {
+    return 'var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  }
+  return `"${family}", var(--font-onest), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
 }
 
 function getShadowCss(shadow: ThemeConfig['cardShadow']): string {
@@ -40,8 +50,8 @@ function buildThemeCss(t: ThemeConfig): string {
   const shadowVal = getShadowCss(t.cardShadow);
   return `
     :root {
-      --font-heading: "${t.headingFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-body: "${t.bodyFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-heading: ${resolveCssFontStack(t.headingFont)};
+      --font-body: ${resolveCssFontStack(t.bodyFont)};
       --heading-transform: ${t.uppercaseHeadings ? 'uppercase' : 'none'};
       --theme-bg-primary: ${t.bgPrimary};
       --theme-bg-secondary: ${t.bgSecondary};

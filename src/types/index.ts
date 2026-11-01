@@ -18,9 +18,10 @@ export interface NewsItem {
   slug: string;
   title: string;
   summary: string;
+  excerpt?: string;
   content: string[];
   date: string;
-  category: 'Официально' | 'Мероприятия' | 'Образование' | 'Стандарты' | 'Регионы';
+  category: string;
   isImportant?: boolean;
   pressReleaseNumber?: string;
   source?: string;
@@ -48,10 +49,12 @@ export interface DocumentItem {
   title: string;
   number: string;
   date: string;
-  category: 'Учредительные документы' | 'Регламенты и стандарты' | 'Методические материалы' | 'Отчетность и протоколы';
+  year?: string;
+  category: string;
   format: 'PDF' | 'DOCX';
   fileSize: string;
   downloadUrl: string;
+  fileUrl?: string;
   signatory?: string;
 }
 

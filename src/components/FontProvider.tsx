@@ -5,7 +5,7 @@ import { getFontUrl } from '@/lib/google-fonts';
 import { DEFAULT_FONTS, DEFAULT_THEMES_LIST } from '@/data/defaultContent';
 import { useSiteContent } from '@/lib/content';
 
-const loadedFonts = new Set<string>();
+const loadedFonts = new Set<string>(['Onest', 'Inter']);
 
 function loadFont(family: string) {
   if (!family || typeof document === 'undefined') return;
@@ -17,6 +17,16 @@ function loadFont(family: string) {
   document.head.appendChild(link);
 }
 
+function resolveFontStack(family: string): string {
+  if (family === 'Onest') {
+    return 'var(--font-onest), "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  }
+  if (family === 'Inter') {
+    return 'var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  }
+  return `"${family}", var(--font-onest), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+}
+
 export default function FontProvider({ children }: { children: React.ReactNode }) {
   const { content } = useSiteContent();
 
@@ -26,29 +36,20 @@ export default function FontProvider({ children }: { children: React.ReactNode }
     const activeThemeId =
       content?.themes?.activeThemeId ||
       content?.settings?.activeThemeId ||
-      'basic-light';
+      'bolt-style';
     const themesList = content?.themes?.items || DEFAULT_THEMES_LIST;
     const activeTheme =
-      themesList.find((t) => t.id === activeThemeId) || DEFAULT_THEMES_LIST[0];
+      themesList.find((t) => t.id === activeThemeId) || DEFAULT_THEMES_LIST[1] || DEFAULT_THEMES_LIST[0];
 
-    const headingFont = activeTheme?.headingFont || fonts.siteHeadingFont || 'Inter';
-    const bodyFont = activeTheme?.bodyFont || fonts.siteBodyFont || 'Inter';
+    const headingFont = activeTheme?.headingFont || fonts.siteHeadingFont || 'Onest';
+    const bodyFont = activeTheme?.bodyFont || fonts.siteBodyFont || 'Onest';
     const adminFont = fonts.adminFont || 'Inter';
     const uppercase = activeTheme?.uppercaseHeadings ?? fonts.uppercaseHeadings ?? false;
 
     const root = document.documentElement;
-    root.style.setProperty(
-      '--font-body',
-      `"${bodyFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
-    );
-    root.style.setProperty(
-      '--font-heading',
-      `"${headingFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
-    );
-    root.style.setProperty(
-      '--font-admin',
-      `"${adminFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
-    );
+    root.style.setProperty('--font-body', resolveFontStack(bodyFont));
+    root.style.setProperty('--font-heading', resolveFontStack(headingFont));
+    root.style.setProperty('--font-admin', resolveFontStack(adminFont));
     root.style.setProperty('--heading-transform', uppercase ? 'uppercase' : 'none');
 
     loadFont(headingFont);

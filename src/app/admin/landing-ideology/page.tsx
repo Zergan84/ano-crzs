@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import {
   ArrowLeft,
-  Sparkles,
   Save,
   Check,
   AlertCircle,
   Landmark,
+  Plus,
+  Trash2,
 } from 'lucide-react';
 import { DEFAULT_LANDING } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
@@ -26,12 +27,7 @@ export default function AdminLandingIdeologyPage() {
 
   async function loadLanding() {
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? '/api/admin/content/landing'
-          : '/api/admin/content/landing';
-
-      const res = await fetch(apiEndpoint);
+      const res = await fetch('/api/admin/content/landing');
       if (res.ok) {
         const json = await res.json();
         if (json && typeof json === 'object') {
@@ -40,7 +36,14 @@ export default function AdminLandingIdeologyPage() {
             ...json,
             header: { ...DEFAULT_LANDING.header, ...(json.header || {}) },
             hero: { ...DEFAULT_LANDING.hero, ...(json.hero || {}) },
-            ideology: { ...DEFAULT_LANDING.ideology, ...(json.ideology || {}) },
+            ideology: {
+              ...DEFAULT_LANDING.ideology,
+              ...(json.ideology || {}),
+              govBlocks:
+                Array.isArray(json?.ideology?.govBlocks) && json.ideology.govBlocks.length > 0
+                  ? json.ideology.govBlocks
+                  : DEFAULT_LANDING.ideology.govBlocks,
+            },
           });
         }
       }
@@ -53,12 +56,7 @@ export default function AdminLandingIdeologyPage() {
     setSaved(false);
     setError('');
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? '/api/admin/content/landing'
-          : '/api/admin/content/landing';
-
-      const res = await fetch(apiEndpoint, {
+      const res = await fetch('/api/admin/content/landing', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -85,28 +83,33 @@ export default function AdminLandingIdeologyPage() {
     });
   }
 
-  function updateFormulaItem(idx: number, val: string) {
-    const items = [...(data.ideology.formulaItems || [])];
-    items[idx] = val;
-    updateIdeology('formulaItems', items);
-  }
-
-  function updatePillar(idx: number, field: string, val: string) {
-    const pillars = [...(data.ideology.pillars || [])];
-    pillars[idx] = { ...pillars[idx], [field]: val };
-    updateIdeology('pillars', pillars);
-  }
-
   function updateGovBlock(idx: number, field: string, val: any) {
     const govBlocks = [...(data.ideology.govBlocks || [])];
     govBlocks[idx] = { ...govBlocks[idx], [field]: val };
     updateIdeology('govBlocks', govBlocks);
   }
 
+  function addGovBlock() {
+    const govBlocks = [
+      ...(data.ideology.govBlocks || []),
+      {
+        title: 'Новое преимущество партнёрства',
+        desc: 'Описание формата участия и сотрудничества...',
+        bullets: [],
+      },
+    ];
+    updateIdeology('govBlocks', govBlocks);
+  }
+
+  function removeGovBlock(idx: number) {
+    const govBlocks = (data.ideology.govBlocks || []).filter((_, i) => i !== idx);
+    updateIdeology('govBlocks', govBlocks);
+  }
+
   if (loading) {
     return (
       <div className="flex h-60 items-center justify-center text-slate-500 text-sm">
-        Загрузка данных методологии и господдержки...
+        Загрузка данных раздела сотрудничества...
       </div>
     );
   }
@@ -126,14 +129,14 @@ export default function AdminLandingIdeologyPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide flex items-center gap-2">
               <Landmark className="w-7 h-7 text-amber-500" />
-              <span>Методология и Господдержка (Лендинг)</span>
+              <span>8. Сотрудничество (#partnership)</span>
             </h1>
             <span className="rounded bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300 uppercase">
-              Блок Лендинга
+              Блок 08 • #partnership
             </span>
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            Формула эффективности, принципы ДНК в госсекторе и блок взаимодействия с министерствами, курортами и грантовыми операторами
+            Тёмно-синий блок «Станьте партнёром центра»: надзаголовок, заголовок, подзаголовок, 4 пункта преимуществ и кнопка модального окна заявки
           </p>
         </div>
 
@@ -150,7 +153,7 @@ export default function AdminLandingIdeologyPage() {
       {saved && (
         <div className="flex items-center gap-2 rounded-lg bg-emerald-950/40 border border-emerald-800 p-3 text-xs text-emerald-300">
           <Check className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>Разделы методологии и господдержки успешно сохранены!</span>
+          <span>Раздел «Сотрудничество (#partnership)» успешно сохранен!</span>
         </div>
       )}
 
@@ -161,125 +164,37 @@ export default function AdminLandingIdeologyPage() {
         </div>
       )}
 
-      {/* 1. Формула эффективности */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-amber-400" />
-          <span>Формула системной эффективности</span>
-        </h3>
-
-        <div>
-          <label className="admin-label">Надзаголовок плашки формулы</label>
-          <input
-            type="text"
-            value={data.ideology.formulaBadge || ''}
-            onChange={(e) => updateIdeology('formulaBadge', e.target.value)}
-            className="admin-input"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {(data.ideology.formulaItems || []).map((item, idx) => (
-            <div key={idx}>
-              <label className="admin-label">Множитель 0{idx + 1}</label>
-              <input
-                type="text"
-                value={item}
-                onChange={(e) => updateFormulaItem(idx, e.target.value)}
-                className="admin-input font-bold"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 2. Методология и технологии */}
+      {/* Основные заголовки и кнопка секции #partnership */}
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
         <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Раздел «Методология и технологии» (ДНК из брендбука в госсектор)
-        </h3>
-
-        <div>
-          <label className="admin-label">Заголовок раздела методологии</label>
-          <input
-            type="text"
-            value={data.ideology.methodologyTitle || ''}
-            onChange={(e) => updateIdeology('methodologyTitle', e.target.value)}
-            className="admin-input font-bold"
-          />
-        </div>
-
-        <div>
-          <label className="admin-label">Вводный абзац</label>
-          <textarea
-            rows={3}
-            value={data.ideology.methodologyLead || ''}
-            onChange={(e) => updateIdeology('methodologyLead', e.target.value)}
-            className="admin-textarea"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-          {(data.ideology.pillars || []).map((p, idx) => (
-            <div
-              key={idx}
-              className="rounded-lg border border-[#252d3d] bg-[#0d1118] p-4 space-y-3"
-            >
-              <div className="text-xs font-mono text-amber-400 font-bold">
-                Принцип 0{idx + 1}
-              </div>
-              <div>
-                <label className="admin-label">Заголовок</label>
-                <input
-                  type="text"
-                  value={p.title || ''}
-                  onChange={(e) => updatePillar(idx, 'title', e.target.value)}
-                  className="admin-input font-bold"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Описание</label>
-                <textarea
-                  rows={3}
-                  value={p.desc || ''}
-                  onChange={(e) => updatePillar(idx, 'desc', e.target.value)}
-                  className="admin-textarea"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 3. Взаимодействие и господдержка (4.5) */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          4.5. Раздел взаимодействия и господдержки (Партнёрам и ведомствам)
+          Заголовок, описание и кнопка блока «Станьте партнёром центра» (#partnership)
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="admin-label">Надзаголовок секции</label>
+            <label className="admin-label">Надзаголовок секции (Eyebrow)</label>
             <input
               type="text"
               value={data.ideology.govBadge || ''}
               onChange={(e) => updateIdeology('govBadge', e.target.value)}
+              placeholder="Сотрудничество"
               className="admin-input"
             />
           </div>
           <div>
-            <label className="admin-label">Заголовок секции</label>
+            <label className="admin-label">Заголовок секции (H2)</label>
             <input
               type="text"
               value={data.ideology.govTitle || ''}
               onChange={(e) => updateIdeology('govTitle', e.target.value)}
+              placeholder="Станьте партнёром центра"
               className="admin-input font-bold"
             />
           </div>
         </div>
 
         <div>
-          <label className="admin-label">Подзаголовок секции</label>
+          <label className="admin-label">Подзаголовок / описание секции</label>
           <textarea
             rows={2}
             value={data.ideology.govSubtitle || ''}
@@ -288,17 +203,69 @@ export default function AdminLandingIdeologyPage() {
           />
         </div>
 
-        <div className="space-y-4 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#222]">
+          <div>
+            <label className="admin-label">Текст золотой кнопки внизу секции</label>
+            <input
+              type="text"
+              value={(data.ideology as any).govCtaText || 'Оставить заявку на партнёрство'}
+              onChange={(e) => updateIdeology('govCtaText', e.target.value)}
+              className="admin-input font-semibold"
+            />
+          </div>
+          <div>
+            <label className="admin-label">Заголовок всплывающего модального окна</label>
+            <input
+              type="text"
+              value={(data.ideology as any).govModalTitle || 'Заявка на партнёрство'}
+              onChange={(e) => updateIdeology('govModalTitle', e.target.value)}
+              className="admin-input"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 4 строки преимуществ партнёрства */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
+        <div className="flex items-center justify-between border-b border-[#222] pb-3">
+          <div>
+            <h3 className="text-base font-bold text-white">
+              Пункты преимуществ партнёрства (список в рамке)
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              На странице отображаются 4 строки: «Гранты и субсидии», «Совместные программы», «Открытая отчётность», «Социальный эффект»
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={addGovBlock}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-500"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Добавить пункт</span>
+          </button>
+        </div>
+
+        <div className="space-y-4">
           {(data.ideology.govBlocks || []).map((block, idx) => (
             <div
               key={idx}
               className="rounded-lg border border-[#252d3d] bg-[#0d1118] p-4 space-y-3"
             >
-              <div className="text-xs font-mono text-amber-400 font-bold">
-                Контур взаимодействия 0{idx + 1}
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-mono text-amber-400 font-bold">
+                  Пункт 0{idx + 1}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeGovBlock(idx)}
+                  className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-950/40"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
               <div>
-                <label className="admin-label">Заголовок блока</label>
+                <label className="admin-label">Заголовок преимущества</label>
                 <input
                   type="text"
                   value={block.title || ''}
@@ -307,27 +274,12 @@ export default function AdminLandingIdeologyPage() {
                 />
               </div>
               <div>
-                <label className="admin-label">Описание</label>
+                <label className="admin-label">Текст описания</label>
                 <textarea
                   rows={2}
                   value={block.desc || ''}
                   onChange={(e) => updateGovBlock(idx, 'desc', e.target.value)}
                   className="admin-textarea"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Ключевые тезисы (по одному в строке)</label>
-                <textarea
-                  rows={3}
-                  value={(block.bullets || []).join('\n')}
-                  onChange={(e) =>
-                    updateGovBlock(
-                      idx,
-                      'bullets',
-                      e.target.value.split('\n').filter((line) => line.trim() !== '')
-                    )
-                  }
-                  className="admin-textarea font-mono text-xs"
                 />
               </div>
             </div>

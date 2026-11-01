@@ -19,15 +19,15 @@ import { DEFAULT_CONTENT } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 
 const sectionTitles: Record<string, { title: string; desc: string }> = {
-  organization: { title: 'О нас, Философия и Реквизиты (Общий блок)', desc: 'Наименование АНО «ЦЗСТ», уставная миссия, 4 опорных принципа работы, юридические реквизиты и показатели' },
-  hero: { title: 'Слайдер Hero (Портал)', desc: 'Управление слайдами, текстами, слоганами и изображениями стартового экрана портала' },
-  news: { title: 'Новости и статьи (Портал)', desc: 'Публикация новостей, анонсов и статей с фотографиями и датами' },
+  organization: { title: '3. О центре (#about)', desc: 'Надзаголовок, заголовок «Миссия: спорт доступен каждому», описание центра, 4 пункта преимуществ и фотография справа' },
+  hero: { title: '2. Главный экран — Слайдер (Main Hero)', desc: 'Управление главным экраном (100% ширины и высоты). Сейчас отображается 1 слайд. При добавлении 2-го и 3-го слайдов включается слайдер.' },
+  news: { title: '5. Лента новостей и пресс-релизов (#news)', desc: 'Публикация новостей, пресс-релизов, событий и отчётов с категориями, датами и краткими анонсами' },
   events: { title: 'Мероприятия (Портал)', desc: 'Календарь всероссийских семинаров, курсов подготовки и конференций' },
   specialists: { title: 'Единый реестр специалистов (Портал)', desc: 'Управление базой аттестованных инструкторов, тренеров и судей' },
-  documents: { title: 'Официальные документы (Общий блок)', desc: 'Учредительные документы, регламенты, стандарты безопасности и приказы' },
-  directions: { title: 'Направления деятельности (Общий блок)', desc: '6 ключевых направлений уставной работы АНО «ЦЗСТ» для лендинга и портала' },
-  partners: { title: 'Партнёры и спонсоры (Общий блок)', desc: 'Список официальных, генеральных и технических партнёров' },
-  contacts: { title: 'Контакты и реквизиты (Общий блок)', desc: 'Телефоны, электронная приёмная, адрес в п. Архангельское г.о. Красногорск и банк' },
+  documents: { title: '6. Документы и отчёты (#documents)', desc: 'Устав, свидетельство о регистрации, годовые отчёты и положения с фильтром по категориям и PDF-файлами' },
+  directions: { title: '4. Проекты и программы (#projects)', desc: 'Спортивные и социальные проекты центра (6 карточек проектов с категориями и описаниями)' },
+  partners: { title: '7. Партнёры (#partners)', desc: 'Организации-партнёры по категориям: «Министерства и ведомства», «Федерации» и «Спонсоры и партнёры»' },
+  contacts: { title: '9. Контакты и форма связи (#contacts)', desc: 'Заголовок и описание секции «Свяжитесь с нами», настройки формы обращения, телефон, email, часы работы и адрес' },
 };
 
 export default function SectionEditorClient({ section }: { section: string }) {
@@ -181,7 +181,7 @@ export default function SectionEditorClient({ section }: { section: string }) {
       {/* Dynamic Section Editors */}
       <div className="space-y-6">
         {section === 'organization' && (
-          <OrganizationEditor data={data} setData={setData} />
+          <OrganizationEditor data={data} setData={setData} openMediaPicker={openMediaPicker} />
         )}
 
         {section === 'hero' && (
@@ -251,9 +251,17 @@ export default function SectionEditorClient({ section }: { section: string }) {
 }
 
 /* =========================================================================
-   1. ORGANIZATION EDITOR
+   1. ORGANIZATION EDITOR (3. О центре #about)
    ========================================================================= */
-function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
+function OrganizationEditor({
+  data,
+  setData,
+  openMediaPicker,
+}: {
+  data: any;
+  setData: any;
+  openMediaPicker: (onSelect: (url: string) => void) => void;
+}) {
   if (!data) return null;
 
   const updateField = (field: string, val: any) => {
@@ -262,60 +270,67 @@ function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
 
   const updatePrinciple = (index: number, key: string, val: string) => {
     const principles = [...(data.principles || DEFAULT_CONTENT.organization.principles)];
-    principles[index] = { ...principles[index], [key]: val };
+    principles[index] = {
+      ...principles[index],
+      [key]: val,
+      description: key === 'title' ? val : principles[index]?.description || val,
+    };
     setData({ ...data, principles });
   };
 
-  const updateStat = (index: number, key: string, val: string) => {
-    const stats = [...(data.stats || [])];
-    stats[index] = { ...stats[index], [key]: val };
-    setData({ ...data, stats });
+  const addPrinciple = () => {
+    const principles = [
+      ...(data.principles || DEFAULT_CONTENT.organization.principles),
+      {
+        id: `item-${Date.now()}`,
+        title: 'Новый пункт преимуществ центра',
+        description: 'Новый пункт преимуществ центра',
+      },
+    ];
+    setData({ ...data, principles });
   };
 
-  const addStat = () => {
-    setData({
-      ...data,
-      stats: [...(data.stats || []), { value: '100+', label: 'Новый показатель' }],
-    });
-  };
-
-  const removeStat = (index: number) => {
-    const stats = data.stats.filter((_: any, i: number) => i !== index);
-    setData({ ...data, stats });
+  const removePrinciple = (index: number) => {
+    const principles = (data.principles || DEFAULT_CONTENT.organization.principles).filter(
+      (_: any, i: number) => i !== index
+    );
+    setData({ ...data, principles });
   };
 
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
         <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Основные сведения и миссия (О Центре)
+          Заголовок, описание и фото секции «О центре» (#about)
         </h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="admin-label">Полное наименование</label>
-            <textarea
-              rows={2}
-              value={data.fullName || ''}
-              onChange={(e) => updateField('fullName', e.target.value)}
-              className="admin-textarea"
+            <label className="admin-label">Надзаголовок секции (Eyebrow)</label>
+            <input
+              type="text"
+              value={data.aboutEyebrow ?? 'О центре'}
+              onChange={(e) => updateField('aboutEyebrow', e.target.value)}
+              placeholder="О центре"
+              className="admin-input"
             />
           </div>
           <div>
-            <label className="admin-label">Краткое наименование</label>
+            <label className="admin-label">Заголовок секции (H2)</label>
             <input
               type="text"
-              value={data.shortName || ''}
-              onChange={(e) => updateField('shortName', e.target.value)}
-              className="admin-input"
+              value={data.aboutTitle ?? 'Миссия: спорт доступен каждому'}
+              onChange={(e) => updateField('aboutTitle', e.target.value)}
+              placeholder="Миссия: спорт доступен каждому"
+              className="admin-input font-bold"
             />
           </div>
         </div>
 
         <div>
-          <label className="admin-label">Слоган / Описание деятельности</label>
+          <label className="admin-label">Основной абзац описания (под заголовком)</label>
           <textarea
-            rows={2}
+            rows={3}
             value={data.tagline || ''}
             onChange={(e) => updateField('tagline', e.target.value)}
             className="admin-textarea"
@@ -323,154 +338,81 @@ function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
         </div>
 
         <div>
-          <label className="admin-label">Формулировка роли организации (4.3. О Центре и миссии)</label>
-          <textarea
-            rows={2}
-            value={data.missionRole || ''}
-            onChange={(e) => updateField('missionRole', e.target.value)}
-            className="admin-textarea"
-          />
-        </div>
-
-        <div>
-          <label className="admin-label">Философия: системность и методология вместо коммерции</label>
-          <textarea
-            rows={2}
-            value={data.ideologyStatement || ''}
-            onChange={(e) => updateField('ideologyStatement', e.target.value)}
-            className="admin-textarea"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div>
-            <label className="admin-label">Год основания</label>
-            <input
-              type="number"
-              value={data.establishedYear || 2012}
-              onChange={(e) => updateField('establishedYear', Number(e.target.value))}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">ИНН</label>
+          <label className="admin-label">Фотография справа в блоке «О центре» (URL или из R2)</label>
+          <div className="flex items-center gap-2">
             <input
               type="text"
-              value={data.inn || ''}
-              onChange={(e) => updateField('inn', e.target.value)}
-              className="admin-input"
+              value={
+                data.aboutImage ??
+                'https://discover.moscow/media/images/DSC00979_1-min.min-1920x1920.webp'
+              }
+              onChange={(e) => updateField('aboutImage', e.target.value)}
+              className="admin-input font-mono text-xs flex-1"
+              placeholder="https://discover.moscow/media/images/..."
             />
+            <button
+              type="button"
+              onClick={() => openMediaPicker((url: string) => updateField('aboutImage', url))}
+              className="flex items-center gap-1.5 rounded bg-[#1e2638] border border-[#334155] px-3 py-2 text-xs text-slate-200 hover:bg-[#28334a]"
+            >
+              <ImageIcon className="h-3.5 w-3.5" />
+              <span>Медиатека</span>
+            </button>
           </div>
-          <div>
-            <label className="admin-label">КПП</label>
-            <input
-              type="text"
-              value={data.kpp || ''}
-              onChange={(e) => updateField('kpp', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">ОГРН</label>
-            <input
-              type="text"
-              value={data.ogrn || ''}
-              onChange={(e) => updateField('ogrn', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="admin-label">Юридический адрес</label>
-            <input
-              type="text"
-              value={data.legalAddress || ''}
-              onChange={(e) => updateField('legalAddress', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Фактический адрес</label>
-            <input
-              type="text"
-              value={data.actualAddress || ''}
-              onChange={(e) => updateField('actualAddress', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 4 опорных принципа работы */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          4 опорных принципа работы (Уставные цели и Философия)
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {(data.principles || DEFAULT_CONTENT.organization.principles).map((p: any, i: number) => (
-            <div key={p.id || i} className="rounded-lg border border-[#2a2a2a] bg-[#161a24] p-4 space-y-2.5">
-              <div className="text-xs font-mono text-amber-400 font-bold">Принцип 0{i + 1}</div>
-              <div>
-                <label className="admin-label">Заголовок принципа</label>
-                <input
-                  type="text"
-                  value={p.title || ''}
-                  onChange={(e) => updatePrinciple(i, 'title', e.target.value)}
-                  className="admin-input font-bold"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Описание</label>
-                <textarea
-                  rows={2}
-                  value={p.description || ''}
-                  onChange={(e) => updatePrinciple(i, 'description', e.target.value)}
-                  className="admin-textarea"
-                />
-              </div>
+          {(data.aboutImage ||
+            'https://discover.moscow/media/images/DSC00979_1-min.min-1920x1920.webp') && (
+            <div className="mt-2 h-24 w-36 overflow-hidden rounded-lg border border-[#2a2a2a] bg-black">
+              <img
+                src={
+                  data.aboutImage ||
+                  'https://discover.moscow/media/images/DSC00979_1-min.min-1920x1920.webp'
+                }
+                alt="About preview"
+                className="h-full w-full object-cover"
+              />
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      {/* Stats Counter List */}
+      {/* Пункты с галочками (Checklist) */}
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
         <div className="flex items-center justify-between border-b border-[#222] pb-3">
-          <h3 className="text-base font-bold text-white">Статистические показатели</h3>
+          <div>
+            <h3 className="text-base font-bold text-white">
+              Список ключевых принципов с галочками (4 пункта)
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Отображаются под описанием в левой колонке секции «О центре»
+            </p>
+          </div>
           <button
-            onClick={addStat}
-            className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
+            type="button"
+            onClick={addPrinciple}
+            className="flex items-center gap-1.5 rounded bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-500"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Добавить</span>
+            <span>Добавить пункт</span>
           </button>
         </div>
 
         <div className="space-y-3">
-          {(data.stats || []).map((st: any, i: number) => (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-[#2a2a2a] bg-[#161a24] p-3">
-              <div className="w-32">
-                <input
-                  type="text"
-                  placeholder="1 480+"
-                  value={st.value}
-                  onChange={(e) => updateStat(i, 'value', e.target.value)}
-                  className="admin-input font-bold"
-                />
-              </div>
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Подпись показателя"
-                  value={st.label}
-                  onChange={(e) => updateStat(i, 'label', e.target.value)}
-                  className="admin-input"
-                />
-              </div>
+          {(data.principles || DEFAULT_CONTENT.organization.principles).map((p: any, i: number) => (
+            <div
+              key={p.id || i}
+              className="flex items-center gap-3 rounded-lg border border-[#2a2a2a] bg-[#161a24] p-3"
+            >
+              <span className="text-xs font-mono text-amber-400 font-bold shrink-0">0{i + 1}</span>
+              <input
+                type="text"
+                value={p.title || ''}
+                onChange={(e) => updatePrinciple(i, 'title', e.target.value)}
+                className="admin-input flex-1 font-medium"
+                placeholder="Текст пункта..."
+              />
               <button
-                onClick={() => removeStat(i)}
+                type="button"
+                onClick={() => removePrinciple(i)}
                 className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/40 rounded"
               >
                 <Trash2 className="h-4 w-4" />
@@ -500,20 +442,16 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
       ...slides,
       {
         id: `slide-${Date.now()}`,
-        tag: 'Новое направление',
+        tag: 'Автономная некоммерческая организация',
         tabLabel: `Слайд 0${slides.length + 1}`,
-        title: 'Заголовок нового слайда',
-        desc: 'Описание слайда на главном экране...',
-        ctaText: 'Подробнее',
-        ctaHref: '#directions',
-        secondaryBtnText: 'Документы',
-        secondaryBtnHref: '#documents',
-        tertiaryBtnText: 'Контакты',
-        tertiaryBtnHref: '#contacts',
-        image: '/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png',
+        title: 'Новый слайд главного экрана',
+        desc: 'Подзаголовок и описание для нового слайда на первом экране...',
+        ctaText: 'Стать партнёром',
+        ctaHref: '#partnership',
+        secondaryBtnText: 'Наши проекты',
+        secondaryBtnHref: '#projects',
+        image: 'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg',
         displayMode: 'image',
-        blockSize: 'md',
-        blockBtnColor: 'blue',
       },
     ];
     setData({ ...data, slides: next });
@@ -599,6 +537,10 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
         </div>
       </div>
 
+      <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 px-4 py-3 text-xs text-blue-200">
+        Сейчас в слайдере активен <strong>{slides.length} {slides.length === 1 ? 'слайд' : 'слайда(ов)'}</strong>. Если оставить 1 слайд — отображается статичный полноэкранный Hero-экран. Как только вы нажмёте «Добавить слайд» и сохраните второй/третий слайд, слайдер автоматически начнёт переключать слайды.
+      </div>
+
       {slides.map((slide: any, i: number) => (
         <div key={slide.id || i} className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-[#222] pb-3">
@@ -627,20 +569,17 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 type="text"
                 value={slide.tag || ''}
                 onChange={(e) => updateSlide(i, 'tag', e.target.value)}
-                placeholder="Например: Отраслевой стандарт"
+                placeholder="Автономная некоммерческая организация"
                 className="admin-input"
               />
             </div>
             <div>
-              <label className="admin-label">Подпись вкладки внизу слайдера (0{i + 1})</label>
+              <label className="admin-label">Подпись вкладки слайдера (0{i + 1})</label>
               <input
                 type="text"
-                value={
-                  slide.tabLabel ??
-                  (i === 0 ? 'Стандарты и Реестр' : i === 1 ? 'Carve CUP 🔥' : i === 2 ? 'Правительство МО' : '')
-                }
+                value={slide.tabLabel ?? `Слайд 0${i + 1}`}
                 onChange={(e) => updateSlide(i, 'tabLabel', e.target.value)}
-                placeholder="Например: Стандарты и Реестр"
+                placeholder="Например: Главный экран"
                 className="admin-input"
               />
             </div>
@@ -666,17 +605,17 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
             />
           </div>
 
-          {/* Кнопки слайда (1, 2, 3) */}
+          {/* Кнопки слайда (1, 2) */}
           <div className="rounded-lg border border-[#1e293b] bg-[#0b0f19] p-4 space-y-3">
             <div className="text-xs font-bold uppercase tracking-wider text-slate-300">
-              Кнопки действий слайда (оставьте текст пустым, чтобы скрыть дополнительную кнопку)
+              Кнопки действий на главном экране
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="admin-label">Кнопка 1 (Основная) — Текст</label>
                 <input
                   type="text"
-                  value={slide.ctaText || ''}
+                  value={slide.ctaText ?? 'Стать партнёром'}
                   onChange={(e) => updateSlide(i, 'ctaText', e.target.value)}
                   className="admin-input"
                 />
@@ -685,7 +624,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 <label className="admin-label">Кнопка 1 — Ссылка (href)</label>
                 <input
                   type="text"
-                  value={slide.ctaHref || ''}
+                  value={slide.ctaHref ?? '#partnership'}
                   onChange={(e) => updateSlide(i, 'ctaHref', e.target.value)}
                   className="admin-input font-mono text-xs"
                 />
@@ -697,16 +636,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 <label className="admin-label">Кнопка 2 (Вторая) — Текст</label>
                 <input
                   type="text"
-                  value={
-                    slide.secondaryBtnText ??
-                    (i === 0
-                      ? 'Нормативная база и стандарты'
-                      : i === 1
-                      ? 'Регламент и правила кубка'
-                      : i === 2
-                      ? 'Регистрация делегатов'
-                      : '')
-                  }
+                  value={slide.secondaryBtnText ?? 'Наши проекты'}
                   onChange={(e) => updateSlide(i, 'secondaryBtnText', e.target.value)}
                   className="admin-input"
                 />
@@ -715,44 +645,8 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 <label className="admin-label">Кнопка 2 — Ссылка (href)</label>
                 <input
                   type="text"
-                  value={
-                    slide.secondaryBtnHref ??
-                    (i === 0 ? '/documents' : i === 1 ? '/documents' : i === 2 ? '/contacts' : '')
-                  }
+                  value={slide.secondaryBtnHref ?? '#projects'}
                   onChange={(e) => updateSlide(i, 'secondaryBtnHref', e.target.value)}
-                  className="admin-input font-mono text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#1e293b]/60">
-              <div>
-                <label className="admin-label">Кнопка 3 (Третья) — Текст</label>
-                <input
-                  type="text"
-                  value={
-                    slide.tertiaryBtnText ??
-                    (i === 0
-                      ? 'Программы аттестации'
-                      : i === 1
-                      ? 'Календарь этапов'
-                      : i === 2
-                      ? 'Схема проезда в Дом Правительства'
-                      : '')
-                  }
-                  onChange={(e) => updateSlide(i, 'tertiaryBtnText', e.target.value)}
-                  className="admin-input"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Кнопка 3 — Ссылка (href)</label>
-                <input
-                  type="text"
-                  value={
-                    slide.tertiaryBtnHref ??
-                    (i === 0 ? '/education' : i === 1 ? '/events' : i === 2 ? '/contacts' : '')
-                  }
-                  onChange={(e) => updateSlide(i, 'tertiaryBtnHref', e.target.value)}
                   className="admin-input font-mono text-xs"
                 />
               </div>
@@ -760,14 +654,14 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
           </div>
 
           <div>
-            <label className="admin-label">Изображение слайда (URL или R2)</label>
+            <label className="admin-label">Фоновое изображение слайда (URL или R2)</label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={slide.image || ''}
                 onChange={(e) => updateSlide(i, 'image', e.target.value)}
                 className="admin-input font-mono text-xs flex-1"
-                placeholder="/carve-cup.jpg или https://..."
+                placeholder="https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg"
               />
               <button
                 type="button"
@@ -779,154 +673,8 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               </button>
             </div>
             {slide.image && (
-              <div className="mt-2 h-20 w-32 overflow-hidden rounded border border-[#2a2a2a] bg-black">
+              <div className="mt-2 h-24 w-44 overflow-hidden rounded border border-[#2a2a2a] bg-black">
                 <img src={slide.image} alt="Preview" className="h-full w-full object-cover" />
-              </div>
-            )}
-          </div>
-
-          {/* Режим отображения визуала: Отдельное изображение vs Отдельный блок */}
-          <div className="pt-4 border-t border-[#222] space-y-4">
-            <div>
-              <label className="admin-label mb-2 block font-bold text-slate-200">
-                Формат отображения визуала слайда:
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label className={`flex items-start gap-3 p-3.5 rounded-lg border cursor-pointer transition-all ${
-                  (slide.displayMode === 'image' || (!slide.displayMode && i === 0))
-                    ? 'border-red-500 bg-red-950/20 text-white shadow-xs'
-                    : 'border-[#2a2a2a] bg-[#0c0f16] text-slate-400 hover:border-slate-700'
-                }`}>
-                  <input
-                    type="radio"
-                    name={`displayMode-${i}`}
-                    checked={(slide.displayMode === 'image' || (!slide.displayMode && i === 0))}
-                    onChange={() => updateSlide(i, 'displayMode', 'image')}
-                    className="mt-1 text-red-600 focus:ring-0"
-                  />
-                  <div>
-                    <div className="font-bold text-xs text-slate-200">Отдельное изображение</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                      Изображение свободно лежит на фоне Main hero без рамки и плашек (как на Слайде 1)
-                    </div>
-                  </div>
-                </label>
-
-                <label className={`flex items-start gap-3 p-3.5 rounded-lg border cursor-pointer transition-all ${
-                  (slide.displayMode === 'card' || (!slide.displayMode && i > 0))
-                    ? 'border-red-500 bg-red-950/20 text-white shadow-xs'
-                    : 'border-[#2a2a2a] bg-[#0c0f16] text-slate-400 hover:border-slate-700'
-                }`}>
-                  <input
-                    type="radio"
-                    name={`displayMode-${i}`}
-                    checked={(slide.displayMode === 'card' || (!slide.displayMode && i > 0))}
-                    onChange={() => updateSlide(i, 'displayMode', 'card')}
-                    className="mt-1 text-red-600 focus:ring-0"
-                  />
-                  <div>
-                    <div className="font-bold text-xs text-slate-200">Отдельный блок с текстом и кнопкой</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                      Карточка в рамке с плашкой, описанием и кнопкой-бейджем (как на Слайдах 2 и 3)
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Настройки блока, если выбран отдельный блок */}
-            {(slide.displayMode === 'card' || (!slide.displayMode && i > 0)) && (
-              <div className="rounded-xl border border-[#1e293b] bg-[#0b0f19] p-4 sm:p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#1e293b] pb-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
-                    Параметры блока (карточки с текстом и кнопкой)
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono">Слайды 2, 3</span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Размер блока */}
-                  <div>
-                    <label className="admin-label">Размер блока</label>
-                    <select
-                      value={slide.blockSize || 'md'}
-                      onChange={(e) => updateSlide(i, 'blockSize', e.target.value)}
-                      className="admin-input"
-                    >
-                      <option value="sm">Компактный (высота ~320px)</option>
-                      <option value="md">Стандартный (высота ~400px)</option>
-                      <option value="lg">Крупный (высота ~480px)</option>
-                    </select>
-                  </div>
-
-                  {/* Цвет бейджа/кнопки */}
-                  <div>
-                    <label className="admin-label">Цвет кнопки / бейджа</label>
-                    <select
-                      value={slide.blockBtnColor || (i === 1 ? 'red' : 'blue')}
-                      onChange={(e) => updateSlide(i, 'blockBtnColor', e.target.value)}
-                      className="admin-input"
-                    >
-                      <option value="red">Красный 🔥 (Carve Cup)</option>
-                      <option value="blue">Синий 🏛 (Форум / Отраслевой)</option>
-                      <option value="emerald">Зеленый 🌲 (Спорт / Зима)</option>
-                      <option value="amber">Янтарный ⭐ (Премиум)</option>
-                      <option value="slate">Темно-серый (Нейтральный)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Заголовок внутри блока */}
-                  <div>
-                    <label className="admin-label">Заголовок внутри блока</label>
-                    <input
-                      type="text"
-                      value={slide.blockTitle ?? (i === 1 ? 'Carve Cup 2028 🔥' : i === 2 ? 'Дом Правительства Московской области' : '')}
-                      onChange={(e) => updateSlide(i, 'blockTitle', e.target.value)}
-                      placeholder="Например: Carve Cup 2028 🔥"
-                      className="admin-input font-semibold"
-                    />
-                  </div>
-
-                  {/* Текст / подзаголовок внутри блока */}
-                  <div>
-                    <label className="admin-label">Текст / описание внутри блока</label>
-                    <input
-                      type="text"
-                      value={slide.blockSubtitle ?? (i === 1 ? 'Официальный зачет • Горные лыжи и сноуборд' : i === 2 ? 'г. Красногорск • День открытых дверей' : '')}
-                      onChange={(e) => updateSlide(i, 'blockSubtitle', e.target.value)}
-                      placeholder="Например: Официальный зачет • Горные лыжи"
-                      className="admin-input"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Текст кнопки */}
-                  <div>
-                    <label className="admin-label">Текст кнопки / плашки блока</label>
-                    <input
-                      type="text"
-                      value={slide.blockBtnText ?? (i === 1 ? 'Скоро старт' : i === 2 ? 'Отраслевой форум' : 'Подробнее')}
-                      onChange={(e) => updateSlide(i, 'blockBtnText', e.target.value)}
-                      placeholder="Например: Скоро старт"
-                      className="admin-input font-bold"
-                    />
-                  </div>
-
-                  {/* Ссылка кнопки */}
-                  <div>
-                    <label className="admin-label">Ссылка кнопки блока (URL, опционально)</label>
-                    <input
-                      type="text"
-                      value={slide.blockBtnHref ?? (i === 1 ? 'https://ano-crzs.pages.dev/#carvecup' : i === 2 ? '/events' : '')}
-                      onChange={(e) => updateSlide(i, 'blockBtnHref', e.target.value)}
-                      placeholder="https://... или /events"
-                      className="admin-input font-mono text-xs"
-                    />
-                  </div>
-                </div>
               </div>
             )}
           </div>
@@ -937,34 +685,37 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
 }
 
 /* =========================================================================
-   3. NEWS EDITOR
+   3. NEWS EDITOR (5. Лента новостей и пресс-релизов #news)
    ========================================================================= */
 function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: any; openMediaPicker: any }) {
   const items = data?.items || [];
 
   const updateNews = (index: number, key: string, val: any) => {
     const next = [...items];
-    next[index] = { ...next[index], [key]: val };
+    const updatedItem = { ...next[index], [key]: val };
+    if (key === 'excerpt') {
+      updatedItem.summary = val;
+    }
+    next[index] = updatedItem;
     setData({ ...data, items: next });
   };
 
   const addNews = () => {
     const newItem = {
       id: `news-${Date.now()}`,
+      slug: `news-${Date.now()}`,
       title: 'Новая публикация',
-      date: new Date().toISOString().split('T')[0],
-      category: 'Отраслевые стандарты',
-      excerpt: 'Краткий анонс новости...',
-      content: 'Полный текст новости...',
-      imageUrl: '',
-      author: 'Пресс-служба АНО «ЦЗСТ»',
-      readTime: '3 мин',
+      date: '15 октября 2026',
+      category: 'Пресс-релиз',
+      excerpt: 'Краткий анонс новости или пресс-релиза...',
+      summary: 'Краткий анонс новости или пресс-релиза...',
+      content: ['Полный текст новости...'],
     };
     setData({ ...data, items: [newItem, ...items] });
   };
 
   const removeNews = (index: number) => {
-    if (!confirm('Удалить эту новость?')) return;
+    if (!confirm('Удалить эту публикацию?')) return;
     const next = items.filter((_: any, i: number) => i !== index);
     setData({ ...data, items: next });
   };
@@ -973,26 +724,26 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-          Всего новостей: {items.length}
+          Всего публикаций в ленте: {items.length}
         </h3>
         <button
           onClick={addNews}
-          className="flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-500"
+          className="flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-500"
         >
           <Plus className="h-4 w-4" />
-          <span>Добавить новость</span>
+          <span>Добавить публикацию</span>
         </button>
       </div>
 
-      <div className="space-y-5">
+      <div className="space-y-4">
         {items.map((item: any, i: number) => (
           <div key={item.id || i} className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
             <div className="flex items-start justify-between border-b border-[#222] pb-3">
               <div className="flex items-center gap-2">
-                <span className="rounded bg-red-950/60 border border-red-800 text-red-300 px-2 py-0.5 text-xs font-mono">
-                  {item.category || 'Новость'}
+                <span className="rounded bg-amber-500/20 border border-amber-500/40 text-amber-300 px-2 py-0.5 text-xs font-mono">
+                  {item.category || 'Новости'}
                 </span>
-                <span className="text-xs text-slate-500 font-mono">{item.date}</span>
+                <span className="text-xs text-slate-400 font-mono">{item.date}</span>
               </div>
               <button
                 onClick={() => removeNews(i)}
@@ -1002,9 +753,9 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
               <div className="sm:col-span-2">
-                <label className="admin-label">Заголовок</label>
+                <label className="admin-label">Заголовок публикации</label>
                 <input
                   type="text"
                   value={item.title || ''}
@@ -1013,85 +764,39 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 />
               </div>
               <div>
-                <label className="admin-label">Категория</label>
-                <input
-                  type="text"
-                  value={item.category || ''}
+                <label className="admin-label">Категория (бейдж)</label>
+                <select
+                  value={item.category || 'Пресс-релиз'}
                   onChange={(e) => updateNews(i, 'category', e.target.value)}
                   className="admin-input"
-                />
+                >
+                  <option value="Пресс-релиз">Пресс-релиз</option>
+                  <option value="Новости">Новости</option>
+                  <option value="Партнёрство">Партнёрство</option>
+                  <option value="Событие">Событие</option>
+                  <option value="Отчёт">Отчёт</option>
+                </select>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
                 <label className="admin-label">Дата публикации</label>
                 <input
-                  type="date"
+                  type="text"
                   value={item.date || ''}
                   onChange={(e) => updateNews(i, 'date', e.target.value)}
-                  className="admin-input font-mono"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Автор</label>
-                <input
-                  type="text"
-                  value={item.author || ''}
-                  onChange={(e) => updateNews(i, 'author', e.target.value)}
-                  className="admin-input"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Время чтения</label>
-                <input
-                  type="text"
-                  value={item.readTime || ''}
-                  onChange={(e) => updateNews(i, 'readTime', e.target.value)}
-                  className="admin-input"
+                  placeholder="12 октября 2026"
+                  className="admin-input font-mono text-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="admin-label">Краткий анонс</label>
+              <label className="admin-label">Краткое описание (отображается в ленте под заголовком)</label>
               <textarea
                 rows={2}
-                value={item.excerpt || ''}
+                value={item.excerpt ?? item.summary ?? ''}
                 onChange={(e) => updateNews(i, 'excerpt', e.target.value)}
                 className="admin-textarea"
               />
-            </div>
-
-            <div>
-              <label className="admin-label">Полный текст</label>
-              <textarea
-                rows={4}
-                value={item.content || ''}
-                onChange={(e) => updateNews(i, 'content', e.target.value)}
-                className="admin-textarea font-sans"
-              />
-            </div>
-
-            <div>
-              <label className="admin-label">Изображение обложки</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={item.imageUrl || ''}
-                  onChange={(e) => updateNews(i, 'imageUrl', e.target.value)}
-                  className="admin-input font-mono text-xs flex-1"
-                  placeholder="/news/photo.jpg или R2 ссылка"
-                />
-                <button
-                  type="button"
-                  onClick={() => openMediaPicker((url: string) => updateNews(i, 'imageUrl', url))}
-                  className="flex items-center gap-1.5 rounded bg-[#1e2638] border border-[#334155] px-3 py-2 text-xs text-slate-200 hover:bg-[#28334a]"
-                >
-                  <ImageIcon className="h-3.5 w-3.5" />
-                  <span>Медиатека</span>
-                </button>
-              </div>
             </div>
           </div>
         ))}
@@ -1414,15 +1119,13 @@ function DocumentsEditor({ data, setData, openMediaPicker }: { data: any; setDat
   const addDoc = () => {
     const newDoc = {
       id: `doc-${Date.now()}`,
-      title: 'Новый нормативный документ',
-      category: 'Отраслевые стандарты',
-      documentNumber: '№ СТ-2025/01',
-      date: new Date().toISOString().split('T')[0],
-      fileUrl: '',
-      fileSize: '1.2 MB',
-      description: 'Краткое описание документа...',
+      title: 'Новый документ организации',
+      category: 'Учредительные',
+      year: '2026',
+      date: '2026',
+      fileUrl: '#',
     };
-    setData({ ...data, items: [newDoc, ...items] });
+    setData({ ...data, items: [...items, newDoc] });
   };
 
   const removeDoc = (index: number) => {
@@ -1435,7 +1138,7 @@ function DocumentsEditor({ data, setData, openMediaPicker }: { data: any; setDat
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-          Всего документов: {items.length}
+          Всего документов (#documents): {items.length}
         </h3>
         <button
           onClick={addDoc}
@@ -1450,7 +1153,9 @@ function DocumentsEditor({ data, setData, openMediaPicker }: { data: any; setDat
         {items.map((doc: any, i: number) => (
           <div key={doc.id || i} className="rounded-xl border border-[#222] bg-[#12161f] p-4 space-y-3">
             <div className="flex items-start justify-between border-b border-[#222] pb-2">
-              <span className="font-mono text-xs text-red-400">{doc.documentNumber || 'Без номера'}</span>
+              <span className="font-mono text-xs text-blue-400">
+                {doc.category || 'Учредительные'} • {doc.year || doc.date || '2026'}
+              </span>
               <button onClick={() => removeDoc(i)} className="text-red-400 hover:text-red-300 p-1">
                 <Trash2 className="h-3.5 w-3.5" />
               </button>
@@ -1466,38 +1171,35 @@ function DocumentsEditor({ data, setData, openMediaPicker }: { data: any; setDat
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label className="admin-label">Категория</label>
+                <label className="admin-label">Категория (Учредительные / Отчётность / Положения)</label>
                 <input
                   type="text"
                   value={doc.category || ''}
                   onChange={(e) => updateDoc(i, 'category', e.target.value)}
+                  placeholder="Учредительные, Отчётность или Положения"
                   className="admin-input"
                 />
               </div>
               <div>
-                <label className="admin-label">Номер приказа / документа</label>
+                <label className="admin-label">Год документа</label>
                 <input
                   type="text"
-                  value={doc.documentNumber || ''}
-                  onChange={(e) => updateDoc(i, 'documentNumber', e.target.value)}
-                  className="admin-input font-mono"
-                />
-              </div>
-              <div>
-                <label className="admin-label">Дата утверждения</label>
-                <input
-                  type="text"
-                  value={doc.date || ''}
-                  onChange={(e) => updateDoc(i, 'date', e.target.value)}
+                  value={doc.year || doc.date?.slice(0, 4) || ''}
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[i] = { ...next[i], year: e.target.value, date: e.target.value };
+                    setData({ ...data, items: next });
+                  }}
+                  placeholder="2026"
                   className="admin-input font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="admin-label">Файл документа (PDF/DOCX в R2)</label>
+              <label className="admin-label">Файл документа (PDF/DOCX в R2 или ссылка)</label>
               <div className="flex items-center gap-2">
                 <input
                   type="text"
@@ -1524,71 +1226,162 @@ function DocumentsEditor({ data, setData, openMediaPicker }: { data: any; setDat
 }
 
 /* =========================================================================
-   7. DIRECTIONS EDITOR
+   7. DIRECTIONS / PROJECTS EDITOR (#projects)
    ========================================================================= */
 function DirectionsEditor({ data, setData }: { data: any; setData: any }) {
-  const directions = data?.directions || data || [];
+  const list = Array.isArray(data) ? data : data?.directions || [];
 
-  const updateDir = (index: number, key: string, val: any) => {
-    const list = Array.isArray(directions) ? [...directions] : [...(data.directions || [])];
-    list[index] = { ...list[index], [key]: val };
-    if (Array.isArray(data)) {
-      setData(list);
-    } else {
-      setData({ ...data, directions: list });
+  const updateField = (field: string, val: any) => {
+    if (!Array.isArray(data)) {
+      setData({ ...data, [field]: val });
     }
   };
 
-  const list = Array.isArray(directions) ? directions : (data.directions || []);
+  const updateDir = (index: number, key: string, val: any) => {
+    const next = [...list];
+    next[index] = { ...next[index], [key]: val };
+    if (Array.isArray(data)) {
+      setData(next);
+    } else {
+      setData({ ...data, directions: next });
+    }
+  };
+
+  const addDir = () => {
+    const next = [
+      ...list,
+      {
+        id: `proj-${Date.now()}`,
+        category: 'Массовый спорт',
+        title: 'Новый проект или программа',
+        description: 'Описание проекта или программы АНО «ЦЗСТ»...',
+      },
+    ];
+    if (Array.isArray(data)) {
+      setData(next);
+    } else {
+      setData({ ...data, directions: next });
+    }
+  };
+
+  const removeDir = (index: number) => {
+    if (!confirm('Удалить этот проект?')) return;
+    const next = list.filter((_: any, i: number) => i !== index);
+    if (Array.isArray(data)) {
+      setData(next);
+    } else {
+      setData({ ...data, directions: next });
+    }
+  };
 
   return (
-    <div className="space-y-5">
-      {list.map((dir: any, i: number) => (
-        <div key={dir.id || i} className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-3">
-          <h3 className="font-bold text-white text-base">Направление 0{i + 1}</h3>
+    <div className="space-y-6">
+      {!Array.isArray(data) && (
+        <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
+          <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
+            Заголовок секции «Проекты и программы» (#projects)
+          </h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="admin-label">Надзаголовок секции</label>
+              <input
+                type="text"
+                value={data?.projectsEyebrow ?? 'Направления работы'}
+                onChange={(e) => updateField('projectsEyebrow', e.target.value)}
+                className="admin-input"
+              />
+            </div>
+            <div>
+              <label className="admin-label">Заголовок секции (H2)</label>
+              <input
+                type="text"
+                value={data?.projectsTitle ?? 'Проекты и программы'}
+                onChange={(e) => updateField('projectsTitle', e.target.value)}
+                className="admin-input font-bold"
+              />
+            </div>
+          </div>
           <div>
-            <label className="admin-label">Заголовок направления</label>
+            <label className="admin-label">Подзаголовок секции</label>
             <input
               type="text"
-              value={dir.title || ''}
-              onChange={(e) => updateDir(i, 'title', e.target.value)}
-              className="admin-input font-bold"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Описание</label>
-            <textarea
-              rows={3}
-              value={dir.description || ''}
-              onChange={(e) => updateDir(i, 'description', e.target.value)}
-              className="admin-textarea"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Подпункты / направления (по одному в строке)</label>
-            <textarea
-              rows={3}
-              value={(dir.topics || []).join('\n')}
-              onChange={(e) =>
-                updateDir(
-                  i,
-                  'topics',
-                  e.target.value.split('\n').filter((line) => line.trim() !== '')
-                )
+              value={
+                data?.projectsSubtitle ??
+                'Шесть взаимосвязанных программ — от дворовых турниров до подготовки сборных.'
               }
-              className="admin-textarea font-mono text-xs"
+              onChange={(e) => updateField('projectsSubtitle', e.target.value)}
+              className="admin-input"
             />
           </div>
         </div>
-      ))}
+      )}
+
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
+          Карточки проектов: {list.length}
+        </h3>
+        <button
+          type="button"
+          onClick={addDir}
+          className="flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-500"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Добавить проект</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {list.map((dir: any, i: number) => (
+          <div key={dir.id || i} className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#222] pb-2">
+              <h3 className="font-bold text-white text-sm">Проект 0{i + 1}</h3>
+              <button
+                type="button"
+                onClick={() => removeDir(i)}
+                className="text-red-400 hover:text-red-300 p-1"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <div>
+              <label className="admin-label">Категория (бейдж справа вверху)</label>
+              <input
+                type="text"
+                value={dir.category || ''}
+                onChange={(e) => updateDir(i, 'category', e.target.value)}
+                placeholder="Например: Массовый спорт"
+                className="admin-input"
+              />
+            </div>
+            <div>
+              <label className="admin-label">Название проекта</label>
+              <input
+                type="text"
+                value={dir.title || ''}
+                onChange={(e) => updateDir(i, 'title', e.target.value)}
+                className="admin-input font-bold"
+              />
+            </div>
+            <div>
+              <label className="admin-label">Описание</label>
+              <textarea
+                rows={3}
+                value={dir.description || ''}
+                onChange={(e) => updateDir(i, 'description', e.target.value)}
+                className="admin-textarea"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 /* =========================================================================
-   8. PARTNERS EDITOR
+   8. PARTNERS EDITOR (#partners)
    ========================================================================= */
-function PartnersEditor({ data, setData, openMediaPicker }: { data: any; setData: any; openMediaPicker: any }) {
+function PartnersEditor({ data, setData }: { data: any; setData: any; openMediaPicker?: any }) {
   const items = data?.items || [];
 
   const updatePartner = (index: number, key: string, val: any) => {
@@ -1600,9 +1393,8 @@ function PartnersEditor({ data, setData, openMediaPicker }: { data: any; setData
   const addPartner = () => {
     const newPartner = {
       id: `partner-${Date.now()}`,
-      name: 'Новый спонсор / партнёр',
-      category: 'Официальный партнёр',
-      logo: '',
+      name: 'Новая организация-партнёр',
+      category: 'Министерства и ведомства',
     };
     setData({ ...data, items: [...items, newPartner] });
   };
@@ -1616,7 +1408,7 @@ function PartnersEditor({ data, setData, openMediaPicker }: { data: any; setData
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-          Всего партнёров: {items.length}
+          Всего партнёров (#partners): {items.length}
         </h3>
         <button
           onClick={addPartner}
@@ -1638,44 +1430,24 @@ function PartnersEditor({ data, setData, openMediaPicker }: { data: any; setData
             </div>
 
             <div>
-              <label className="admin-label">Наименование компании / курорта</label>
+              <label className="admin-label">Наименование организации</label>
               <input
                 type="text"
                 value={p.name || ''}
                 onChange={(e) => updatePartner(i, 'name', e.target.value)}
-                className="admin-input"
+                className="admin-input font-semibold"
               />
             </div>
 
             <div>
-              <label className="admin-label">Категория</label>
+              <label className="admin-label">Колонка (Министерства и ведомства / Федерации / Спонсоры и партнёры)</label>
               <input
                 type="text"
                 value={p.category || ''}
                 onChange={(e) => updatePartner(i, 'category', e.target.value)}
+                placeholder="Министерства и ведомства, Федерации или Спонсоры и партнёры"
                 className="admin-input"
               />
-            </div>
-
-            <div>
-              <label className="admin-label">Логотип (URL)</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={p.logo || ''}
-                  onChange={(e) => updatePartner(i, 'logo', e.target.value)}
-                  className="admin-input font-mono text-xs flex-1"
-                  placeholder="/api/media/... или ссылка"
-                />
-                <button
-                  type="button"
-                  onClick={() => openMediaPicker((url: string) => updatePartner(i, 'logo', url))}
-                  className="flex items-center gap-1 rounded bg-[#1e2638] border border-[#334155] px-2.5 py-1.5 text-xs text-slate-200"
-                >
-                  <ImageIcon className="h-3.5 w-3.5" />
-                  <span>R2</span>
-                </button>
-              </div>
             </div>
           </div>
         ))}
@@ -1685,7 +1457,7 @@ function PartnersEditor({ data, setData, openMediaPicker }: { data: any; setData
 }
 
 /* =========================================================================
-   9. CONTACTS EDITOR
+   9. CONTACTS EDITOR (#contacts)
    ========================================================================= */
 function ContactsEditor({ data, setData }: { data: any; setData: any }) {
   if (!data) return null;
@@ -1694,27 +1466,109 @@ function ContactsEditor({ data, setData }: { data: any; setData: any }) {
     setData({ ...data, [field]: val });
   };
 
-  const updateBank = (field: string, val: any) => {
-    setData({
-      ...data,
-      bankRequisites: { ...(data.bankRequisites || {}), [field]: val },
-    });
-  };
-
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
         <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Связь и часы работы
+          Заголовок и форма секции «Контакты» (#contacts)
         </h3>
-
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="admin-label">Основной телефон</label>
+            <label className="admin-label">Надзаголовок (Eyebrow)</label>
+            <input
+              type="text"
+              value={data.contactsEyebrow ?? 'Контакты'}
+              onChange={(e) => updateField('contactsEyebrow', e.target.value)}
+              className="admin-input"
+            />
+          </div>
+          <div>
+            <label className="admin-label">Заголовок секции (H2)</label>
+            <input
+              type="text"
+              value={data.contactsTitle ?? 'Свяжитесь с нами'}
+              onChange={(e) => updateField('contactsTitle', e.target.value)}
+              className="admin-input font-bold"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="admin-label">Подзаголовок секции</label>
+          <textarea
+            rows={2}
+            value={
+              data.contactsSubtitle ??
+              'Ответим на вопросы о программах, документах и формах сотрудничества.'
+            }
+            onChange={(e) => updateField('contactsSubtitle', e.target.value)}
+            className="admin-textarea"
+          />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="admin-label">Подпись поля сообщения</label>
+            <input
+              type="text"
+              value={data.contactsFormMessageLabel ?? 'Ваше обращение *'}
+              onChange={(e) => updateField('contactsFormMessageLabel', e.target.value)}
+              className="admin-input"
+            />
+          </div>
+          <div>
+            <label className="admin-label">Текст кнопки отправки</label>
+            <input
+              type="text"
+              value={data.contactsFormSubmitLabel ?? 'Отправить обращение'}
+              onChange={(e) => updateField('contactsFormSubmitLabel', e.target.value)}
+              className="admin-input font-bold"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="admin-label">Плейсхолдер поля сообщения</label>
+          <input
+            type="text"
+            value={
+              data.contactsFormMessagePlaceholder ??
+              'Опишите вопрос, предложение о сотрудничестве или запрос документов'
+            }
+            onChange={(e) => updateField('contactsFormMessagePlaceholder', e.target.value)}
+            className="admin-input"
+          />
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
+        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
+          Контактные данные организации
+        </h3>
+
+        <div>
+          <label className="admin-label">Адрес местонахождения</label>
+          <input
+            type="text"
+            value={data.legalAddress || ''}
+            onChange={(e) => updateField('legalAddress', e.target.value)}
+            className="admin-input"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label className="admin-label">Телефон</label>
             <input
               type="text"
               value={data.phone || ''}
               onChange={(e) => updateField('phone', e.target.value)}
+              className="admin-input"
+            />
+          </div>
+          <div>
+            <label className="admin-label">Электронная почта</label>
+            <input
+              type="text"
+              value={data.receptionEmail || ''}
+              onChange={(e) => updateField('receptionEmail', e.target.value)}
               className="admin-input"
             />
           </div>
@@ -1725,90 +1579,6 @@ function ContactsEditor({ data, setData }: { data: any; setData: any }) {
               value={data.workHours || ''}
               onChange={(e) => updateField('workHours', e.target.value)}
               className="admin-input"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="admin-label">Email приёмной</label>
-            <input
-              type="text"
-              value={data.receptionEmail || ''}
-              onChange={(e) => updateField('receptionEmail', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Email пресс-службы</label>
-            <input
-              type="text"
-              value={data.pressEmail || ''}
-              onChange={(e) => updateField('pressEmail', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Email реестра специалистов</label>
-            <input
-              type="text"
-              value={data.registryEmail || ''}
-              onChange={(e) => updateField('registryEmail', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Email учебного центра</label>
-            <input
-              type="text"
-              value={data.educationEmail || ''}
-              onChange={(e) => updateField('educationEmail', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Банковские реквизиты
-        </h3>
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="admin-label">Наименование банка</label>
-            <input
-              type="text"
-              value={data.bankRequisites?.bankName || ''}
-              onChange={(e) => updateBank('bankName', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">БИК</label>
-            <input
-              type="text"
-              value={data.bankRequisites?.bik || ''}
-              onChange={(e) => updateBank('bik', e.target.value)}
-              className="admin-input font-mono"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Расчётный счёт</label>
-            <input
-              type="text"
-              value={data.bankRequisites?.checkingAccount || ''}
-              onChange={(e) => updateBank('checkingAccount', e.target.value)}
-              className="admin-input font-mono"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Корреспондентский счёт</label>
-            <input
-              type="text"
-              value={data.bankRequisites?.correspondentAccount || ''}
-              onChange={(e) => updateBank('correspondentAccount', e.target.value)}
-              className="admin-input font-mono"
             />
           </div>
         </div>
