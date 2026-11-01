@@ -513,13 +513,14 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               Высота:
             </span>
             <select
-              value={data?.sliderHeight || 'compact'}
+              value={data?.sliderHeight || 'screen-50'}
               onChange={(e) =>
                 setData({ ...data, sliderHeight: e.target.value })
               }
               className="rounded-md border border-[#2d3748] bg-[#0c0f16] px-2.5 py-1 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
             >
-              <option value="compact">Компактная (как в образце Lovable ~560px)</option>
+              <option value="screen-50">50% экрана вместе с Header (фиксированная)</option>
+              <option value="compact">Компактная (~560px)</option>
               <option value="medium">Средняя (~680px)</option>
               <option value="tall">Высокая (~820px)</option>
               <option value="fullscreen">100% высота экрана (Fullscreen)</option>
@@ -720,12 +721,12 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               </button>
             </div>
             
-            {/* Настройки позиционирования фона (Top Margin / Сдвиг по вертикали) */}
+            {/* Настройки позиционирования фона (Top Padding / Смещение и привязка к блоку/экрану) */}
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-lg border border-[#1e293b] bg-[#0c101a] p-3">
               <div>
                 <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-semibold text-slate-300">Сдвиг фона сверху (Top margin)</span>
-                  <span className="font-mono text-amber-400 font-bold">{slide.bgMarginTop ?? 0}px</span>
+                  <span className="font-semibold text-slate-300">Отступ фона сверху (Top padding)</span>
+                  <span className="font-mono text-amber-400 font-bold">{slide.bgPaddingTop ?? slide.bgMarginTop ?? 0}px</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <input
@@ -733,39 +734,64 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                     min={-200}
                     max={300}
                     step={5}
-                    value={slide.bgMarginTop ?? 0}
-                    onChange={(e) => updateSlide(i, 'bgMarginTop', Number(e.target.value))}
+                    value={slide.bgPaddingTop ?? slide.bgMarginTop ?? 0}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      const next = [...slides];
+                      next[i] = { ...next[i], bgPaddingTop: val, bgMarginTop: val };
+                      setData({ ...data, slides: next });
+                    }}
                     className="w-full accent-amber-500 cursor-pointer"
                   />
                   <input
                     type="number"
-                    value={slide.bgMarginTop ?? 0}
-                    onChange={(e) => updateSlide(i, 'bgMarginTop', Number(e.target.value))}
+                    value={slide.bgPaddingTop ?? slide.bgMarginTop ?? 0}
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      const next = [...slides];
+                      next[i] = { ...next[i], bgPaddingTop: val, bgMarginTop: val };
+                      setData({ ...data, slides: next });
+                    }}
                     className="w-20 rounded border border-[#2d3748] bg-[#070a10] px-2 py-1 text-xs font-mono text-white text-center focus:border-amber-500 focus:outline-none"
                     placeholder="0"
                   />
                   <span className="text-xs text-slate-400">px</span>
                 </div>
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Смещение отсчитывается строго от верхней границы блока слайдера (не экрана и не хидера). Отрицательное поднимает, положительное опускает.
+                  Плавный сдвиг фона по вертикали. Отрицательное поднимает, положительное опускает.
                 </p>
               </div>
 
               <div>
-                <label className="admin-label">Точка фокусировки (Object Position)</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="admin-label !mb-0">Точка центрирования (Object Position)</label>
+                  <label className="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={slide.alignToBlock !== false}
+                      onChange={(e) => updateSlide(i, 'alignToBlock', e.target.checked)}
+                      className="h-3.5 w-3.5 rounded border-slate-600 bg-[#0c0f16] text-amber-500 focus:ring-0"
+                    />
+                    <span className="text-[11px] font-semibold text-amber-400">
+                      Ровнение относительно блока
+                    </span>
+                  </label>
+                </div>
                 <select
                   value={slide.bgPosition || 'center'}
                   onChange={(e) => updateSlide(i, 'bgPosition', e.target.value)}
                   className="admin-input font-medium"
                 >
                   <option value="center">По центру (center)</option>
-                  <option value="top">По верху (top - строгая фиксация по верхней грани)</option>
+                  <option value="top">По верху (top)</option>
                   <option value="bottom">По низу (bottom)</option>
                   <option value="center top">Сверху по центру (center top)</option>
                   <option value="center bottom">Снизу по центру (center bottom)</option>
                 </select>
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Фиксирует опорную линию центрирования относительно блока слайдера.
+                  {slide.alignToBlock !== false
+                    ? '✓ Картинка ровняется относительно верхней границы блока слайдера'
+                    : '○ Картинка ровняется просто по верхней границе экрана браузера'}
                 </p>
               </div>
             </div>

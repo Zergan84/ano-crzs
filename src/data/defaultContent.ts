@@ -554,7 +554,7 @@ export const DEFAULT_CONTENT = {
   hero: {
     showControls: false,
     slideDuration: 8,
-    sliderHeight: 'compact' as 'compact' | 'medium' | 'tall' | 'fullscreen',
+    sliderHeight: 'screen-50' as 'screen-50' | 'compact' | 'medium' | 'tall' | 'fullscreen',
     transitionEffect: 'motion-blur' as 'motion-blur' | 'fast-wind' | 'transparent' | 'dip-to-white' | 'dip-to-color',
     slides: DEFAULT_HERO_SLIDES,
   },

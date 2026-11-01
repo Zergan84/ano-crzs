@@ -534,17 +534,20 @@ export function HeroSlider() {
 
     const heightClasses = (() => {
       switch (sliderHeight) {
+        case 'screen-50':
+          // 50vh вместе с header (верхнее меню ~68px + контакты ~32px + триколор ~4px = ~104px)
+          return 'h-[calc(50vh-104px)] min-h-[420px] max-h-[580px] py-6 md:py-10';
         case 'compact':
-          return 'min-h-[520px] md:min-h-[580px] py-12 md:py-20';
+          return 'h-[calc(50vh-104px)] min-h-[420px] max-h-[580px] py-6 md:py-10';
         case 'medium':
-          return 'min-h-[640px] md:min-h-[700px] py-16 md:py-24';
+          return 'h-[calc(65vh-104px)] min-h-[520px] max-h-[700px] py-12 md:py-16';
         case 'tall':
           return 'min-h-[780px] md:min-h-[860px] py-20 md:py-32';
         case 'fullscreen':
           return 'min-h-screen py-16 md:py-24';
         default:
           return isTricolor
-            ? 'min-h-[520px] md:min-h-[580px] py-12 md:py-20'
+            ? 'h-[calc(50vh-104px)] min-h-[420px] max-h-[580px] py-6 md:py-10'
             : 'min-h-screen py-16 md:py-24';
       }
     })();
@@ -558,14 +561,17 @@ export function HeroSlider() {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Фоновые изображения всех слайдов: жестко привязаны к верхнему краю блока слайдера top: 0,
-            плавно растворяются (cross-fade) без скачков и прыжков */}
+        {/* Фоновые изображения всех слайдов: плавный cross-fade,
+            ровнение относительно блока слайдера (alignToBlock) либо экрана браузера */}
         <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
           {slidesData.map((s: any, idx: number) => {
             const isSlideActive = currentSlide === idx;
             const bgUrl = (s.image ? resolveMediaUrl(s.image) : '') || boltHeroBg;
-            const sBgMarginTop = typeof s.bgMarginTop === 'number' ? s.bgMarginTop : 0;
+            const sBgPaddingTop = typeof s.bgPaddingTop === 'number' 
+              ? s.bgPaddingTop 
+              : (typeof s.bgMarginTop === 'number' ? s.bgMarginTop : 0);
             const sBgPosition = s.bgPosition || 'center';
+            const alignToBlock = s.alignToBlock !== false;
 
             return (
               <img
@@ -575,7 +581,11 @@ export function HeroSlider() {
                 aria-hidden="true"
                 style={{
                   objectPosition: sBgPosition,
-                  transform: `translateY(${sBgMarginTop}px)`,
+                  // Если чекбокс "ровнение относительно блока" отжат (alignToBlock === false) —
+                  // сдвиг учитывает верхний header (~104px), чтобы картинка позиционировалась от верхнего края экрана
+                  transform: alignToBlock
+                    ? `translateY(${sBgPaddingTop}px)`
+                    : `translateY(${sBgPaddingTop - 104}px)`,
                 }}
                 className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
                   isSlideActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
@@ -617,35 +627,35 @@ export function HeroSlider() {
 
         <div
           className={`mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 md:px-6 relative z-10 ${
-            isTricolor ? 'pb-14 pt-8' : 'pb-28 pt-32'
+            isTricolor ? 'pb-10 pt-4' : 'pb-28 pt-32'
           }`}
         >
           <div
-            className={`w-full max-w-2xl min-h-[340px] flex flex-col justify-center transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
+            className={`w-full max-w-2xl min-h-[220px] sm:min-h-[260px] flex flex-col justify-center transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
           >
             {boltBadge && (
               isTricolor ? (
-                <div className="mb-6 flex items-center gap-3 text-xs font-semibold uppercase leading-relaxed text-white">
+                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase leading-relaxed text-white">
                   <span className="h-0.5 w-8 shrink-0 bg-[#D92D20]" aria-hidden="true" />
                   <span>{boltBadge}</span>
                 </div>
               ) : (
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur mb-4">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#E8B93E]" aria-hidden="true" />
                   {boltBadge}
                 </span>
               )
             )}
 
-            <h1 className="text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-[1.12] tracking-[-0.02em]">
+            <h1 className="text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl leading-[1.12] tracking-[-0.02em]">
               {boltTitle}
             </h1>
 
-            <p className={`mt-6 max-w-xl text-base leading-relaxed text-white/90 sm:text-lg ${alignDescClasses}`}>
+            <p className={`mt-3 max-w-xl text-sm leading-relaxed text-white/90 sm:text-base line-clamp-3 ${alignDescClasses}`}>
               {boltDesc}
             </p>
 
-            <div className={`mt-9 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
+            <div className={`mt-6 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
               {boltPrimaryText && (
                 <a
                   href={boltPrimaryHref}
