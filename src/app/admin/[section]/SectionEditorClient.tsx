@@ -53,7 +53,7 @@ export default function SectionEditorClient({ section }: { section: string }) {
     setStatusMessage(null);
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${storageKey}`
+        ? `/api/admin/content/${storageKey}`
         : `/api/admin/content/${storageKey}`;
       const res = await fetch(apiEndpoint);
       if (res.ok) {
@@ -91,7 +91,7 @@ export default function SectionEditorClient({ section }: { section: string }) {
     setStatusMessage(null);
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${storageKey}`
+        ? `/api/admin/content/${storageKey}`
         : `/api/admin/content/${storageKey}`;
 
       const res = await fetch(apiEndpoint, {

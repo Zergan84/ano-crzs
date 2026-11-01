@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { ShieldCheck, Lock, User, ArrowRight } from 'lucide-react';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,13 +18,18 @@ export default function AdminLoginPage() {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login, password }),
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          login: login.trim(),
+          password: password.trim(),
+        }),
       });
 
       if (res.ok) {
-        router.push('/admin');
+        window.location.href = '/admin';
+        return;
       } else {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         setError(data.error || 'Неверный логин или пароль');
       }
     } catch {
@@ -40,7 +43,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md rounded-xl border border-slate-800 bg-[#0d121c] p-8 shadow-2xl">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-red-600/10 border border-red-500/20 text-red-500">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500">
             <ShieldCheck className="h-8 w-8" />
           </div>
           <h1 className="text-2xl font-black tracking-wider text-white">АНО «ЦЗСТ»</h1>
@@ -92,7 +95,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 py-3 text-sm font-bold uppercase tracking-wider text-white transition-all hover:bg-red-500 disabled:opacity-50 shadow-lg shadow-red-900/20"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-orange-600 to-amber-500 py-3 text-sm font-bold uppercase tracking-wider text-white transition-all hover:from-orange-500 hover:to-amber-400 disabled:opacity-50 shadow-lg shadow-orange-950/30"
           >
             <span>{loading ? 'Проверка...' : 'Войти в панель'}</span>
             {!loading && <ArrowRight className="h-4 w-4" />}
@@ -101,7 +104,7 @@ export default function AdminLoginPage() {
 
         <div className="mt-8 border-t border-slate-800/80 pt-4 text-center">
           <p className="text-[11px] text-slate-500">
-            Доступ защищен секретами Cloudflare Secrets & токеном сессии
+            Доступ защищен секретами Cloudflare & токеном сессии
           </p>
         </div>
       </div>

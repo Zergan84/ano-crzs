@@ -16,7 +16,7 @@ export default function SectionOrderPage() {
   const loadOrder = useCallback(async () => {
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/section-order'
+        ? '/api/admin/content/section-order'
         : '/api/admin/content/section-order';
 
       const res = await fetch(apiEndpoint);
@@ -48,7 +48,7 @@ export default function SectionOrderPage() {
     setError('');
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/section-order'
+        ? '/api/admin/content/section-order'
         : '/api/admin/content/section-order';
 
       const res = await fetch(apiEndpoint, {

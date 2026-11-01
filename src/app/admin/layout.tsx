@@ -81,20 +81,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     checkAuth();
   }, [pathname]);
 
+  const isLoginPage = pathname?.startsWith('/admin/login');
+
   async function checkAuth() {
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/check'
-          : '/api/admin/check';
-      const res = await fetch(apiEndpoint);
+      const res = await fetch('/api/admin/check', {
+        credentials: 'same-origin',
+        cache: 'no-store',
+      });
       const isAuth = res.ok;
       setAuth(isAuth);
-      if (!isAuth && pathname !== '/admin/login') {
+      if (!isAuth && !isLoginPage) {
         router.push('/admin/login');
       }
     } catch {
-      if (pathname !== '/admin/login') {
+      if (!isLoginPage) {
         router.push('/admin/login');
       }
     }
@@ -103,9 +104,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   async function handleLogout() {
     try {
-      await fetch('/api/admin/logout', { method: 'POST' });
+      await fetch('/api/admin/logout', { method: 'POST', credentials: 'same-origin' });
     } catch {}
     router.push('/admin/login');
+  }
+
+  if (isLoginPage) {
+    return <div className="min-h-screen bg-[#0a0a0a] text-white">{children}</div>;
   }
 
   if (loading) {
@@ -119,12 +124,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!auth && pathname !== '/admin/login') {
+  if (!auth) {
     return null;
-  }
-
-  if (pathname === '/admin/login') {
-    return <div className="min-h-screen bg-[#0a0a0a] text-white">{children}</div>;
   }
 
   return (

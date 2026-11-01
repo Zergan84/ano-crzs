@@ -19,7 +19,7 @@ export default function AdminFooterPage() {
   async function loadFooterData() {
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/footer'
+        ? '/api/admin/content/footer'
         : '/api/admin/content/footer';
 
       const res = await fetch(apiEndpoint);
@@ -39,7 +39,7 @@ export default function AdminFooterPage() {
     setError('');
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/footer'
+        ? '/api/admin/content/footer'
         : '/api/admin/content/footer';
 
       const res = await fetch(apiEndpoint, {

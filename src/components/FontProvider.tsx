@@ -40,7 +40,7 @@ export default function FontProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-      ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/fonts'
+      ? '/api/admin/content/fonts'
       : '/api/admin/content/fonts';
 
     fetch(apiEndpoint)

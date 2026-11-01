@@ -58,7 +58,7 @@ export default function AdminFontsPage() {
 
   useEffect(() => {
     const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-      ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/fonts'
+      ? '/api/admin/content/fonts'
       : '/api/admin/content/fonts';
 
     fetch(apiEndpoint)
@@ -86,7 +86,7 @@ export default function AdminFontsPage() {
     setSaved(false);
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/fonts'
+        ? '/api/admin/content/fonts'
         : '/api/admin/content/fonts';
 
       const res = await fetch(apiEndpoint, {

@@ -48,7 +48,7 @@ export default function AdminPagesPage() {
   async function loadPages() {
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/pages'
+        ? '/api/admin/content/pages'
         : '/api/admin/content/pages';
 
       const res = await fetch(apiEndpoint);
@@ -68,7 +68,7 @@ export default function AdminPagesPage() {
     setError('');
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/pages'
+        ? '/api/admin/content/pages'
         : '/api/admin/content/pages';
 
       const res = await fetch(apiEndpoint, {

@@ -77,7 +77,7 @@ export async function getContent(forceRefresh = false): Promise<SiteContent> {
   if (typeof window !== 'undefined') {
     try {
       const apiEndpoint = window.location.hostname.includes('pages.dev')
-        ? 'https://ano-crzs.101filmstudio.workers.dev/api/content'
+        ? '/api/content'
         : '/api/content';
       const res = await fetch(apiEndpoint, { cache: 'no-store' });
       if (res.ok) {
@@ -112,7 +112,7 @@ export function notifyContentUpdated() {
 export async function updateSection(section: string, data: unknown): Promise<boolean> {
   try {
     const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-      ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${section}`
+      ? `/api/admin/content/${section}`
       : `/api/admin/content/${section}`;
     const res = await fetch(apiEndpoint, {
       method: 'PUT',

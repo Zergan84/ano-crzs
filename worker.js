@@ -128,10 +128,10 @@ export default {
       try {
         const { login, password } = await request.json();
         const expectedLogin = env.ADMIN_LOGIN || 'ADMIN';
-        const expectedPassword = env.ADMIN_PASSWORD || 'admin2028';
+        const expectedPassword = env.ADMIN_PASSWORD || 'ANO_pass2026';
         const secret = env.TOKEN_SECRET || 'crzs-nko-secret-token-key-2026-auth-v1';
 
-        if (login === expectedLogin && password === expectedPassword) {
+        if (String(login || '').trim().toUpperCase() === expectedLogin.toUpperCase() && String(password || '').trim() === expectedPassword) {
           const token = await createAuthToken(login, secret);
           const headers = new Headers();
           headers.set('Content-Type', 'application/json');

@@ -28,7 +28,7 @@ export default function AdminLandingIdeologyPage() {
     try {
       const apiEndpoint =
         typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/landing'
+          ? '/api/admin/content/landing'
           : '/api/admin/content/landing';
 
       const res = await fetch(apiEndpoint);
@@ -55,7 +55,7 @@ export default function AdminLandingIdeologyPage() {
     try {
       const apiEndpoint =
         typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/content/landing'
+          ? '/api/admin/content/landing'
           : '/api/admin/content/landing';
 
       const res = await fetch(apiEndpoint, {
