@@ -178,16 +178,18 @@ export default function AdminFooterPage() {
           Колонка «Контакты» в подвале сайта
         </h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="admin-label">Адрес</label>
-            <input
-              type="text"
-              value={data.address || ''}
-              onChange={(e) => setData({ ...data, address: e.target.value })}
-              className="admin-input"
-            />
-          </div>
+        <div>
+          <label className="admin-label">Адрес (поддерживается перенос строк Enter)</label>
+          <textarea
+            rows={3}
+            value={data.address || ''}
+            onChange={(e) => setData({ ...data, address: e.target.value })}
+            placeholder="Например:&#10;РФ, Московская обл., Красногорск г.о.,&#10;п. Архангельское"
+            className="admin-textarea"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="admin-label">Телефон</label>
             <input
@@ -197,9 +199,6 @@ export default function AdminFooterPage() {
               className="admin-input"
             />
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="admin-label">Электронная почта (Email)</label>
             <input

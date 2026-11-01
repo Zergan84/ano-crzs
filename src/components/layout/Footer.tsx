@@ -151,7 +151,7 @@ export const Footer: React.FC = () => {
             <div className="space-y-2.5 text-slate-300">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                <span>{footer.address || org.actualAddress}</span>
+                <span className="whitespace-pre-line">{footer.address || org.actualAddress}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-blue-400 shrink-0" />

@@ -1178,7 +1178,7 @@ export function LandingView() {
                 Контакты
               </h2>
               <ul className="mt-5 space-y-3 text-sm">
-                <li>{footer.address || org.legalAddress || 'г. Москва, ул. Спортивная, д. 1, стр. 2'}</li>
+                <li className="whitespace-pre-line">{footer.address || org.legalAddress || 'г. Москва, ул. Спортивная, д. 1, стр. 2'}</li>
                 <li>
                   <a
                     href={`tel:${(footer.phone || org.phone || '+7 (495) 000-00-00').replace(/[^+\d]/g, '')}`}
@@ -2046,7 +2046,7 @@ export function LandingView() {
               <div className="text-xs text-slate-400 space-y-1 font-mono">
                 <p>
                   Юридический адрес:{' '}
-                  <span className="text-slate-200 font-sans">
+                  <span className="text-slate-200 font-sans whitespace-pre-line">
                     {footer.address || 'РФ, Московская обл., Красногорск г.о., п. Архангельское'}
                   </span>
                 </p>

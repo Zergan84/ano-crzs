@@ -30,6 +30,7 @@ export type HeroTransitionEffect =
 interface Slide {
   id: string;
   badge?: string;
+  showBadge?: boolean;
   tabLabel?: string;
   title: string;
   description: string;
@@ -362,6 +363,7 @@ export function HeroSlider() {
       title: dyn.title || base.title,
       description: dyn.desc || base.description,
       badge: dyn.tag !== undefined ? dyn.tag : base.badge,
+      showBadge: dyn.showBadge !== false,
       tabLabel:
         dyn.tabLabel ||
         base.tabLabel ||
@@ -449,10 +451,12 @@ export function HeroSlider() {
 
   if (isBoltStyle) {
     const dyn0: any = dynamicHeroSlides?.[currentSlide % Math.max(1, dynamicHeroSlides?.length || 1)];
-    const boltBadge =
-      dyn0?.tag ||
-      slide.badge ||
-      'Автономная некоммерческая организация';
+    const showBadge = dyn0?.showBadge !== false;
+    const boltBadge = showBadge
+      ? dyn0?.tag ||
+        slide.badge ||
+        'Автономная некоммерческая организация'
+      : '';
     const boltTitle =
       dyn0?.title ||
       slide.title ||
@@ -677,7 +681,7 @@ export function HeroSlider() {
         >
           {/* Left Column: Text & Actions */}
           <div className="lg:col-span-7">
-            {(slide.badge || isBoltStyle) && (
+            {slide.showBadge !== false && (slide.badge || isBoltStyle) && (
               <div
                 className={
                   isBoltStyle

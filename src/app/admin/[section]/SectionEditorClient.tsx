@@ -431,7 +431,7 @@ function OrganizationEditor({
 function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: any; openMediaPicker: any }) {
   const slides = data?.slides || [];
 
-  const updateSlide = (index: number, key: string, val: string) => {
+  const updateSlide = (index: number, key: string, val: any) => {
     const next = [...slides];
     next[index] = { ...next[index], [key]: val };
     setData({ ...data, slides: next });
@@ -443,6 +443,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
       {
         id: `slide-${Date.now()}`,
         tag: 'Автономная некоммерческая организация',
+        showBadge: true,
         tabLabel: `Слайд 0${slides.length + 1}`,
         title: 'Новый слайд главного экрана',
         desc: 'Подзаголовок и описание для нового слайда на первом экране...',
@@ -565,13 +566,26 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
-              <label className="admin-label">Метка над заголовком (бейдж)</label>
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <label className="admin-label !mb-0">Метка над заголовком (бейдж)</label>
+                <label className="inline-flex items-center gap-1.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={slide.showBadge !== false}
+                    onChange={(e) => updateSlide(i, 'showBadge', e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-slate-600 bg-[#0c0f16] text-amber-500 focus:ring-0"
+                  />
+                  <span className="text-[11px] font-semibold text-slate-300">
+                    Показывать
+                  </span>
+                </label>
+              </div>
               <input
                 type="text"
                 value={slide.tag || ''}
                 onChange={(e) => updateSlide(i, 'tag', e.target.value)}
                 placeholder="Автономная некоммерческая организация"
-                className="admin-input"
+                className={`admin-input ${slide.showBadge === false ? 'opacity-50' : ''}`}
               />
             </div>
             <div>
