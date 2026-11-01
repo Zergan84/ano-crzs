@@ -9,6 +9,8 @@ import {
   GraduationCap, 
   ChevronLeft, 
   ChevronRight, 
+  ChevronDown,
+  ArrowRight,
   Trophy, 
   Building2, 
   Calendar,
@@ -66,19 +68,13 @@ export function HeroSlider() {
   const activeThemeId =
     content?.themes?.activeThemeId ||
     content?.settings?.activeThemeId ||
-    'basic-light';
+    'bolt-style';
   const activeTheme =
     (content?.themes?.items || []).find((t: any) => t.id === activeThemeId) || null;
   const isBoltStyle = activeThemeId === 'bolt-style';
   const boltHeroBg =
     activeTheme?.heroBgImage ||
-    'https://images.pexels.com/photos/5961806/pexels-photo-5961806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
-  const statsList = content?.organization?.stats || [
-    { value: '1250+', label: 'Аттестованных специалистов' },
-    { value: '45+', label: 'Спортивных комплексов и курортов' },
-    { value: '85', label: 'Субъектов Российской Федерации' },
-    { value: '18', label: 'Отраслевых стандартов и программ' },
-  ];
+    'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg';
 
   const baseSlides: Slide[] = [
     {
@@ -451,13 +447,145 @@ export function HeroSlider() {
     }
   };
 
+  if (isBoltStyle) {
+    const landingHero = content?.landing?.hero;
+    const dyn0: any = dynamicHeroSlides?.[currentSlide % Math.max(1, dynamicHeroSlides?.length || 1)];
+    const boltBadge =
+      (currentSlide === 0 ? landingHero?.badge : dyn0?.tag) ||
+      'Автономная некоммерческая организация';
+    const boltTitle =
+      currentSlide === 0
+        ? 'Развиваем спорт, который объединяет регионы'
+        : slide.title;
+    const boltDesc =
+      currentSlide === 0
+        ? 'Мы реализуем государственные и социальные программы в сфере физической культуры и спорта: от школьных секций до подготовки спортивного резерва. Открыто говорим о нашей работе и ждём партнёров.'
+        : slide.description;
+
+    return (
+      <section
+        id="top"
+        className="relative isolate flex min-h-screen w-full flex-col overflow-hidden bg-[#071A33]"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <img
+          src={boltHeroBg}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 -z-20 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#071A33] via-[#071A33]/85 to-[#0C2444]/40" />
+        <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#071A33] to-transparent" />
+
+        {/* Dip to White / Dip to Color Flash Overlay */}
+        {transitionEffect === 'dip-to-white' && (
+          <div
+            className={`absolute inset-0 z-20 pointer-events-none bg-white transition-opacity duration-200 ${
+              animPhase === 'out' ? 'opacity-95' : 'opacity-0'
+            }`}
+          />
+        )}
+        {transitionEffect === 'dip-to-color' && (
+          <div
+            className={`absolute inset-0 z-20 pointer-events-none bg-gradient-to-r from-[#071A33] via-[#0C2444] to-[#E8B93E] transition-opacity duration-200 ${
+              animPhase === 'out' ? 'opacity-90' : 'opacity-0'
+            }`}
+          />
+        )}
+
+        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pb-24 pt-32 lg:px-8 relative z-10">
+          <div
+            className={`max-w-3xl transition-all duration-300 ease-out will-change-transform ${getSlideTransitionClasses()}`}
+          >
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#E8B93E]" aria-hidden="true" />
+              {boltBadge}
+            </span>
+
+            <h1 className="mt-6 text-4xl font-bold text-white sm:text-5xl lg:text-6xl leading-[1.12] tracking-[-0.02em]">
+              {boltTitle}
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#D9E4F0] sm:text-lg">
+              {boltDesc}
+            </p>
+
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="#partnership"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]"
+              >
+                <span>Стать партнёром</span>
+                <ArrowRight
+                  className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </a>
+
+              <a
+                href="#projects"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
+              >
+                Наши проекты
+              </a>
+            </div>
+          </div>
+
+          {showControls && (
+            <div className="mt-10 pt-4 border-t border-white/15 flex flex-wrap items-center justify-between gap-4 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                {activeSlides.map((s, idx) => (
+                  <button
+                    key={s.id}
+                    onClick={() => goToSlide(idx)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      currentSlide === idx
+                        ? 'bg-[#E8B93E] text-[#071A33]'
+                        : 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
+                    }`}
+                  >
+                    <span>0{idx + 1}</span>
+                    <span className="hidden md:inline font-normal truncate max-w-[140px]">
+                      {s.tabLabel}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={prevSlide}
+                  aria-label="Предыдущий слайд"
+                  className="p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  aria-label="Следующий слайд"
+                  className="p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <a
+          href="#about"
+          aria-label="Перейти к разделу о центре"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/60 transition-colors hover:text-white z-10"
+        >
+          <ChevronDown className="h-6 w-6" aria-hidden="true" />
+        </a>
+      </section>
+    );
+  }
+
   return (
     <section 
-      className={
-        isBoltStyle
-          ? 'relative isolate flex flex-col overflow-hidden bg-[#071A33] text-white pt-10 pb-0 border-b border-white/10'
-          : 'bg-white text-slate-900 pt-10 pb-12 lg:pt-14 lg:pb-16 border-b border-slate-200 relative overflow-hidden'
-      }
+      className="bg-white text-slate-900 pt-10 pb-12 lg:pt-14 lg:pb-16 border-b border-slate-200 relative overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -640,22 +768,14 @@ export function HeroSlider() {
               <button
                 onClick={prevSlide}
                 aria-label="Предыдущий слайд"
-                className={`p-2 rounded-lg border transition-colors shadow-2xs ${
-                  isBoltStyle
-                    ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                    : 'bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200'
-                }`}
+                className="p-2 rounded-lg border transition-colors shadow-2xs bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={nextSlide}
                 aria-label="Следующий слайд"
-                className={`p-2 rounded-lg border transition-colors shadow-2xs ${
-                  isBoltStyle
-                    ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
-                    : 'bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200'
-                }`}
+                className="p-2 rounded-lg border transition-colors shadow-2xs bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -663,27 +783,6 @@ export function HeroSlider() {
           </div>
         )}
       </div>
-
-      {/* Bottom Stats Bar in Bolt Style (1-in-1 with Kp bottom bar on bolt.host) */}
-      {isBoltStyle && (
-        <div className="relative z-10 border-t border-white/10 bg-[#071A33]/75 backdrop-blur">
-          <dl className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
-            {statsList.slice(0, 4).map((st: any, sIdx: number) => (
-              <div key={sIdx} className="py-5 lg:py-7 lg:pr-8">
-                <dt className="sr-only">{st.label}</dt>
-                <dd>
-                  <span className="block text-2xl sm:text-3xl font-bold text-white">
-                    {st.value}
-                  </span>
-                  <span className="mt-1 block text-xs sm:text-sm text-[#B3C9E0]">
-                    {st.label}
-                  </span>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      )}
     </section>
   );
 }

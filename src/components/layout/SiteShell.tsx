@@ -175,7 +175,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   const activeThemeId =
     content?.themes?.activeThemeId ||
     content?.settings?.activeThemeId ||
-    'basic-light';
+    'bolt-style';
 
   const themesList: ThemeConfig[] =
     content?.themes?.items && content.themes.items.length > 0

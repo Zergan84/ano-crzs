@@ -106,8 +106,8 @@ export const DEFAULT_THEMES_LIST: ThemeConfig[] = [
     cardRadius: '20px',
     buttonRadius: '9999px',
     cardShadow: 'md',
-    heroBgImage: 'https://images.pexels.com/photos/5961806/pexels-photo-5961806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
-    aboutImage: 'https://images.pexels.com/photos/7207549/pexels-photo-7207549.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    heroBgImage: 'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg',
+    aboutImage: 'https://discover.moscow/media/images/DSC00979_1-min.min-1920x1920.webp',
     partnerImage: 'https://images.pexels.com/photos/4963360/pexels-photo-4963360.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
   {
@@ -203,13 +203,13 @@ export const DEFAULT_THEMES_LIST: ThemeConfig[] = [
 ];
 
 export const DEFAULT_THEMES = {
-  activeThemeId: 'basic-light',
+  activeThemeId: 'bolt-style',
   items: DEFAULT_THEMES_LIST,
 };
 
 export const DEFAULT_SETTINGS = {
   siteMode: 'landing' as 'landing' | 'portal',
-  activeThemeId: 'basic-light',
+  activeThemeId: 'bolt-style',
   seoTitle: 'АНО «ЦЗСТ» — Центр развития зимнего спорта, современных спортивных технологий и туризма',
   seoDescription: 'Официальный сайт АНО «ЦЗСТ»: реализация социально значимых программ, внедрение научно обоснованных методик спортивной подготовки, биомеханики и организация физкультурно-туристских мероприятий на территории РФ.',
   showDocumentsOnLanding: true,
