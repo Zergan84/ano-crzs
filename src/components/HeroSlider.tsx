@@ -59,6 +59,7 @@ export function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [animPhase, setAnimPhase] = useState<'idle' | 'out'>('idle');
+  const [slideProgress, setSlideProgress] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showControls = Boolean(content?.hero?.showControls);
@@ -69,7 +70,7 @@ export function HeroSlider() {
   const activeThemeId =
     content?.themes?.activeThemeId ||
     content?.settings?.activeThemeId ||
-    'bolt-style';
+    'tricolor';
   const activeTheme =
     (content?.themes?.items || []).find((t: any) => t.id === activeThemeId) || null;
   const isBoltStyle = activeThemeId === 'bolt-style';
@@ -414,14 +415,31 @@ export function HeroSlider() {
     };
   }, []);
 
-  // Auto-advance slides every slideDurationSec seconds when not paused
+  // Auto-advance slides every slideDurationSec seconds with real-time progress update
   useEffect(() => {
-    if (isPaused || activeSlides.length <= 1) return;
-    const interval = setInterval(() => {
-      nextSlide();
-    }, slideDurationSec * 1000);
-    return () => clearInterval(interval);
-  }, [isPaused, nextSlide, slideDurationSec, activeSlides.length]);
+    if (activeSlides.length <= 1) {
+      setSlideProgress(100);
+      return;
+    }
+    if (isPaused) return;
+
+    setSlideProgress(0);
+    const totalMs = slideDurationSec * 1000;
+    const intervalMs = 50;
+    const step = (intervalMs / totalMs) * 100;
+
+    const timer = setInterval(() => {
+      setSlideProgress((prev) => {
+        if (prev + step >= 100) {
+          nextSlide();
+          return 0;
+        }
+        return prev + step;
+      });
+    }, intervalMs);
+
+    return () => clearInterval(timer);
+  }, [isPaused, nextSlide, slideDurationSec, activeSlides.length, currentSlide]);
 
   const slide = activeSlides[currentSlide % activeSlides.length] || activeSlides[0];
 
@@ -478,6 +496,8 @@ export function HeroSlider() {
       dyn0?.secondaryBtnHref || '#projects';
     const boltSlideBg =
       (dyn0?.image ? resolveMediaUrl(dyn0.image) : '') || boltHeroBg;
+    const bgMarginTop = typeof dyn0?.bgMarginTop === 'number' ? dyn0.bgMarginTop : 0;
+    const bgPosition = dyn0?.bgPosition || 'center';
     const textAlign: 'left' | 'center' | 'right' =
       dyn0?.textAlign === 'center' || dyn0?.textAlign === 'right'
         ? dyn0.textAlign
@@ -519,7 +539,11 @@ export function HeroSlider() {
           src={boltSlideBg}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 -z-20 h-full w-full object-cover object-center transition-opacity duration-500"
+          style={{
+            objectPosition: bgPosition,
+            transform: `translateY(${bgMarginTop}px)`,
+          }}
+          className="absolute inset-0 -z-20 h-full w-full object-cover transition-all duration-500"
         />
         {isTricolor ? (
           <div
@@ -675,6 +699,20 @@ export function HeroSlider() {
         >
           <ChevronDown className="h-6 w-6" aria-hidden="true" />
         </a>
+
+        {/* Прогрессбар слайдера в виде триколора (под слайдером для темы Tricolor) */}
+        {isTricolor && (
+          <div className="absolute inset-x-0 bottom-0 z-30 h-1.5 w-full bg-black/40 overflow-hidden">
+            <div
+              className="h-full transition-all duration-75 ease-linear"
+              style={{
+                width: `${slideProgress}%`,
+                backgroundImage:
+                  'linear-gradient(90deg, #FFFFFF 0 33.3%, #1447E6 33.3% 66.6%, #D92D20 66.6%)',
+              }}
+            />
+          </div>
+        )}
       </section>
     );
   }

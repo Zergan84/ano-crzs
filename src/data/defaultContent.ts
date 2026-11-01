@@ -235,13 +235,13 @@ export const DEFAULT_THEMES_LIST: ThemeConfig[] = [
 ];
 
 export const DEFAULT_THEMES = {
-  activeThemeId: 'bolt-style',
+  activeThemeId: 'tricolor',
   items: DEFAULT_THEMES_LIST,
 };
 
 export const DEFAULT_SETTINGS = {
   siteMode: 'landing' as 'landing' | 'portal',
-  activeThemeId: 'bolt-style',
+  activeThemeId: 'tricolor',
   seoTitle: 'Центр развития спорта — АНО «ЦЗСТ»',
   seoDescription: 'Автономная некоммерческая организация. Реализуем государственные и социальные программы в сфере физической культуры и спорта: от школьных секций до подготовки спортивного резерва.',
   showDocumentsOnLanding: true,
@@ -362,6 +362,8 @@ export const DEFAULT_HERO_SLIDES = [
     tertiaryBtnText: '',
     tertiaryBtnHref: '',
     image: 'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg',
+    bgMarginTop: 0,
+    bgPosition: 'center',
     displayMode: 'image',
     textAlign: 'left',
     blockSize: 'md',
@@ -432,8 +434,8 @@ export const DEFAULT_SECTION_ORDER = [
 ];
 
 export const DEFAULT_FONTS = {
-  siteHeadingFont: 'Onest',
-  siteBodyFont: 'Onest',
+  siteHeadingFont: 'Golos Text',
+  siteBodyFont: 'Golos Text',
   adminFont: 'Inter',
   uppercaseHeadings: false,
 };

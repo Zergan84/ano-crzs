@@ -430,7 +430,7 @@ export function LandingView() {
   const activeThemeId =
     content?.themes?.activeThemeId ||
     content?.settings?.activeThemeId ||
-    'bolt-style';
+    'tricolor';
   const activeTheme =
     (content?.themes?.items || []).find((t: any) => t.id === activeThemeId) || null;
   const isBoltStyle = activeThemeId === 'bolt-style';

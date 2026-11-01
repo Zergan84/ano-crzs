@@ -699,9 +699,68 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 <span>Медиатека</span>
               </button>
             </div>
+            
+            {/* Настройки позиционирования фона (Top Margin / Сдвиг по вертикали) */}
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-lg border border-[#1e293b] bg-[#0c101a] p-3">
+              <div>
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className="font-semibold text-slate-300">Сдвиг фона сверху (Top margin / смещение)</span>
+                  <span className="font-mono text-amber-400 font-bold">{slide.bgMarginTop ?? 0}px</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="range"
+                    min={-200}
+                    max={300}
+                    step={5}
+                    value={slide.bgMarginTop ?? 0}
+                    onChange={(e) => updateSlide(i, 'bgMarginTop', Number(e.target.value))}
+                    className="w-full accent-amber-500 cursor-pointer"
+                  />
+                  <input
+                    type="number"
+                    value={slide.bgMarginTop ?? 0}
+                    onChange={(e) => updateSlide(i, 'bgMarginTop', Number(e.target.value))}
+                    className="w-20 rounded border border-[#2d3748] bg-[#070a10] px-2 py-1 text-xs font-mono text-white text-center focus:border-amber-500 focus:outline-none"
+                    placeholder="0"
+                  />
+                  <span className="text-xs text-slate-400">px</span>
+                </div>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Отрицательное значение поднимает картинку вверх, положительное смещает вниз.
+                </p>
+              </div>
+
+              <div>
+                <label className="admin-label">Точка фокусировки (Object Position)</label>
+                <select
+                  value={slide.bgPosition || 'center'}
+                  onChange={(e) => updateSlide(i, 'bgPosition', e.target.value)}
+                  className="admin-input font-medium"
+                >
+                  <option value="center">По центру (center)</option>
+                  <option value="top">По верху (top - приоритет шапке изображения)</option>
+                  <option value="bottom">По низу (bottom)</option>
+                  <option value="center top">Сверху по центру (center top)</option>
+                  <option value="center bottom">Снизу по центру (center bottom)</option>
+                </select>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Помогает зафиксировать ключевую часть фото (например лица лыжников или спортсменов).
+                </p>
+              </div>
+            </div>
+
             {slide.image && (
-              <div className="mt-2 h-24 w-44 overflow-hidden rounded border border-[#2a2a2a] bg-black">
-                <img src={slide.image} alt="Preview" className="h-full w-full object-cover" />
+              <div className="mt-2 h-24 w-44 overflow-hidden rounded border border-[#2a2a2a] bg-black relative">
+                <img
+                  src={slide.image}
+                  alt="Preview"
+                  style={{
+                    objectPosition: slide.bgPosition || 'center',
+                    transform: `translateY(${slide.bgMarginTop ?? 0}px)`,
+                  }}
+                  className="h-full w-full object-cover transition-transform"
+                />
               </div>
             )}
           </div>

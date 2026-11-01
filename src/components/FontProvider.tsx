@@ -36,13 +36,13 @@ export default function FontProvider({ children }: { children: React.ReactNode }
     const activeThemeId =
       content?.themes?.activeThemeId ||
       content?.settings?.activeThemeId ||
-      'bolt-style';
+      'tricolor';
     const themesList = content?.themes?.items || DEFAULT_THEMES_LIST;
     const activeTheme =
-      themesList.find((t) => t.id === activeThemeId) || DEFAULT_THEMES_LIST[1] || DEFAULT_THEMES_LIST[0];
+      themesList.find((t) => t.id === activeThemeId) || DEFAULT_THEMES_LIST[0];
 
-    const headingFont = activeTheme?.headingFont || fonts.siteHeadingFont || 'Onest';
-    const bodyFont = activeTheme?.bodyFont || fonts.siteBodyFont || 'Onest';
+    const headingFont = activeTheme?.headingFont || fonts.siteHeadingFont || 'Golos Text';
+    const bodyFont = activeTheme?.bodyFont || fonts.siteBodyFont || 'Golos Text';
     const adminFont = fonts.adminFont || 'Inter';
     const uppercase = activeTheme?.uppercaseHeadings ?? fonts.uppercaseHeadings ?? false;
 

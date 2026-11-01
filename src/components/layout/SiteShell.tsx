@@ -188,7 +188,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
   const activeThemeId =
     content?.themes?.activeThemeId ||
     content?.settings?.activeThemeId ||
-    'bolt-style';
+    'tricolor';
 
   const themesList: ThemeConfig[] =
     content?.themes?.items && content.themes.items.length > 0
