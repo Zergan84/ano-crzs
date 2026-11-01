@@ -581,18 +581,13 @@ export function HeroSlider() {
                 aria-hidden="true"
                 style={{
                   objectPosition: sBgPosition,
-                  // Если чекбокс "ровнение относительно блока" отжат (alignToBlock === false) —
-                  // сдвиг учитывает верхний header (~104px), чтобы картинка позиционировалась от верхнего края экрана.
-                  // Также задаем top/bottom с запасом (over-bleed), чтобы при сдвиге вверх или вниз
-                  // никогда не обнажался фоновый цвет подложки (синяя полоса)
-                  top: '-150px',
-                  bottom: '-150px',
-                  height: 'calc(100% + 300px)',
+                  // Полноразмерный слой на 100% высоты слайдера.
+                  // При ровнении от экрана смещаем на высоту шапки (-104px), плюс пользовательский сдвиг (sBgPaddingTop)
                   transform: alignToBlock
                     ? `translateY(${sBgPaddingTop}px)`
                     : `translateY(${sBgPaddingTop - 104}px)`,
                 }}
-                className={`absolute inset-x-0 w-full object-cover transition-opacity duration-700 ease-in-out ${
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
                   isSlideActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
                 }`}
               />
