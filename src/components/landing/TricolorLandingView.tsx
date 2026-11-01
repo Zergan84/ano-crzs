@@ -172,18 +172,48 @@ export function TricolorLandingView({
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#1B263B] font-sans selection:bg-[#D92D20]/20 selection:text-[#0F2147]">
-      {/* 1. HEADER (with sticky card/95 backdrop and border) */}
+      {/* 1. TOPMOST TRICOLOR BAR */}
+      <div
+        className="h-1 w-full"
+        style={{
+          backgroundImage:
+            'linear-gradient(90deg, #FFFFFF 0 33.3%, #1447E6 33.3% 66.6%, #D92D20 66.6%)',
+        }}
+      />
+
+      {/* 2. TOP BLUE SUBHEADER (Гос. шапка с контактами) */}
+      <div className="bg-[#0F2147] text-white/80">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-2 text-xs md:px-6">
+          <span>Автономная некоммерческая организация</span>
+          <div className="flex flex-wrap gap-x-6 gap-y-1">
+            <a
+              href={`tel:${(org?.phone || footer?.phone || '+7 (495) 000-00-00').replace(/[^+\d]/g, '')}`}
+              className="hover:text-white transition-colors"
+            >
+              {org?.phone || footer?.phone || '+7 (495) 000-00-00'}
+            </a>
+            <a
+              href={`mailto:${org?.receptionEmail || footer?.email || 'info@crzs-sport.ru'}`}
+              className="break-all hover:text-white transition-colors"
+            >
+              {org?.receptionEmail || footer?.email || 'info@crzs-sport.ru'}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. MAIN STICKY HEADER */}
       <header
-        className={`sticky top-0 z-40 border-b border-[#E2E8F0] bg-white/95 backdrop-blur transition-shadow ${
+        className={`sticky top-0 z-30 border-b border-[#E2E8F0] bg-white/95 backdrop-blur transition-shadow ${
           scrolled ? 'shadow-sm' : ''
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-4 md:px-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-5 md:px-6">
           <a href="#top" aria-label="Центр развития спорта, на главную" className="min-w-0 shrink-0">
             <img
               src={logoUrl}
               alt={header?.logoTitle || 'АНО ЦЗСТ — Центр развития спорта'}
-              className="h-9 w-auto max-w-full md:h-10"
+              className="brand-logo h-auto w-52 max-w-full md:w-64"
             />
           </a>
 
@@ -201,7 +231,7 @@ export function TricolorLandingView({
 
           <a
             href={headerCtaHref}
-            className="hidden items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#b92419] lg:inline-flex"
+            className="hidden items-center justify-center gap-2 whitespace-nowrap text-sm font-medium cursor-pointer transition-colors shadow-sm bg-[#D92D20] text-white hover:bg-[#b92419] h-auto rounded-sm px-5 py-3 lg:inline-flex"
           >
             <span>{headerCtaText}</span>
             <ArrowRight className="h-4 w-4" />
@@ -210,36 +240,40 @@ export function TricolorLandingView({
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
             aria-label={mobileMenuOpen ? 'Закрыть меню' : 'Открыть меню'}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-sm text-[#0F2147] hover:bg-slate-100 lg:hidden"
+            className="inline-flex items-center justify-center rounded-sm text-[#0F2147] hover:bg-slate-100 h-9 w-9 shrink-0 lg:hidden"
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
 
         {mobileMenuOpen && (
-          <div className="border-t border-[#E2E8F0] bg-white px-5 py-4 lg:hidden">
-            <nav className="flex flex-col gap-2">
-              {navLinks.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-sm px-3 py-2 text-base font-medium text-[#1B263B] hover:bg-[#EFF3F8] hover:text-[#1447E6]"
-                >
-                  {item.label}
-                </a>
-              ))}
+          <nav
+            id="mobile-menu"
+            aria-label="Мобильная навигация"
+            className="border-t border-[#E2E8F0] bg-white px-5 py-4 lg:hidden"
+          >
+            {navLinks.map((item) => (
               <a
-                href={headerCtaHref}
+                key={item.href}
+                href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="mt-3 inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-5 py-2.5 text-sm font-semibold text-white"
+                className="block border-b border-[#E2E8F0] py-3 text-sm font-medium text-[#0F2147] hover:text-[#1447E6]"
               >
-                <span>{headerCtaText}</span>
-                <ArrowRight className="h-4 w-4" />
+                {item.label}
               </a>
-            </nav>
-          </div>
+            ))}
+            <a
+              href={headerCtaHref}
+              onClick={() => setMobileMenuOpen(false)}
+              className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-[#D92D20] text-sm font-semibold text-white hover:bg-[#b92419]"
+            >
+              <span>{headerCtaText}</span>
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          </nav>
         )}
       </header>
 

@@ -507,8 +507,10 @@ export function HeroSlider() {
     return (
       <section
         id="top"
-        className={`relative isolate flex min-h-screen w-full flex-col overflow-hidden ${
-          isTricolor ? 'bg-[#0F2147]' : 'bg-[#071A33]'
+        className={`relative isolate flex w-full flex-col overflow-hidden ${
+          isTricolor
+            ? 'bg-[#0F2147] py-12 md:py-24'
+            : 'min-h-screen bg-[#071A33]'
         }`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
@@ -550,9 +552,13 @@ export function HeroSlider() {
           />
         )}
 
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pb-28 pt-32 lg:px-8 relative z-10">
+        <div
+          className={`mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 md:px-6 relative z-10 ${
+            isTricolor ? 'pb-14' : 'pb-28 pt-32'
+          }`}
+        >
           <div
-            className={`w-full max-w-3xl transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
+            className={`w-full max-w-2xl transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
           >
             {boltBadge && (
               isTricolor ? (
@@ -568,21 +574,21 @@ export function HeroSlider() {
               )
             )}
 
-            <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-[1.12] tracking-[-0.02em]">
+            <h1 className="text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-[1.12] tracking-[-0.02em]">
               {boltTitle}
             </h1>
 
-            <p className={`mt-6 max-w-2xl text-base leading-relaxed text-white/90 sm:text-lg ${alignDescClasses}`}>
+            <p className={`mt-6 max-w-xl text-base leading-relaxed text-white/90 sm:text-lg ${alignDescClasses}`}>
               {boltDesc}
             </p>
 
-            <div className={`mt-10 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
+            <div className={`mt-9 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
               {boltPrimaryText && (
                 <a
                   href={boltPrimaryHref}
                   className={
                     isTricolor
-                      ? 'group inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-7 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:bg-[#b92419]'
+                      ? 'group inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:bg-[#b92419]'
                       : 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
                   }
                 >
@@ -599,7 +605,7 @@ export function HeroSlider() {
                   href={boltSecondaryHref}
                   className={
                     isTricolor
-                      ? 'inline-flex items-center justify-center gap-2 rounded-sm bg-white px-7 py-3.5 text-base font-semibold text-[#0F2147] shadow-sm transition-colors hover:bg-slate-100'
+                      ? 'inline-flex items-center justify-center gap-2 rounded-sm bg-white px-6 py-3.5 text-base font-semibold text-[#0F2147] shadow-sm transition-colors hover:bg-slate-100'
                       : 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
                   }
                 >
@@ -635,7 +641,11 @@ export function HeroSlider() {
 
         {/* Точки пагинации ровно по центру экрана внизу прямо над стрелочкой скролла вниз */}
         {activeSlides.length > 1 && (
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2.5">
+          <div
+            className={`absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2.5 ${
+              isTricolor ? 'bottom-12' : 'bottom-16'
+            }`}
+          >
             {activeSlides.map((s, idx) => (
               <button
                 key={s.id}
@@ -657,7 +667,11 @@ export function HeroSlider() {
         <a
           href="#about"
           aria-label="Перейти к разделу о центре"
-          className="absolute bottom-7 left-1/2 -translate-x-1/2 animate-bounce text-white/60 transition-colors hover:text-white z-10"
+          className={`absolute left-1/2 -translate-x-1/2 transition-colors hover:text-white z-10 ${
+            isTricolor
+              ? 'bottom-4 text-white/80'
+              : 'bottom-7 animate-bounce text-white/60'
+          }`}
         >
           <ChevronDown className="h-6 w-6" aria-hidden="true" />
         </a>
