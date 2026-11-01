@@ -1,15 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { getFontUrl } from '@/lib/google-fonts';
-import { DEFAULT_FONTS } from '@/data/defaultContent';
-
-interface FontSettings {
-  siteHeadingFont: string;
-  siteBodyFont: string;
-  adminFont: string;
-  uppercaseHeadings: boolean;
-}
+import { DEFAULT_FONTS, DEFAULT_THEMES_LIST } from '@/data/defaultContent';
+import { useSiteContent } from '@/lib/content';
 
 const loadedFonts = new Set<string>();
 
@@ -23,38 +17,44 @@ function loadFont(family: string) {
   document.head.appendChild(link);
 }
 
-function applyFonts(f: FontSettings) {
-  if (typeof document === 'undefined') return;
-  const root = document.documentElement;
-  root.style.setProperty('--font-body', `"${f.siteBodyFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
-  root.style.setProperty('--font-heading', `"${f.siteHeadingFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
-  root.style.setProperty('--font-admin', `"${f.adminFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`);
-  root.style.setProperty('--heading-transform', f.uppercaseHeadings ? 'uppercase' : 'none');
-  loadFont(f.siteHeadingFont);
-  loadFont(f.siteBodyFont);
-  loadFont(f.adminFont);
-}
-
 export default function FontProvider({ children }: { children: React.ReactNode }) {
-  const [fonts, setFonts] = useState<FontSettings>(DEFAULT_FONTS);
+  const { content } = useSiteContent();
 
   useEffect(() => {
-    const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-      ? '/api/admin/content/fonts'
-      : '/api/admin/content/fonts';
+    if (typeof document === 'undefined') return;
+    const fonts = content?.fonts || DEFAULT_FONTS;
+    const activeThemeId =
+      content?.themes?.activeThemeId ||
+      content?.settings?.activeThemeId ||
+      'basic-light';
+    const themesList = content?.themes?.items || DEFAULT_THEMES_LIST;
+    const activeTheme =
+      themesList.find((t) => t.id === activeThemeId) || DEFAULT_THEMES_LIST[0];
 
-    fetch(apiEndpoint)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data && data.siteHeadingFont) {
-          setFonts(data as FontSettings);
-          applyFonts(data as FontSettings);
-        } else {
-          applyFonts(DEFAULT_FONTS);
-        }
-      })
-      .catch(() => applyFonts(DEFAULT_FONTS));
-  }, []);
+    const headingFont = activeTheme?.headingFont || fonts.siteHeadingFont || 'Inter';
+    const bodyFont = activeTheme?.bodyFont || fonts.siteBodyFont || 'Inter';
+    const adminFont = fonts.adminFont || 'Inter';
+    const uppercase = activeTheme?.uppercaseHeadings ?? fonts.uppercaseHeadings ?? false;
+
+    const root = document.documentElement;
+    root.style.setProperty(
+      '--font-body',
+      `"${bodyFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
+    );
+    root.style.setProperty(
+      '--font-heading',
+      `"${headingFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
+    );
+    root.style.setProperty(
+      '--font-admin',
+      `"${adminFont}", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
+    );
+    root.style.setProperty('--heading-transform', uppercase ? 'uppercase' : 'none');
+
+    loadFont(headingFont);
+    loadFont(bodyFont);
+    loadFont(adminFont);
+  }, [content]);
 
   return <>{children}</>;
 }

@@ -13,12 +13,21 @@ import {
   FileText,
   Handshake,
   Sparkles,
+  Palette,
+  Sliders,
+  ArrowRight,
 } from 'lucide-react';
-import { DEFAULT_SETTINGS } from '@/data/defaultContent';
+import {
+  DEFAULT_SETTINGS,
+  DEFAULT_THEMES,
+  DEFAULT_THEMES_LIST,
+  ThemeConfig,
+} from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 
 export default function AdminSettingsPage() {
   const [data, setData] = useState(DEFAULT_SETTINGS);
+  const [themesData, setThemesData] = useState(DEFAULT_THEMES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -30,44 +39,67 @@ export default function AdminSettingsPage() {
 
   async function loadSettings() {
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? '/api/admin/content/settings'
-          : '/api/admin/content/settings';
+      const [settingsRes, themesRes] = await Promise.all([
+        fetch('/api/admin/content/settings'),
+        fetch('/api/admin/content/themes'),
+      ]);
 
-      const res = await fetch(apiEndpoint);
-      if (res.ok) {
-        const json = await res.json();
+      let mergedSettings = { ...DEFAULT_SETTINGS };
+      if (settingsRes.ok) {
+        const json = await settingsRes.json();
         if (json && typeof json === 'object') {
-          setData({ ...DEFAULT_SETTINGS, ...json });
+          mergedSettings = { ...DEFAULT_SETTINGS, ...json };
         }
       }
+
+      let mergedThemes = { ...DEFAULT_THEMES };
+      if (themesRes.ok) {
+        const tJson = await themesRes.json();
+        if (tJson && typeof tJson === 'object') {
+          mergedThemes = {
+            activeThemeId:
+              tJson.activeThemeId || mergedSettings.activeThemeId || 'basic-light',
+            items:
+              Array.isArray(tJson.items) && tJson.items.length > 0
+                ? tJson.items
+                : DEFAULT_THEMES_LIST,
+          };
+        }
+      } else {
+        mergedThemes.activeThemeId = mergedSettings.activeThemeId || 'basic-light';
+      }
+
+      mergedSettings.activeThemeId = mergedThemes.activeThemeId;
+      setData(mergedSettings);
+      setThemesData(mergedThemes);
     } catch {}
     setLoading(false);
   }
 
-  async function handleSave(nextData = data) {
+  async function handleSave(nextData = data, nextThemes = themesData) {
     setSaving(true);
     setSaved(false);
     setError('');
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? '/api/admin/content/settings'
-          : '/api/admin/content/settings';
+      const [resSettings, resThemes] = await Promise.all([
+        fetch('/api/admin/content/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nextData),
+        }),
+        fetch('/api/admin/content/themes', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nextThemes),
+        }),
+      ]);
 
-      const res = await fetch(apiEndpoint, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nextData),
-      });
-
-      if (res.ok) {
+      if (resSettings.ok && resThemes.ok) {
         setSaved(true);
         notifyContentUpdated();
         setTimeout(() => setSaved(false), 3500);
       } else {
-        const err = await res.json();
+        const err = await resSettings.json().catch(() => ({}));
         setError(err.error || 'Ошибка при сохранении настроек');
       }
     } catch {
@@ -79,7 +111,15 @@ export default function AdminSettingsPage() {
   function handleModeSelect(mode: 'landing' | 'portal') {
     const next = { ...data, siteMode: mode };
     setData(next);
-    handleSave(next);
+    handleSave(next, themesData);
+  }
+
+  function handleThemeSelect(themeId: string) {
+    const nextSettings = { ...data, activeThemeId: themeId };
+    const nextThemes = { ...themesData, activeThemeId: themeId };
+    setData(nextSettings);
+    setThemesData(nextThemes);
+    handleSave(nextSettings, nextThemes);
   }
 
   if (loading) {
@@ -89,6 +129,10 @@ export default function AdminSettingsPage() {
       </div>
     );
   }
+
+  const activeThemeId = data.activeThemeId || themesData.activeThemeId || 'basic-light';
+  const activeThemeObj: ThemeConfig =
+    themesData.items.find((t) => t.id === activeThemeId) || DEFAULT_THEMES_LIST[0];
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
@@ -104,15 +148,15 @@ export default function AdminSettingsPage() {
           </NextLink>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide flex items-center gap-2.5">
             <Settings className="w-7 h-7 text-amber-500" />
-            <span>Настройки и режим отображения сайта</span>
+            <span>Настройки</span>
           </h1>
           <p className="mt-1 text-xs text-slate-400">
-            Переключение между одностраничным лендингом АНО «ЦЗСТ» и расширенным многостраничным порталом
+            Управление режимом отображения сайта (Лендинг / Портал), темами оформления (Themes) и SEO-параметрами
           </p>
         </div>
 
         <button
-          onClick={() => handleSave(data)}
+          onClick={() => handleSave(data, themesData)}
           disabled={saving}
           className="flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-amber-500 transition-all shadow-lg shadow-amber-950/20 disabled:opacity-50"
         >
@@ -125,7 +169,7 @@ export default function AdminSettingsPage() {
         <div className="flex items-center gap-2 rounded-lg bg-emerald-950/40 border border-emerald-800 p-3 text-xs text-emerald-300">
           <Check className="h-4 w-4 text-emerald-400 shrink-0" />
           <span>
-            Настройки сохранены! Активный режим сайта и состав разделов админ-панели обновлены.
+            Настройки сохранены! Режим сайта и выбранная тема оформления применены.
           </span>
         </div>
       )}
@@ -137,7 +181,7 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      {/* Главный переключатель режима отображения сайта: ЛЕНДИНГ vs ПОРТАЛ */}
+      {/* 1. Главный переключатель режима отображения сайта: ЛЕНДИНГ vs ПОРТАЛ */}
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-6 space-y-5">
         <div className="flex items-center justify-between border-b border-[#222] pb-3">
           <div>
@@ -197,7 +241,7 @@ export default function AdminSettingsPage() {
             </div>
 
             <div className="pt-3 border-t border-white/10 text-[11px] text-slate-400 font-mono">
-              Активные блоки: Шапка и Hero лендинга, Методология и Господдержка + перекрестные блоки (О нас, Направления, Документы, Партнёры, Контакты, Подвал)
+              Активные блоки: Шапка лендинга, Слайдер Hero, Методология и Господдержка + перекрестные блоки
             </div>
           </button>
 
@@ -243,7 +287,117 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      {/* Видимость перекрестных блоков на Лендинге */}
+      {/* 2. МОДУЛЬ ТЕМ ОФОРМЛЕНИЯ САЙТА (THEMES) */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-6 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#222] pb-3">
+          <div>
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <Palette className="w-4 h-4 text-amber-400" />
+              <span>Темы оформления сайта (Themes)</span>
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Темы меняют визуальный дизайн сайта (цвета, шрифты, кнопки, скругления) без изменения контента. Работают как в режиме Лендинга, так и в режиме Портала.
+            </p>
+          </div>
+          <NextLink
+            href={`/admin/themes?theme=${activeThemeObj.id}`}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#1c2333] hover:bg-[#252f45] border border-[#334155] px-3.5 py-2 text-xs font-bold text-amber-300 transition-colors shrink-0"
+          >
+            <Sliders className="w-3.5 h-3.5" />
+            <span>Редактор параметров тем</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </NextLink>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {themesData.items.map((theme) => {
+            const isActive = theme.id === activeThemeId;
+            return (
+              <div
+                key={theme.id}
+                onClick={() => handleThemeSelect(theme.id)}
+                className={`rounded-xl p-4 border-2 cursor-pointer transition-all flex flex-col justify-between gap-3 ${
+                  isActive
+                    ? 'border-emerald-500 bg-emerald-950/15 shadow-lg shadow-emerald-950/20'
+                    : 'border-[#252d3d] bg-[#0d1118] hover:border-slate-600'
+                }`}
+              >
+                <div className="space-y-2.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">{theme.name}</h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                        {theme.description}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase shrink-0 ${
+                        isActive
+                          ? 'bg-emerald-500 text-slate-950'
+                          : 'bg-slate-800 text-slate-400'
+                      }`}
+                    >
+                      {isActive ? 'Активна' : 'Выбрать'}
+                    </span>
+                  </div>
+
+                  {/* Индикаторы палитры и шрифтов */}
+                  <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        title={`Фон: ${theme.bgPrimary}`}
+                        className="w-5 h-5 rounded-full border border-white/25"
+                        style={{ backgroundColor: theme.bgPrimary }}
+                      />
+                      <span
+                        title={`Вторичный фон: ${theme.bgSecondary}`}
+                        className="w-5 h-5 rounded-full border border-white/25"
+                        style={{ backgroundColor: theme.bgSecondary }}
+                      />
+                      <span
+                        title={`Заголовки: ${theme.textHeading}`}
+                        className="w-5 h-5 rounded-full border border-white/25"
+                        style={{ backgroundColor: theme.textHeading }}
+                      />
+                      <span
+                        title={`Кнопки: ${theme.btnPrimaryFrom} → ${theme.btnPrimaryTo}`}
+                        className="w-8 h-5 rounded-full border border-white/25"
+                        style={{
+                          backgroundImage: `linear-gradient(to right, ${theme.btnPrimaryFrom}, ${theme.btnPrimaryTo})`,
+                        }}
+                      />
+                      <span
+                        title={`Подвал: ${theme.darkPanelBg}`}
+                        className="w-5 h-5 rounded-full border border-white/25"
+                        style={{ backgroundColor: theme.darkPanelBg }}
+                      />
+                    </div>
+
+                    <span className="text-[11px] font-mono text-slate-400">
+                      {theme.headingFont}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[11px] text-slate-400">
+                    {isActive ? '✓ Применена к сайту' : 'Нажмите для включения'}
+                  </span>
+                  <NextLink
+                    href={`/admin/themes?theme=${theme.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 underline underline-offset-2"
+                  >
+                    Настроить цвета и шрифты →
+                  </NextLink>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. Видимость перекрестных блоков на Лендинге */}
       {data.siteMode === 'landing' && (
         <div className="rounded-xl border border-[#222] bg-[#12161f] p-6 space-y-4">
           <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
@@ -297,7 +451,7 @@ export default function AdminSettingsPage() {
         </div>
       )}
 
-      {/* SEO & Мета-теги */}
+      {/* 4. SEO & Мета-теги */}
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-6 space-y-4">
         <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
           SEO и мета-данные официального профиля АНО «ЦЗСТ»

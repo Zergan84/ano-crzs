@@ -6,8 +6,173 @@ import { DOCUMENTS_DATA } from './documents';
 import { COURSES_DATA } from './courses';
 import { STRUCTURE_MEMBERS } from './structure';
 
+export interface ThemeConfig {
+  id: string;
+  name: string;
+  description: string;
+  isBuiltin?: boolean;
+  // Шрифты и типографика
+  headingFont: string;
+  bodyFont: string;
+  uppercaseHeadings: boolean;
+  baseFontSize: '15px' | '16px' | '17px';
+  // Цвета фонов и поверхностей
+  bgPrimary: string;
+  bgSecondary: string;
+  cardBg: string;
+  cardBorder: string;
+  headerBg: string;
+  darkPanelBg: string;
+  // Цвета текста
+  textHeading: string;
+  textBody: string;
+  textMuted: string;
+  // Цвета кнопок и акцентов
+  btnPrimaryFrom: string;
+  btnPrimaryTo: string;
+  btnPrimaryText: string;
+  btnSecondaryBg: string;
+  btnSecondaryText: string;
+  accentColor: string;
+  badgeBg: string;
+  badgeText: string;
+  // Геометрия и эффекты
+  cardRadius: '0px' | '6px' | '12px' | '20px';
+  buttonRadius: '0px' | '6px' | '8px' | '9999px';
+  cardShadow: 'none' | 'sm' | 'md' | 'lg';
+}
+
+export const DEFAULT_THEMES_LIST: ThemeConfig[] = [
+  {
+    id: 'basic-light',
+    name: 'Basic light',
+    description: 'Базовая светлая ведомственная тема АНО «ЦЗСТ» (чистый белый фон, графитовый текст и тёплые янтарно-оранжевые акценты по Уставу)',
+    isBuiltin: true,
+    headingFont: 'Inter',
+    bodyFont: 'Inter',
+    uppercaseHeadings: false,
+    baseFontSize: '16px',
+    bgPrimary: '#FFFFFF',
+    bgSecondary: '#F8F9FA',
+    cardBg: '#FFFFFF',
+    cardBorder: '#E2E8F0',
+    headerBg: '#FFFFFF',
+    darkPanelBg: '#0F172A',
+    textHeading: '#0F172A',
+    textBody: '#334155',
+    textMuted: '#64748B',
+    btnPrimaryFrom: '#EA580C',
+    btnPrimaryTo: '#F59E0B',
+    btnPrimaryText: '#FFFFFF',
+    btnSecondaryBg: '#F1F5F9',
+    btnSecondaryText: '#1E293B',
+    accentColor: '#EA580C',
+    badgeBg: '#FFFBEB',
+    badgeText: '#9A3412',
+    cardRadius: '12px',
+    buttonRadius: '8px',
+    cardShadow: 'sm',
+  },
+  {
+    id: 'state-navy',
+    name: 'State Navy (Госстандарт)',
+    description: 'Строгая государственная сине-белая палитра с академической типографикой Montserrat и холодными стальными оттенками',
+    isBuiltin: true,
+    headingFont: 'Montserrat',
+    bodyFont: 'Inter',
+    uppercaseHeadings: false,
+    baseFontSize: '16px',
+    bgPrimary: '#FFFFFF',
+    bgSecondary: '#F1F5F9',
+    cardBg: '#FFFFFF',
+    cardBorder: '#CBD5E1',
+    headerBg: '#FFFFFF',
+    darkPanelBg: '#0A2540',
+    textHeading: '#0A2540',
+    textBody: '#1E293B',
+    textMuted: '#475569',
+    btnPrimaryFrom: '#1D4ED8',
+    btnPrimaryTo: '#2563EB',
+    btnPrimaryText: '#FFFFFF',
+    btnSecondaryBg: '#E2E8F0',
+    btnSecondaryText: '#0A2540',
+    accentColor: '#1D4ED8',
+    badgeBg: '#EFF6FF',
+    badgeText: '#1E40AF',
+    cardRadius: '6px',
+    buttonRadius: '6px',
+    cardShadow: 'sm',
+  },
+  {
+    id: 'alpine-dark',
+    name: 'Alpine Dark (Тёмный графит)',
+    description: 'Контрастная тёмная тема с глубоким сланцевым фоном, графитовыми карточками и энергичными янтарными кнопками',
+    isBuiltin: true,
+    headingFont: 'Manrope',
+    bodyFont: 'Inter',
+    uppercaseHeadings: false,
+    baseFontSize: '16px',
+    bgPrimary: '#0B1120',
+    bgSecondary: '#111827',
+    cardBg: '#1E293B',
+    cardBorder: '#334155',
+    headerBg: '#0F172A',
+    darkPanelBg: '#030712',
+    textHeading: '#F8FAFC',
+    textBody: '#CBD5E1',
+    textMuted: '#94A3B8',
+    btnPrimaryFrom: '#EA580C',
+    btnPrimaryTo: '#F59E0B',
+    btnPrimaryText: '#FFFFFF',
+    btnSecondaryBg: '#334155',
+    btnSecondaryText: '#F8FAFC',
+    accentColor: '#F59E0B',
+    badgeBg: '#1E293B',
+    badgeText: '#FBBF24',
+    cardRadius: '12px',
+    buttonRadius: '8px',
+    cardShadow: 'md',
+  },
+  {
+    id: 'emerald-sport',
+    name: 'Emerald Sport (Туризм и Эко)',
+    description: 'Природная спортивно-туристическая палитра с изумрудными акцентами, мягкими скруглениями и современным гротеском Rubik',
+    isBuiltin: true,
+    headingFont: 'Rubik',
+    bodyFont: 'Open Sans',
+    uppercaseHeadings: false,
+    baseFontSize: '16px',
+    bgPrimary: '#FFFFFF',
+    bgSecondary: '#F2FBF7',
+    cardBg: '#FFFFFF',
+    cardBorder: '#D1FAE5',
+    headerBg: '#FFFFFF',
+    darkPanelBg: '#064E3B',
+    textHeading: '#064E3B',
+    textBody: '#1F2937',
+    textMuted: '#4B5563',
+    btnPrimaryFrom: '#059669',
+    btnPrimaryTo: '#10B981',
+    btnPrimaryText: '#FFFFFF',
+    btnSecondaryBg: '#ECFDF5',
+    btnSecondaryText: '#065F46',
+    accentColor: '#059669',
+    badgeBg: '#ECFDF5',
+    badgeText: '#065F46',
+    cardRadius: '20px',
+    buttonRadius: '9999px',
+    cardShadow: 'md',
+  },
+];
+
+export const DEFAULT_THEMES = {
+  activeThemeId: 'basic-light',
+  items: DEFAULT_THEMES_LIST,
+};
+
 export const DEFAULT_SETTINGS = {
   siteMode: 'landing' as 'landing' | 'portal',
+  activeThemeId: 'basic-light',
   seoTitle: 'АНО «ЦЗСТ» — Центр развития зимнего спорта, современных спортивных технологий и туризма',
   seoDescription: 'Официальный сайт АНО «ЦЗСТ»: реализация социально значимых программ, внедрение научно обоснованных методик спортивной подготовки, биомеханики и организация физкультурно-туристских мероприятий на территории РФ.',
   showDocumentsOnLanding: true,
@@ -281,6 +446,7 @@ export const DEFAULT_PAGES = {
 
 export const DEFAULT_CONTENT = {
   settings: DEFAULT_SETTINGS,
+  themes: DEFAULT_THEMES,
   landing: DEFAULT_LANDING,
   organization: ORGANIZATION,
   hero: {

@@ -23,6 +23,7 @@ import {
   Settings,
   Sparkles,
   Scale,
+  Palette,
 } from 'lucide-react';
 
 type SiteMode = 'landing' | 'portal';
@@ -37,7 +38,8 @@ interface SectionItem {
 }
 
 const sections: SectionItem[] = [
-  { id: 'settings', label: 'Режим отображения (Лендинг / Портал)', desc: 'Переключение режима отображения сайта и видимости перекрёстных блоков', icon: Settings, href: '/admin/settings', scope: 'both' },
+  { id: 'settings', label: 'Настройки', desc: 'Переключение режима отображения сайта (Лендинг / Портал), выбор темы оформления и видимость блоков', icon: Settings, href: '/admin/settings', scope: 'both' },
+  { id: 'themes', label: 'Темы (Themes)', desc: 'Настройка визуальных тем сайта (Basic light и др.): шрифты, цвета фонов, текста, кнопок и рамок', icon: Palette, href: '/admin/themes', scope: 'both' },
   { id: 'hero', label: 'Главный экран (Hero Слайдер)', desc: 'Слайды главного экрана, заголовки, описания, кнопки, изображения и плашки', icon: Sliders, href: '/admin/hero', scope: 'both' },
   { id: 'landing-hero', label: 'Шапка сайта (Header Лендинга)', desc: 'Логотип АНО «ЦЗСТ», подзаголовок, якорная навигация и кнопка обращения в шапке', icon: Sparkles, href: '/admin/landing-hero', scope: 'landing' },
   { id: 'landing-ideology', label: 'Идеология, Методология и Господдержка', desc: 'Формула эффективности, системные принципы работы и взаимодействие с госсектором', icon: Scale, href: '/admin/landing-ideology', scope: 'landing' },

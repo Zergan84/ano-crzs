@@ -27,6 +27,18 @@ function mergeWithDefaults(data: any): SiteContent {
       ...DEFAULT_CONTENT.settings,
       ...(data.settings || {}),
     },
+    themes: {
+      ...DEFAULT_CONTENT.themes,
+      ...(data.themes || {}),
+      activeThemeId:
+        data.themes?.activeThemeId ||
+        data.settings?.activeThemeId ||
+        DEFAULT_CONTENT.themes.activeThemeId,
+      items:
+        Array.isArray(data.themes?.items) && data.themes.items.length > 0
+          ? data.themes.items
+          : DEFAULT_CONTENT.themes.items,
+    },
     landing: {
       ...DEFAULT_CONTENT.landing,
       ...(data.landing || {}),

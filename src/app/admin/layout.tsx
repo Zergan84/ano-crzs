@@ -27,6 +27,7 @@ import {
   LayoutTemplate,
   Settings,
   Landmark,
+  Palette,
 } from 'lucide-react';
 import { useSiteContent } from '@/lib/content';
 import './globals.css';
@@ -42,7 +43,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard, href: '/admin', modes: ['landing', 'portal'] },
-  { id: 'settings', label: 'Настройки (Режим)', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'], badge: 'Режим' },
+  { id: 'settings', label: 'Настройки', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'] },
+  { id: 'themes', label: 'Темы', icon: Palette, href: '/admin/themes', modes: ['landing', 'portal'] },
   { id: 'hero', label: 'Слайдер Hero', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
   // Landing-only blocks
   { id: 'landing-hero', label: 'Шапка лендинга', icon: Menu, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },

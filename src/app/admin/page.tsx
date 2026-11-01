@@ -20,6 +20,7 @@ import {
   Landmark,
   Layout,
   Globe,
+  Palette,
 } from 'lucide-react';
 import { useSiteContent, updateSection } from '@/lib/content';
 import { DEFAULT_SETTINGS } from '@/data/defaultContent';
@@ -56,13 +57,23 @@ export default function AdminDashboardPage() {
   const cards: DashboardCard[] = [
     {
       id: 'settings',
-      title: 'Настройки и Режим сайта',
-      description: 'Переключатель режима отображения сайта (Одностраничный Лендинг / Расширенный Портал), SEO и видимость блоков',
+      title: 'Настройки',
+      description: 'Переключатель режима отображения сайта (Лендинг / Портал), выбор активной темы оформления (Themes), SEO и видимость блоков',
       countLabel: siteMode === 'landing' ? 'Режим: ЛЕНДИНГ' : 'Режим: ПОРТАЛ',
       href: '/admin/settings',
       icon: Settings,
       modes: ['landing', 'portal'],
       scopeTag: 'Настройки',
+    },
+    {
+      id: 'themes',
+      title: 'Темы (Themes)',
+      description: 'Редактор визуальных тем сайта (Basic light и др.): смена шрифтов, цветов фонов, текста, кнопок и скруглений без изменения контента',
+      countLabel: `Активна: ${content.themes?.items?.find((t) => t.id === (content.themes?.activeThemeId || content.settings?.activeThemeId))?.name || 'Basic light'}`,
+      href: '/admin/themes',
+      icon: Palette,
+      modes: ['landing', 'portal'],
+      scopeTag: 'Общий блок',
     },
     {
       id: 'hero',
