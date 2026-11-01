@@ -330,6 +330,7 @@ export const DEFAULT_HERO_SLIDES = [
     tertiaryBtnHref: '',
     image: 'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg',
     displayMode: 'image',
+    textAlign: 'left',
     blockSize: 'md',
     blockTitle: '',
     blockSubtitle: '',

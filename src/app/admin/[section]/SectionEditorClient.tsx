@@ -452,6 +452,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
         secondaryBtnHref: '#projects',
         image: 'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg',
         displayMode: 'image',
+        textAlign: 'left',
       },
     ];
     setData({ ...data, slides: next });
@@ -562,7 +563,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div>
               <label className="admin-label">Метка над заголовком (бейдж)</label>
               <input
@@ -572,6 +573,18 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                 placeholder="Автономная некоммерческая организация"
                 className="admin-input"
               />
+            </div>
+            <div>
+              <label className="admin-label">Ориентация текста слайда</label>
+              <select
+                value={slide.textAlign || 'left'}
+                onChange={(e) => updateSlide(i, 'textAlign', e.target.value)}
+                className="admin-input font-semibold"
+              >
+                <option value="left">Левая (текст ровняется влево)</option>
+                <option value="center">Центр (текст ровняется по центру)</option>
+                <option value="right">Правая (текст ровняется по правому краю)</option>
+              </select>
             </div>
             <div>
               <label className="admin-label">Подпись вкладки слайдера (0{i + 1})</label>

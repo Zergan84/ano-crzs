@@ -473,6 +473,31 @@ export function HeroSlider() {
       dyn0?.secondaryBtnHref || '#projects';
     const boltSlideBg =
       (dyn0?.image ? resolveMediaUrl(dyn0.image) : '') || boltHeroBg;
+    const textAlign: 'left' | 'center' | 'right' =
+      dyn0?.textAlign === 'center' || dyn0?.textAlign === 'right'
+        ? dyn0.textAlign
+        : 'left';
+
+    const alignContainerClasses =
+      textAlign === 'center'
+        ? 'mx-auto text-center flex flex-col items-center'
+        : textAlign === 'right'
+        ? 'ml-auto text-right flex flex-col items-end'
+        : 'mr-auto text-left flex flex-col items-start';
+
+    const alignDescClasses =
+      textAlign === 'center'
+        ? 'mx-auto text-center'
+        : textAlign === 'right'
+        ? 'ml-auto text-right'
+        : 'text-left';
+
+    const alignButtonsClasses =
+      textAlign === 'center'
+        ? 'justify-center'
+        : textAlign === 'right'
+        ? 'justify-end'
+        : 'justify-start';
 
     return (
       <section
@@ -506,9 +531,9 @@ export function HeroSlider() {
           />
         )}
 
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pb-24 pt-32 lg:px-8 relative z-10">
+        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pb-28 pt-32 lg:px-8 relative z-10">
           <div
-            className={`max-w-3xl transition-all duration-300 ease-out will-change-transform ${getSlideTransitionClasses()}`}
+            className={`w-full max-w-3xl transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
           >
             {boltBadge && (
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur">
@@ -521,11 +546,11 @@ export function HeroSlider() {
               {boltTitle}
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#D9E4F0] sm:text-lg">
+            <p className={`mt-6 max-w-2xl text-base leading-relaxed text-[#D9E4F0] sm:text-lg ${alignDescClasses}`}>
               {boltDesc}
             </p>
 
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            <div className={`mt-10 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
               {boltPrimaryText && (
                 <a
                   href={boltPrimaryHref}
@@ -550,69 +575,51 @@ export function HeroSlider() {
             </div>
           </div>
 
-          {(showControls || activeSlides.length > 1) && (
-            <div className="mt-10 pt-4 border-t border-white/15 flex flex-wrap items-center justify-between gap-4 max-w-3xl">
-              {showControls ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  {activeSlides.map((s, idx) => (
-                    <button
-                      key={s.id}
-                      onClick={() => goToSlide(idx)}
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                        currentSlide === idx
-                          ? 'bg-[#E8B93E] text-[#071A33]'
-                          : 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
-                      }`}
-                    >
-                      <span>0{idx + 1}</span>
-                      <span className="hidden md:inline font-normal truncate max-w-[140px]">
-                        {s.tabLabel}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  {activeSlides.map((s, idx) => (
-                    <button
-                      key={s.id}
-                      onClick={() => goToSlide(idx)}
-                      aria-label={`Слайд ${idx + 1}`}
-                      className={`h-2 rounded-full transition-all ${
-                        currentSlide === idx
-                          ? 'w-7 bg-[#E8B93E]'
-                          : 'w-2 bg-white/30 hover:bg-white/60'
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-              {activeSlides.length > 1 && (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={prevSlide}
-                    aria-label="Предыдущий слайд"
-                    className="p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={nextSlide}
-                    aria-label="Следующий слайд"
-                    className="p-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
+          {showControls && activeSlides.length > 1 && (
+            <div className="mt-10 pt-4 border-t border-white/15 flex flex-wrap items-center justify-center gap-2">
+              {activeSlides.map((s, idx) => (
+                <button
+                  key={s.id}
+                  onClick={() => goToSlide(idx)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    currentSlide === idx
+                      ? 'bg-[#E8B93E] text-[#071A33]'
+                      : 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
+                  }`}
+                >
+                  <span>0{idx + 1}</span>
+                  <span className="hidden md:inline font-normal truncate max-w-[140px]">
+                    {s.tabLabel}
+                  </span>
+                </button>
+              ))}
             </div>
           )}
         </div>
 
+        {/* Точки пагинации ровно по центру экрана внизу прямо над стрелочкой скролла вниз */}
+        {activeSlides.length > 1 && (
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center gap-2.5">
+            {activeSlides.map((s, idx) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => goToSlide(idx)}
+                aria-label={`Слайд ${idx + 1}`}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  currentSlide === idx
+                    ? 'w-8 bg-[#E8B93E] shadow-sm shadow-black/30'
+                    : 'w-2.5 bg-white/40 hover:bg-white/75'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
         <a
           href="#about"
           aria-label="Перейти к разделу о центре"
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-white/60 transition-colors hover:text-white z-10"
+          className="absolute bottom-7 left-1/2 -translate-x-1/2 animate-bounce text-white/60 transition-colors hover:text-white z-10"
         >
           <ChevronDown className="h-6 w-6" aria-hidden="true" />
         </a>
@@ -774,49 +781,47 @@ export function HeroSlider() {
 
         {/* Slider Controls & Progress Indicators (Optional via showControls checkbox in Admin) */}
         {showControls && (
-          <div className={`mt-8 pt-4 border-t ${isBoltStyle ? 'border-white/15' : 'border-slate-200/80'} flex flex-col sm:flex-row sm:items-center justify-between gap-4`}>
-            {/* Dot & Slide Selectors */}
-            <div className="flex flex-wrap items-center gap-2">
-              {activeSlides.map((s, idx) => (
-                <button
-                  key={s.id}
-                  onClick={() => goToSlide(idx)}
-                  aria-label={`Перейти к слайду ${idx + 1}`}
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    currentSlide === idx
-                      ? isBoltStyle
-                        ? 'bg-[#E8B93E] text-[#071A33] shadow-xs'
-                        : 'bg-[#0A2540] text-white shadow-xs'
-                      : isBoltStyle
-                      ? 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  <span>0{idx + 1}</span>
-                  <span className="hidden md:inline font-normal truncate max-w-[140px]">
-                    {s.tabLabel}
-                  </span>
-                </button>
-              ))}
-            </div>
+          <div className={`mt-8 pt-4 border-t ${isBoltStyle ? 'border-white/15' : 'border-slate-200/80'} flex flex-wrap items-center justify-center gap-2`}>
+            {activeSlides.map((s, idx) => (
+              <button
+                key={s.id}
+                onClick={() => goToSlide(idx)}
+                aria-label={`Перейти к слайду ${idx + 1}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  currentSlide === idx
+                    ? isBoltStyle
+                      ? 'bg-[#E8B93E] text-[#071A33] shadow-xs'
+                      : 'bg-[#0A2540] text-white shadow-xs'
+                    : isBoltStyle
+                    ? 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span>0{idx + 1}</span>
+                <span className="hidden md:inline font-normal truncate max-w-[140px]">
+                  {s.tabLabel}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
 
-            {/* Navigation Arrows */}
-            <div className="flex items-center gap-2 self-end sm:self-center">
+        {/* Точки пагинации по центру внизу */}
+        {activeSlides.length > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2.5">
+            {activeSlides.map((s, idx) => (
               <button
-                onClick={prevSlide}
-                aria-label="Предыдущий слайд"
-                className="p-2 rounded-lg border transition-colors shadow-2xs bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-              <button
-                onClick={nextSlide}
-                aria-label="Следующий слайд"
-                className="p-2 rounded-lg border transition-colors shadow-2xs bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+                key={s.id}
+                type="button"
+                onClick={() => goToSlide(idx)}
+                aria-label={`Слайд ${idx + 1}`}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  currentSlide === idx
+                    ? 'w-8 bg-[#0A2540]'
+                    : 'w-2.5 bg-slate-300 hover:bg-slate-400'
+                }`}
+              />
+            ))}
           </div>
         )}
       </div>
