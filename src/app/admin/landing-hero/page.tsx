@@ -11,8 +11,10 @@ import {
   Trash2,
   ArrowRight,
 } from 'lucide-react';
-import { DEFAULT_LANDING, LandingContent } from '@/data/defaultContent';
+import { DEFAULT_LANDING } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
+
+type LandingContent = typeof DEFAULT_LANDING;
 
 export default function AdminLandingHeroPage() {
   const [data, setData] = useState<LandingContent>(DEFAULT_LANDING);
