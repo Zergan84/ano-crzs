@@ -530,24 +530,73 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#222] bg-[#12161f] p-4">
-        <div>
-          <h3 className="text-sm font-bold text-white">
-            Управление слайдами главного экрана (Hero Слайдер)
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Этот слайдер отображается 1 в 1 на главном экране сайта (и в режиме Лендинг, и в режиме Портал). Вы можете редактировать тексты, кнопки и изображения каждого слайда.
-          </p>
+    <div className="space-y-5">
+      {/* Компактный верхний блок настроек слайдера */}
+      <div className="rounded-xl border border-[#2a3346] bg-[#12161f] px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+        {/* 1. Чекбокс отображения кнопок слайдера */}
+        <label className="inline-flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={Boolean(data?.showControls)}
+            onChange={(e) => setData({ ...data, showControls: e.target.checked })}
+            className="h-4 w-4 rounded border-slate-600 bg-[#0c0f16] text-amber-500 focus:ring-0"
+          />
+          <span className="text-xs font-bold text-slate-200">
+            Отображать кнопки слайдера (01, 02, 03)
+          </span>
+        </label>
+
+        <div className="flex flex-wrap items-center gap-4">
+          {/* 2. Задержка одного слайда в секундах */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 whitespace-nowrap">
+              Задержка слайда (сек.):
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={120}
+              value={data?.slideDuration ?? 8}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  slideDuration: Math.max(1, Number(e.target.value) || 8),
+                })
+              }
+              className="w-16 rounded-md border border-[#2d3748] bg-[#0c0f16] px-2.5 py-1 text-xs font-mono font-bold text-white focus:border-amber-500 focus:outline-none"
+            />
+          </div>
+
+          {/* 3. Выпадающий список эффекта смены слайда */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 whitespace-nowrap">
+              Эффект смены:
+            </span>
+            <select
+              value={data?.transitionEffect || 'motion-blur'}
+              onChange={(e) =>
+                setData({ ...data, transitionEffect: e.target.value })
+              }
+              className="rounded-md border border-[#2d3748] bg-[#0c0f16] px-2.5 py-1 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
+            >
+              <option value="motion-blur">Motion blur</option>
+              <option value="fast-wind">Fast wind</option>
+              <option value="transparent">transparent</option>
+              <option value="dip-to-white">dip to white</option>
+              <option value="dip-to-color">dip to color</option>
+            </select>
+          </div>
+
+          {/* Кнопка добавления слайда */}
+          <button
+            type="button"
+            onClick={addSlide}
+            className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-amber-500 shrink-0 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Добавить слайд</span>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={addSlide}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-500 shrink-0 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>Добавить слайд</span>
-        </button>
       </div>
 
       {slides.map((slide: any, i: number) => (

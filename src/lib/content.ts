@@ -43,6 +43,24 @@ function mergeWithDefaults(data: any): SiteContent {
         ...(data.landing?.ideology || {}),
       },
     },
+    hero: {
+      ...DEFAULT_CONTENT.hero,
+      ...(data.hero || {}),
+      showControls:
+        typeof data.hero?.showControls === 'boolean'
+          ? data.hero.showControls
+          : DEFAULT_CONTENT.hero.showControls,
+      slideDuration:
+        typeof data.hero?.slideDuration === 'number' && data.hero.slideDuration > 0
+          ? data.hero.slideDuration
+          : DEFAULT_CONTENT.hero.slideDuration,
+      transitionEffect:
+        data.hero?.transitionEffect || DEFAULT_CONTENT.hero.transitionEffect,
+      slides:
+        Array.isArray(data.hero?.slides) && data.hero.slides.length > 0
+          ? data.hero.slides
+          : DEFAULT_CONTENT.hero.slides,
+    },
     organization: {
       ...DEFAULT_CONTENT.organization,
       ...(data.organization || {}),

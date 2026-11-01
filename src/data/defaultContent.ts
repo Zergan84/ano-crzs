@@ -283,7 +283,12 @@ export const DEFAULT_CONTENT = {
   settings: DEFAULT_SETTINGS,
   landing: DEFAULT_LANDING,
   organization: ORGANIZATION,
-  hero: { slides: DEFAULT_HERO_SLIDES },
+  hero: {
+    showControls: false,
+    slideDuration: 8,
+    transitionEffect: 'motion-blur' as 'motion-blur' | 'fast-wind' | 'transparent' | 'dip-to-white' | 'dip-to-color',
+    slides: DEFAULT_HERO_SLIDES,
+  },
   header: DEFAULT_HEADER,
   'section-order': { order: DEFAULT_SECTION_ORDER },
   sectionOrder: { order: DEFAULT_SECTION_ORDER },

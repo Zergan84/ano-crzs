@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { 
@@ -17,6 +17,13 @@ import {
 } from 'lucide-react';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
 import { useSiteContent, resolveMediaUrl } from '@/lib/content';
+
+export type HeroTransitionEffect =
+  | 'motion-blur'
+  | 'fast-wind'
+  | 'transparent'
+  | 'dip-to-white'
+  | 'dip-to-color';
 
 interface Slide {
   id: string;
@@ -48,6 +55,13 @@ export function HeroSlider() {
   const { content } = useSiteContent();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [animPhase, setAnimPhase] = useState<'idle' | 'out'>('idle');
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showControls = Boolean(content?.hero?.showControls);
+  const slideDurationSec = Math.max(1, Number(content?.hero?.slideDuration) || 8);
+  const transitionEffect: HeroTransitionEffect =
+    (content?.hero?.transitionEffect as HeroTransitionEffect) || 'motion-blur';
 
   const baseSlides: Slide[] = [
     {
@@ -209,12 +223,10 @@ export function HeroSlider() {
     const dynamicImg = (dyn.image ? resolveMediaUrl(dyn.image) : '') ||
       (idx === 0 ? '/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png' : idx === 1 ? '/carve-cup.jpg' : '/mosreg-gov.jpg');
 
-    // Check display mode: 'image' (отдельное изображение) vs 'card' (отдельный блок)
     const isCardMode = dyn.displayMode
       ? dyn.displayMode === 'card'
-      : (idx > 0); // fallback for existing content: slide 0 is image, others card
+      : (idx > 0);
 
-    // Block size
     const blockSize = dyn.blockSize || 'md';
     const sizeConfig = {
       sm: { container: 'max-w-xs sm:max-w-sm', imgH: 'max-h-[300px] sm:max-h-[340px]' },
@@ -225,7 +237,6 @@ export function HeroSlider() {
     let rightContent: React.ReactNode;
 
     if (!isCardMode) {
-      // 1. Separate free image (Отдельное изображение без рамки и плашек)
       rightContent = (
         <div className={`relative ${sizeConfig.container} w-full flex justify-center lg:justify-end`}>
           <img
@@ -236,7 +247,6 @@ export function HeroSlider() {
         </div>
       );
     } else {
-      // 2. Separate card block (Отдельный блок с рамкой, плашкой, текстом и кнопкой)
       const blockTitle = dyn.blockTitle !== undefined && dyn.blockTitle !== ''
         ? dyn.blockTitle
         : (idx === 1 ? 'Carve Cup 2028 🔥' : idx === 2 ? 'Дом Правительства Московской области' : dyn.title || '');
@@ -354,24 +364,75 @@ export function HeroSlider() {
     };
   });
 
+  const switchToSlide = useCallback(
+    (getTargetIdx: (prev: number) => number) => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      setAnimPhase('out');
+      timeoutRef.current = setTimeout(() => {
+        setCurrentSlide((prev) => getTargetIdx(prev));
+        setAnimPhase('idle');
+      }, 210);
+    },
+    []
+  );
+
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
-  }, [activeSlides.length]);
+    switchToSlide((prev) => (prev + 1) % activeSlides.length);
+  }, [activeSlides.length, switchToSlide]);
 
   const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
-  }, [activeSlides.length]);
+    switchToSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
+  }, [activeSlides.length, switchToSlide]);
 
-  // Auto-advance slides every 8 seconds when not paused
+  const goToSlide = useCallback(
+    (idx: number) => {
+      if (idx === currentSlide) return;
+      switchToSlide(() => idx);
+    },
+    [currentSlide, switchToSlide]
+  );
+
   useEffect(() => {
-    if (isPaused) return;
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  // Auto-advance slides every slideDurationSec seconds when not paused
+  useEffect(() => {
+    if (isPaused || activeSlides.length <= 1) return;
     const interval = setInterval(() => {
       nextSlide();
-    }, 8000);
+    }, slideDurationSec * 1000);
     return () => clearInterval(interval);
-  }, [isPaused, nextSlide]);
+  }, [isPaused, nextSlide, slideDurationSec, activeSlides.length]);
 
   const slide = activeSlides[currentSlide % activeSlides.length] || activeSlides[0];
+
+  // Compute CSS transition classes based on selected transitionEffect
+  const getSlideTransitionClasses = () => {
+    switch (transitionEffect) {
+      case 'motion-blur':
+        return animPhase === 'out'
+          ? 'opacity-0 blur-[10px] translate-x-8 scale-x-[1.03]'
+          : 'opacity-100 blur-0 translate-x-0 scale-x-100';
+      case 'fast-wind':
+        return animPhase === 'out'
+          ? 'opacity-0 -translate-x-16 -skew-x-6 scale-95'
+          : 'opacity-100 translate-x-0 skew-x-0 scale-100';
+      case 'transparent':
+        return animPhase === 'out'
+          ? 'opacity-0 scale-[0.99]'
+          : 'opacity-100 scale-100';
+      case 'dip-to-white':
+      case 'dip-to-color':
+        return animPhase === 'out'
+          ? 'opacity-10 scale-[0.99]'
+          : 'opacity-100 scale-100';
+      default:
+        return animPhase === 'out' ? 'opacity-0' : 'opacity-100';
+    }
+  };
 
   return (
     <section 
@@ -385,11 +446,29 @@ export function HeroSlider() {
       {/* Subtle geometric pattern overlay */}
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]" />
 
+      {/* Dip to White / Dip to Color Flash Overlay */}
+      {transitionEffect === 'dip-to-white' && (
+        <div
+          className={`absolute inset-0 z-20 pointer-events-none bg-white transition-opacity duration-200 ${
+            animPhase === 'out' ? 'opacity-95' : 'opacity-0'
+          }`}
+        />
+      )}
+      {transitionEffect === 'dip-to-color' && (
+        <div
+          className={`absolute inset-0 z-20 pointer-events-none bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-orange-600 transition-opacity duration-200 ${
+            animPhase === 'out' ? 'opacity-90' : 'opacity-0'
+          }`}
+        />
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Slide Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[460px]">
+        <div
+          className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[440px] transition-all duration-300 ease-out will-change-transform ${getSlideTransitionClasses()}`}
+        >
           {/* Left Column: Text & Actions */}
-          <div className="lg:col-span-7 transition-all duration-300">
+          <div className="lg:col-span-7">
             {slide.badge && (
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold uppercase tracking-wider mb-4">
                 <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse" />
@@ -451,52 +530,54 @@ export function HeroSlider() {
           </div>
 
           {/* Right Column: Visual Showcase */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end items-end transition-opacity duration-300">
+          <div className="lg:col-span-5 flex justify-center lg:justify-end items-end">
             {slide.rightContent}
           </div>
         </div>
 
-        {/* Slider Controls & Progress Indicators */}
-        <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          {/* Dot & Slide Selectors */}
-          <div className="flex flex-wrap items-center gap-2">
-            {activeSlides.map((s, idx) => (
-              <button
-                key={s.id}
-                onClick={() => setCurrentSlide(idx)}
-                aria-label={`Перейти к слайду ${idx + 1}`}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                  currentSlide === idx
-                    ? 'bg-[#0A2540] text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                <span>0{idx + 1}</span>
-                <span className="hidden md:inline font-normal truncate max-w-[140px]">
-                  {s.tabLabel}
-                </span>
-              </button>
-            ))}
-          </div>
+        {/* Slider Controls & Progress Indicators (Optional via showControls checkbox in Admin) */}
+        {showControls && (
+          <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            {/* Dot & Slide Selectors */}
+            <div className="flex flex-wrap items-center gap-2">
+              {activeSlides.map((s, idx) => (
+                <button
+                  key={s.id}
+                  onClick={() => goToSlide(idx)}
+                  aria-label={`Перейти к слайду ${idx + 1}`}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    currentSlide === idx
+                      ? 'bg-[#0A2540] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span>0{idx + 1}</span>
+                  <span className="hidden md:inline font-normal truncate max-w-[140px]">
+                    {s.tabLabel}
+                  </span>
+                </button>
+              ))}
+            </div>
 
-          {/* Navigation Arrows */}
-          <div className="flex items-center gap-2 self-end sm:self-center">
-            <button
-              onClick={prevSlide}
-              aria-label="Предыдущий слайд"
-              className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={nextSlide}
-              aria-label="Следующий слайд"
-              className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            {/* Navigation Arrows */}
+            <div className="flex items-center gap-2 self-end sm:self-center">
+              <button
+                onClick={prevSlide}
+                aria-label="Предыдущий слайд"
+                className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={nextSlide}
+                aria-label="Следующий слайд"
+                className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
