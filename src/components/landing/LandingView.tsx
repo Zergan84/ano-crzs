@@ -37,6 +37,7 @@ import { useSiteContent, resolveMediaUrl } from '@/lib/content';
 import { ORGANIZATION } from '@/data/organization';
 import { DEFAULT_LANDING, DEFAULT_FOOTER, DEFAULT_SETTINGS } from '@/data/defaultContent';
 import { HeroSlider } from '@/components/HeroSlider';
+import { TricolorLandingView } from './TricolorLandingView';
 
 const BOLT_NAV_LINKS = [
   { label: 'О центре', href: '#about' },
@@ -433,6 +434,7 @@ export function LandingView() {
   const activeTheme =
     (content?.themes?.items || []).find((t: any) => t.id === activeThemeId) || null;
   const isBoltStyle = activeThemeId === 'bolt-style';
+  const isTricolor = activeThemeId === 'tricolor';
 
   const boltAboutImg =
     activeTheme?.aboutImage ||
@@ -519,6 +521,63 @@ export function LandingView() {
     Array.isArray(org.directions) && org.directions.length > 0
       ? org.directions
       : ORGANIZATION.directions;
+
+  const newsItems =
+    Array.isArray(content?.news?.items) && content.news.items.length > 0
+      ? content.news.items.map((n: any, idx: number) => ({
+          id: n.id || `news-${idx}`,
+          date: n.date || '',
+          category: n.category || 'Новости',
+          title: n.title || '',
+          excerpt: n.excerpt || n.summary || (Array.isArray(n.content) ? n.content[0] : n.content) || '',
+        }))
+      : BOLT_NEWS;
+
+  const rawDocs =
+    Array.isArray(documents) && documents.length > 0 ? documents : BOLT_DOCUMENTS;
+  const mappedDocs = rawDocs.map((d: any, idx: number) => {
+    const cat = d.category || 'Учредительные';
+    const yr =
+      d.year ||
+      (d.date && String(d.date).match(/\d{4}/)?.[0]) ||
+      d.date ||
+      '2026';
+    let DocIcon: any = FileText;
+    if (cat.toLowerCase().includes('отчёт') || cat.toLowerCase().includes('отчет')) {
+      DocIcon = BarChart3;
+    } else if (String(d.title || '').toLowerCase().includes('свидетельство')) {
+      DocIcon = ShieldCheck;
+    }
+    return {
+      id: d.id || `doc-${idx}`,
+      title: d.title || 'Документ',
+      category: cat,
+      year: yr,
+      fileUrl: d.fileUrl || '#',
+      icon: DocIcon,
+    };
+  });
+
+  // =========================================================================
+  // 1-IN-1 TRICOLOR STYLE RENDERING (exact match to state-sports-showcase.lovable.app, fully editable via Admin)
+  // =========================================================================
+  if (isTricolor) {
+    return (
+      <TricolorLandingView
+        header={header}
+        org={org}
+        directions={directions}
+        principles={principles}
+        newsItems={newsItems}
+        docItems={mappedDocs}
+        partnerItems={partners}
+        ideology={ideology}
+        footer={footer}
+        activeTheme={activeTheme}
+        scrolled={scrolled}
+      />
+    );
+  }
 
   // =========================================================================
   // 1-IN-1 BOLT STYLE RENDERING (exact match to sports-development-c-z4rl.bolt.host, fully editable via Admin)

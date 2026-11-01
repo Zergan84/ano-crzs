@@ -73,6 +73,7 @@ export function HeroSlider() {
   const activeTheme =
     (content?.themes?.items || []).find((t: any) => t.id === activeThemeId) || null;
   const isBoltStyle = activeThemeId === 'bolt-style';
+  const isTricolor = activeThemeId === 'tricolor';
   const boltHeroBg =
     activeTheme?.heroBgImage ||
     'https://skisport.ru/upload/iblock/9aa/a90b092yyp4qdml3bju3dxvf3njv2asn.jpg';
@@ -449,7 +450,7 @@ export function HeroSlider() {
     }
   };
 
-  if (isBoltStyle) {
+  if (isBoltStyle || isTricolor) {
     const dyn0: any = dynamicHeroSlides?.[currentSlide % Math.max(1, dynamicHeroSlides?.length || 1)];
     const showBadge = dyn0?.showBadge !== false;
     const boltBadge = showBadge
@@ -506,7 +507,9 @@ export function HeroSlider() {
     return (
       <section
         id="top"
-        className="relative isolate flex min-h-screen w-full flex-col overflow-hidden bg-[#071A33]"
+        className={`relative isolate flex min-h-screen w-full flex-col overflow-hidden ${
+          isTricolor ? 'bg-[#0F2147]' : 'bg-[#071A33]'
+        }`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -514,10 +517,22 @@ export function HeroSlider() {
           src={boltSlideBg}
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-500"
+          className="absolute inset-0 -z-20 h-full w-full object-cover object-center transition-opacity duration-500"
         />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#071A33] via-[#071A33]/85 to-[#0C2444]/40" />
-        <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#071A33] to-transparent" />
+        {isTricolor ? (
+          <div
+            className="absolute inset-0 -z-10"
+            style={{
+              backgroundImage:
+                'linear-gradient(100deg, rgba(15,33,71,0.92) 0%, rgba(15,33,71,0.75) 38%, rgba(15,33,71,0.22) 72%, rgba(15,33,71,0.08) 100%)',
+            }}
+          />
+        ) : (
+          <>
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#071A33] via-[#071A33]/85 to-[#0C2444]/40" />
+            <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#071A33] to-transparent" />
+          </>
+        )}
 
         {/* Dip to White / Dip to Color Flash Overlay */}
         {transitionEffect === 'dip-to-white' && (
@@ -540,17 +555,24 @@ export function HeroSlider() {
             className={`w-full max-w-3xl transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
           >
             {boltBadge && (
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#E8B93E]" aria-hidden="true" />
-                {boltBadge}
-              </span>
+              isTricolor ? (
+                <div className="mb-6 flex items-center gap-3 text-xs font-semibold uppercase leading-relaxed text-white">
+                  <span className="h-0.5 w-8 shrink-0 bg-[#D92D20]" aria-hidden="true" />
+                  <span>{boltBadge}</span>
+                </div>
+              ) : (
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#E8B93E]" aria-hidden="true" />
+                  {boltBadge}
+                </span>
+              )
             )}
 
-            <h1 className="mt-6 text-4xl font-bold text-white sm:text-5xl lg:text-6xl leading-[1.12] tracking-[-0.02em]">
+            <h1 className="mt-4 text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl leading-[1.12] tracking-[-0.02em]">
               {boltTitle}
             </h1>
 
-            <p className={`mt-6 max-w-2xl text-base leading-relaxed text-[#D9E4F0] sm:text-lg ${alignDescClasses}`}>
+            <p className={`mt-6 max-w-2xl text-base leading-relaxed text-white/90 sm:text-lg ${alignDescClasses}`}>
               {boltDesc}
             </p>
 
@@ -558,7 +580,11 @@ export function HeroSlider() {
               {boltPrimaryText && (
                 <a
                   href={boltPrimaryHref}
-                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]"
+                  className={
+                    isTricolor
+                      ? 'group inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-7 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:bg-[#b92419]'
+                      : 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
+                  }
                 >
                   <span>{boltPrimaryText}</span>
                   <ArrowRight
@@ -571,7 +597,11 @@ export function HeroSlider() {
               {boltSecondaryText && (
                 <a
                   href={boltSecondaryHref}
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
+                  className={
+                    isTricolor
+                      ? 'inline-flex items-center justify-center gap-2 rounded-sm bg-white px-7 py-3.5 text-base font-semibold text-[#0F2147] shadow-sm transition-colors hover:bg-slate-100'
+                      : 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
+                  }
                 >
                   {boltSecondaryText}
                 </a>
@@ -587,8 +617,10 @@ export function HeroSlider() {
                   onClick={() => goToSlide(idx)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                     currentSlide === idx
-                      ? 'bg-[#E8B93E] text-[#071A33]'
-                      : 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
+                      ? isTricolor
+                        ? 'bg-[#D92D20] text-white shadow-xs'
+                        : 'bg-[#E8B93E] text-[#071A33]'
+                      : 'bg-white/10 text-white/80 hover:bg-white/20'
                   }`}
                 >
                   <span>0{idx + 1}</span>
@@ -612,7 +644,9 @@ export function HeroSlider() {
                 aria-label={`Слайд ${idx + 1}`}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
                   currentSlide === idx
-                    ? 'w-8 bg-[#E8B93E] shadow-sm shadow-black/30'
+                    ? isTricolor
+                      ? 'w-8 bg-[#D92D20] shadow-sm'
+                      : 'w-8 bg-[#E8B93E] shadow-sm shadow-black/30'
                     : 'w-2.5 bg-white/40 hover:bg-white/75'
                 }`}
               />

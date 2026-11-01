@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Onest, Inter } from 'next/font/google';
+import { Onest, Inter, Golos_Text } from 'next/font/google';
 import './globals.css';
 import { SiteShell } from '@/components/layout/SiteShell';
 import FontProvider from '@/components/FontProvider';
@@ -17,6 +17,13 @@ const inter = Inter({
   weight: ['300', '400', '500', '600', '700', '800'],
   display: 'swap',
   variable: '--font-inter',
+});
+
+const golosText = Golos_Text({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  variable: '--font-golos',
 });
 
 export const metadata: Metadata = {
@@ -41,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={`scroll-smooth ${onest.variable} ${inter.variable}`}>
+    <html lang="ru" className={`scroll-smooth ${onest.variable} ${inter.variable} ${golosText.variable}`}>
       <body className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1E293B] antialiased selection:bg-amber-500/20 selection:text-[#0F172A]">
         <FontProvider>
           <SiteShell>

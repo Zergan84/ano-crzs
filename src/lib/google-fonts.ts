@@ -5,6 +5,7 @@ export interface GoogleFont {
 }
 
 export const GOOGLE_FONTS: GoogleFont[] = [
+  { family: 'Golos Text', category: 'sans-serif', weights: '400..800' },
   { family: 'Inter', category: 'sans-serif', weights: '100..900' },
   { family: 'Onest', category: 'sans-serif', weights: '100..900' },
   { family: 'Roboto', category: 'sans-serif', weights: '100..900' },

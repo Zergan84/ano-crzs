@@ -9,7 +9,7 @@ import { useSiteContent } from '@/lib/content';
 import { DEFAULT_THEMES_LIST, ThemeConfig } from '@/data/defaultContent';
 import { getFontUrl } from '@/lib/google-fonts';
 
-const loadedThemeFonts = new Set<string>(['Onest', 'Inter']);
+const loadedThemeFonts = new Set<string>(['Onest', 'Inter', 'Golos Text']);
 
 function ensureGoogleFont(family: string) {
   if (!family || typeof document === 'undefined') return;
@@ -27,6 +27,9 @@ function resolveCssFontStack(family: string): string {
   }
   if (family === 'Inter') {
     return 'var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  }
+  if (family === 'Golos Text') {
+    return 'var(--font-golos), "Golos Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
   }
   return `"${family}", var(--font-onest), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
 }
