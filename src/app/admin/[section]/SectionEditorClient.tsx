@@ -724,7 +724,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
             <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 rounded-lg border border-[#1e293b] bg-[#0c101a] p-3">
               <div>
                 <div className="flex items-center justify-between text-xs mb-1">
-                  <span className="font-semibold text-slate-300">Сдвиг фона сверху (Top margin / смещение)</span>
+                  <span className="font-semibold text-slate-300">Сдвиг фона сверху (Top margin)</span>
                   <span className="font-mono text-amber-400 font-bold">{slide.bgMarginTop ?? 0}px</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -747,7 +747,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                   <span className="text-xs text-slate-400">px</span>
                 </div>
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Отрицательное значение поднимает картинку вверх, положительное смещает вниз.
+                  Смещение отсчитывается строго от верхней границы блока слайдера (не экрана и не хидера). Отрицательное поднимает, положительное опускает.
                 </p>
               </div>
 
@@ -759,13 +759,13 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                   className="admin-input font-medium"
                 >
                   <option value="center">По центру (center)</option>
-                  <option value="top">По верху (top - приоритет шапке изображения)</option>
+                  <option value="top">По верху (top - строгая фиксация по верхней грани)</option>
                   <option value="bottom">По низу (bottom)</option>
                   <option value="center top">Сверху по центру (center top)</option>
                   <option value="center bottom">Снизу по центру (center bottom)</option>
                 </select>
                 <p className="mt-1 text-[11px] text-slate-400">
-                  Помогает зафиксировать ключевую часть фото (например лица лыжников или спортсменов).
+                  Фиксирует опорную линию центрирования относительно блока слайдера.
                 </p>
               </div>
             </div>

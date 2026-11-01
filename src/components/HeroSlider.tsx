@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
 import { useSiteContent, resolveMediaUrl } from '@/lib/content';
+import { DEFAULT_HERO_SLIDES } from '@/data/defaultContent';
 
 export type HeroTransitionEffect =
   | 'motion-blur'
@@ -475,21 +476,26 @@ export function HeroSlider() {
   };
 
   if (isBoltStyle || isTricolor) {
-    const dyn0: any = dynamicHeroSlides?.[currentSlide % Math.max(1, dynamicHeroSlides?.length || 1)];
+    const slidesData =
+      Array.isArray(dynamicHeroSlides) && dynamicHeroSlides.length > 0
+        ? dynamicHeroSlides
+        : DEFAULT_HERO_SLIDES;
+
+    const dyn0: any = slidesData[currentSlide % Math.max(1, slidesData.length)];
     const showBadge = dyn0?.showBadge !== false;
     const boltBadge = showBadge
       ? dyn0?.tag ||
         slide.badge ||
-        'Автономная некоммерческая организация'
+        ''
       : '';
     const boltTitle =
       dyn0?.title ||
       slide.title ||
-      'Развиваем спорт, который объединяет регионы';
+      '';
     const boltDesc =
       dyn0?.desc ||
       slide.description ||
-      'Мы реализуем государственные и социальные программы в сфере физической культуры и спорта: от школьных секций до подготовки спортивного резерва. Открыто говорим о нашей работе и ждём партнёров.';
+      '';
     const boltPrimaryText =
       dyn0?.ctaText || slide.primaryBtn?.label || 'Стать партнёром';
     const boltPrimaryHref =
@@ -500,10 +506,6 @@ export function HeroSlider() {
         : 'Наши проекты';
     const boltSecondaryHref =
       dyn0?.secondaryBtnHref || '#projects';
-    const boltSlideBg =
-      (dyn0?.image ? resolveMediaUrl(dyn0.image) : '') || boltHeroBg;
-    const bgMarginTop = typeof dyn0?.bgMarginTop === 'number' ? dyn0.bgMarginTop : 0;
-    const bgPosition = dyn0?.bgPosition || 'center';
     const textAlign: 'left' | 'center' | 'right' =
       dyn0?.textAlign === 'center' || dyn0?.textAlign === 'right'
         ? dyn0.textAlign
@@ -556,16 +558,32 @@ export function HeroSlider() {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        <img
-          src={boltSlideBg}
-          alt=""
-          aria-hidden="true"
-          style={{
-            objectPosition: bgPosition,
-            transform: `translateY(${bgMarginTop}px)`,
-          }}
-          className="absolute inset-0 -z-20 h-full w-full object-cover transition-all duration-500"
-        />
+        {/* Фоновые изображения всех слайдов: жестко привязаны к верхнему краю блока слайдера top: 0,
+            плавно растворяются (cross-fade) без скачков и прыжков */}
+        <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
+          {slidesData.map((s: any, idx: number) => {
+            const isSlideActive = currentSlide === idx;
+            const bgUrl = (s.image ? resolveMediaUrl(s.image) : '') || boltHeroBg;
+            const sBgMarginTop = typeof s.bgMarginTop === 'number' ? s.bgMarginTop : 0;
+            const sBgPosition = s.bgPosition || 'center';
+
+            return (
+              <img
+                key={s.id || idx}
+                src={bgUrl}
+                alt=""
+                aria-hidden="true"
+                style={{
+                  objectPosition: sBgPosition,
+                  transform: `translateY(${sBgMarginTop}px)`,
+                }}
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
+                  isSlideActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                }`}
+              />
+            );
+          })}
+        </div>
         {isTricolor ? (
           <div
             className="absolute inset-0 -z-10"
