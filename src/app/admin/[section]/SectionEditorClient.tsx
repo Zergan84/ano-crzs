@@ -797,16 +797,163 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
             </div>
 
             {slide.image && (
-              <div className="mt-2 h-24 w-44 overflow-hidden rounded border border-[#2a2a2a] bg-black relative">
-                <img
-                  src={slide.image}
-                  alt="Preview"
-                  style={{
-                    objectPosition: slide.bgPosition || 'center',
-                    transform: `translateY(${slide.bgMarginTop ?? 0}px)`,
-                  }}
-                  className="h-full w-full object-cover transition-transform"
-                />
+              <div className="mt-4 rounded-xl border border-[#2d3748] bg-[#070b14] p-3">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#1e293b] text-xs">
+                  <span className="font-semibold text-slate-300">
+                    Интерактивное превью: Хидер + Слайдер 50% + Следующая секция
+                  </span>
+                  <span className="text-[11px] text-amber-400 font-mono">
+                    (Наведите курсор для всплывающего увеличенного просмотра)
+                  </span>
+                </div>
+
+                {/* Макет первого экрана сайта в масштабе */}
+                <div className="group relative w-full max-w-xl mx-auto rounded-lg border border-slate-700 bg-white shadow-xl overflow-hidden cursor-crosshair">
+                  {/* 1. Имитация верхнего триколора */}
+                  <div
+                    className="h-1 w-full"
+                    style={{
+                      backgroundImage:
+                        'linear-gradient(90deg, #FFFFFF 0 33.3%, #1447E6 33.3% 66.6%, #D92D20 66.6%)',
+                    }}
+                  />
+
+                  {/* 2. Имитация верхней синей строки контактов */}
+                  <div className="bg-[#0F2147] px-3 py-1 flex items-center justify-between text-[9px] text-white/80">
+                    <span>Автономная некоммерческая организация</span>
+                    <span>+7 (495) 000-00-00</span>
+                  </div>
+
+                  {/* 3. Имитация белого меню хидера */}
+                  <div className="bg-white/95 px-3 py-2 flex items-center justify-between border-b border-slate-200">
+                    <span className="text-[10px] font-bold text-[#0F2147]">АНО ЦЗСТ</span>
+                    <div className="flex items-center gap-2 text-[9px] text-slate-600 font-medium">
+                      <span>О центре</span>
+                      <span>Проекты</span>
+                      <span>Новости</span>
+                      <span>Контакты</span>
+                    </div>
+                    <span className="rounded-xs bg-[#D92D20] text-white text-[8px] font-bold px-2 py-0.5">
+                      Стать партнёром
+                    </span>
+                  </div>
+
+                  {/* 4. Блок слайдера ровно 50% экрана */}
+                  <div className="relative h-44 w-full bg-[#0F2147] overflow-hidden flex flex-col justify-center px-4">
+                    {/* Фоновая картинка с учётом всех реальных стилей и сдвига */}
+                    <img
+                      src={slide.image}
+                      alt="Preview"
+                      style={{
+                        objectPosition: slide.bgPosition || 'center',
+                        top: '-60px',
+                        bottom: '-60px',
+                        height: 'calc(100% + 120px)',
+                        transform: (slide.alignToBlock !== false)
+                          ? `translateY(${(slide.bgPaddingTop ?? slide.bgMarginTop ?? 0) * 0.45}px)`
+                          : `translateY(${((slide.bgPaddingTop ?? slide.bgMarginTop ?? 0) - 104) * 0.45}px)`,
+                      }}
+                      className="absolute inset-x-0 w-full object-cover select-none pointer-events-none transition-transform"
+                    />
+
+                    {/* Градиентное затемнение как на сайте */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        backgroundImage:
+                          'linear-gradient(100deg, rgba(15,33,71,0.92) 0%, rgba(15,33,71,0.75) 38%, rgba(15,33,71,0.22) 72%, rgba(15,33,71,0.08) 100%)',
+                      }}
+                    />
+
+                    {/* Текстовый контент слайда */}
+                    <div className="relative z-10 max-w-[280px]">
+                      {slide.showBadge !== false && (
+                        <div className="text-[8px] uppercase tracking-wider text-[#D92D20] font-bold mb-1 flex items-center gap-1">
+                          <span className="h-0.5 w-3 bg-[#D92D20]" />
+                          <span className="truncate">{slide.tag || 'Автономная некоммерческая организация'}</span>
+                        </div>
+                      )}
+                      <h4 className="text-xs font-bold text-white line-clamp-2 leading-tight">
+                        {slide.title || 'Заголовок слайда'}
+                      </h4>
+                      <p className="text-[9px] text-white/80 line-clamp-2 mt-1 leading-snug">
+                        {slide.desc || 'Описание слайда'}
+                      </p>
+                      <div className="mt-2 flex items-center gap-1.5">
+                        <span className="bg-[#D92D20] text-white text-[8px] font-semibold px-2 py-0.5 rounded-xs">
+                          {slide.ctaText || 'Стать партнёром'}
+                        </span>
+                        <span className="bg-white text-[#0F2147] text-[8px] font-semibold px-2 py-0.5 rounded-xs">
+                          {slide.secondaryBtnText || 'Наши проекты'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Полоска прогрессбара-триколора внизу слайдера */}
+                    <div
+                      className="absolute inset-x-0 bottom-0 h-1 w-full"
+                      style={{
+                        backgroundImage:
+                          'linear-gradient(90deg, #FFFFFF 0 33.3%, #1447E6 33.3% 66.6%, #D92D20 66.6%)',
+                      }}
+                    />
+                  </div>
+
+                  {/* 5. Имитация следующей секции сайта ("О центре"), видимой под слайдером */}
+                  <div className="bg-[#F8FAFC] px-4 py-2 border-t border-slate-200">
+                    <span className="text-[8px] font-bold uppercase text-[#D92D20] flex items-center gap-1">
+                      <span className="h-0.5 w-2 bg-[#D92D20]" />
+                      О центре
+                    </span>
+                    <div className="text-[10px] font-bold text-[#0F2147] mt-0.5">
+                      Миссия: спорт доступен каждому
+                    </div>
+                  </div>
+
+                  {/* ВСПЛЫВАЮЩИЙ УВЕЛИЧЕННЫЙ ПРОСМОТР ПРИ НАВЕДЕНИИ */}
+                  <div className="absolute inset-0 z-50 bg-[#0F2147]/95 p-3 flex flex-col justify-between opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200">
+                    <div className="text-[11px] font-bold text-white flex items-center justify-between border-b border-white/20 pb-1">
+                      <span>Крупный предпросмотр кадрирования</span>
+                      <span className="text-amber-400">
+                        {slide.alignToBlock !== false ? 'Ровнение: от блока' : 'Ровнение: от экрана'}
+                      </span>
+                    </div>
+                    <div className="relative flex-1 my-2 rounded overflow-hidden border border-white/20">
+                      <img
+                        src={slide.image}
+                        alt="Zoomed"
+                        style={{
+                          objectPosition: slide.bgPosition || 'center',
+                          top: '-60px',
+                          bottom: '-60px',
+                          height: 'calc(100% + 120px)',
+                          transform: (slide.alignToBlock !== false)
+                            ? `translateY(${slide.bgPaddingTop ?? slide.bgMarginTop ?? 0}px)`
+                            : `translateY(${((slide.bgPaddingTop ?? slide.bgMarginTop ?? 0) - 104)}px)`,
+                        }}
+                        className="absolute inset-x-0 w-full object-cover"
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundImage:
+                            'linear-gradient(100deg, rgba(15,33,71,0.85) 0%, rgba(15,33,71,0.4) 50%, transparent 100%)',
+                        }}
+                      />
+                      <div className="absolute inset-0 p-3 flex flex-col justify-center z-10 text-white">
+                        <span className="text-xs font-bold text-amber-300">
+                          {slide.title || 'Слайд'}
+                        </span>
+                        <span className="text-[10px] text-white/90 mt-1 line-clamp-2">
+                          {slide.desc}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-slate-300 text-center">
+                      Сдвиг: <strong className="text-amber-400">{slide.bgPaddingTop ?? slide.bgMarginTop ?? 0}px</strong> | Фокус: <strong className="text-amber-400">{slide.bgPosition || 'center'}</strong>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
