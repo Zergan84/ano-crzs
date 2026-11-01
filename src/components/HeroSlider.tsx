@@ -13,7 +13,6 @@ import {
   Building2, 
   Calendar,
   Sparkles,
-  ArrowRight,
   Flame
 } from 'lucide-react';
 import { GuillochePattern } from '@/components/ui/GuillochePattern';
@@ -22,6 +21,7 @@ import { useSiteContent, resolveMediaUrl } from '@/lib/content';
 interface Slide {
   id: string;
   badge?: string;
+  tabLabel?: string;
   title: string;
   description: string;
   primaryBtn: {
@@ -49,9 +49,10 @@ export function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
-  const slides: Slide[] = [
+  const baseSlides: Slide[] = [
     {
       id: 'standards',
+      tabLabel: 'Стандарты и Реестр',
       title: 'Развитие стандартов, экспертных компетенций и технологий зимнего спорта в России',
       description: 'АНО «ЦЗСТ» осуществляет профессиональную аттестацию специалистов, разработку отраслевых стандартов безопасности горнолыжных комплексов, научно-методическое сопровождение и внедрение современных спортивно-инженерных технологий.',
       primaryBtn: {
@@ -85,6 +86,7 @@ export function HeroSlider() {
     {
       id: 'carve-cup',
       badge: 'Всероссийский спортивный кубок',
+      tabLabel: 'Carve CUP 🔥',
       title: 'Carve Cup 2028: соревнования в разных дисциплинах',
       description: 'Масштабный турнир по спортивному карвингу и горнолыжным дисциплинам. Состязания сильнейших райдеров страны в слаломе-гиганте, скоростном ведении дуг и точности прохождения трассы по официальным стандартам.',
       primaryBtn: {
@@ -114,7 +116,6 @@ export function HeroSlider() {
               height={800}
               className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
             />
-            {/* Overlay badge */}
             <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -141,6 +142,7 @@ export function HeroSlider() {
     {
       id: 'open-doors',
       badge: 'Официальное событие Московской области',
+      tabLabel: 'Правительство МО',
       title: 'День открытых дверей в здании Правительства Московской области',
       description: 'Ежегодная встреча руководства АНО «ЦЗСТ», представителей профильных министерств, федераций и директоров горнолыжных курортов в Доме Правительства Московской области. Презентация стандартов безопасности и кадровых программ.',
       primaryBtn: {
@@ -168,7 +170,6 @@ export function HeroSlider() {
               height={800}
               className="w-full h-auto object-cover max-h-[380px] sm:max-h-[440px]"
             />
-            {/* Overlay badge */}
             <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
@@ -195,8 +196,14 @@ export function HeroSlider() {
 
   // Merge dynamic slides if available from R2 content
   const dynamicHeroSlides = content?.hero?.slides;
-  const activeSlides: Slide[] = slides.map((base, idx) => {
-    const dyn = dynamicHeroSlides?.[idx];
+  const sourceCount =
+    Array.isArray(dynamicHeroSlides) && dynamicHeroSlides.length > 0
+      ? dynamicHeroSlides.length
+      : baseSlides.length;
+
+  const activeSlides: Slide[] = Array.from({ length: sourceCount }).map((_, idx) => {
+    const base = baseSlides[idx] || baseSlides[0];
+    const dyn: any = dynamicHeroSlides?.[idx];
     if (!dyn) return base;
 
     const dynamicImg = (dyn.image ? resolveMediaUrl(dyn.image) : '') ||
@@ -262,7 +269,6 @@ export function HeroSlider() {
               alt={dyn.title || base.title}
               className={`w-full h-auto object-cover ${sizeConfig.imgH}`}
             />
-            {/* Overlay badge with text and action button */}
             {(blockTitle || blockSubtitle || blockBtnText) && (
               <div className="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md p-3 rounded-xl border border-white/20 text-white flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2.5 min-w-0">
@@ -305,17 +311,46 @@ export function HeroSlider() {
       );
     }
 
+    const secondaryBtn =
+      dyn.secondaryBtnText === ''
+        ? undefined
+        : dyn.secondaryBtnText
+        ? {
+            label: dyn.secondaryBtnText,
+            href: dyn.secondaryBtnHref || base.secondaryBtn?.href || '#documents',
+            icon: base.secondaryBtn?.icon || <FileText className="w-4 h-4 text-slate-500" />,
+          }
+        : base.secondaryBtn;
+
+    const tertiaryBtn =
+      dyn.tertiaryBtnText === ''
+        ? undefined
+        : dyn.tertiaryBtnText
+        ? {
+            label: dyn.tertiaryBtnText,
+            href: dyn.tertiaryBtnHref || base.tertiaryBtn?.href || '#contacts',
+            icon: base.tertiaryBtn?.icon || <GraduationCap className="w-4 h-4 text-blue-700" />,
+          }
+        : base.tertiaryBtn;
+
     return {
       ...base,
+      id: dyn.id || base.id || `slide-${idx + 1}`,
       title: dyn.title || base.title,
       description: dyn.desc || base.description,
-      badge: dyn.tag || base.badge,
+      badge: dyn.tag !== undefined ? dyn.tag : base.badge,
+      tabLabel:
+        dyn.tabLabel ||
+        base.tabLabel ||
+        (idx === 0 ? 'Стандарты и Реестр' : idx === 1 ? 'Carve CUP 🔥' : idx === 2 ? 'Правительство МО' : dyn.tag || `Слайд ${idx + 1}`),
       rightContent,
       primaryBtn: {
         ...base.primaryBtn,
         label: dyn.ctaText || base.primaryBtn.label,
         href: dyn.ctaHref || base.primaryBtn.href,
       },
+      secondaryBtn,
+      tertiaryBtn,
     };
   });
 
@@ -424,7 +459,7 @@ export function HeroSlider() {
         {/* Slider Controls & Progress Indicators */}
         <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Dot & Slide Selectors */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {activeSlides.map((s, idx) => (
               <button
                 key={s.id}
@@ -438,7 +473,7 @@ export function HeroSlider() {
               >
                 <span>0{idx + 1}</span>
                 <span className="hidden md:inline font-normal truncate max-w-[140px]">
-                  {idx === 0 ? 'Стандарты и Реестр' : idx === 1 ? 'Carve CUP 🔥' : 'Правительство МО'}
+                  {s.tabLabel}
                 </span>
               </button>
             ))}

@@ -495,51 +495,110 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
     setData({ ...data, slides: next });
   };
 
+  const addSlide = () => {
+    const next = [
+      ...slides,
+      {
+        id: `slide-${Date.now()}`,
+        tag: 'Новое направление',
+        tabLabel: `Слайд 0${slides.length + 1}`,
+        title: 'Заголовок нового слайда',
+        desc: 'Описание слайда на главном экране...',
+        ctaText: 'Подробнее',
+        ctaHref: '#directions',
+        secondaryBtnText: 'Документы',
+        secondaryBtnHref: '#documents',
+        tertiaryBtnText: 'Контакты',
+        tertiaryBtnHref: '#contacts',
+        image: '/Gemini_Generated_Image_hkfhw8hkfhw8hkfh.png',
+        displayMode: 'image',
+        blockSize: 'md',
+        blockBtnColor: 'blue',
+      },
+    ];
+    setData({ ...data, slides: next });
+  };
+
+  const removeSlide = (index: number) => {
+    if (slides.length <= 1) {
+      alert('В слайдере должен оставаться минимум 1 слайд.');
+      return;
+    }
+    if (!confirm(`Удалить Слайд 0${index + 1}?`)) return;
+    const next = slides.filter((_: any, idx: number) => idx !== index);
+    setData({ ...data, slides: next });
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#222] bg-[#12161f] p-4">
+        <div>
+          <h3 className="text-sm font-bold text-white">
+            Управление слайдами главного экрана (Hero Слайдер)
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Этот слайдер отображается 1 в 1 на главном экране сайта (и в режиме Лендинг, и в режиме Портал). Вы можете редактировать тексты, кнопки и изображения каждого слайда.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={addSlide}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-500 shrink-0 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Добавить слайд</span>
+        </button>
+      </div>
+
       {slides.map((slide: any, i: number) => (
         <div key={slide.id || i} className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-[#222] pb-3">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <span className="rounded bg-red-600/20 text-red-400 px-2 py-0.5 text-xs font-mono">
+              <span className="rounded bg-amber-500/20 text-amber-400 px-2 py-0.5 text-xs font-mono">
                 Слайд 0{i + 1}
               </span>
-              <span>{slide.tag || 'Слайд'}</span>
+              <span>{slide.title || slide.tag || 'Слайд'}</span>
             </h3>
+            {slides.length > 1 && (
+              <button
+                type="button"
+                onClick={() => removeSlide(i)}
+                className="inline-flex items-center gap-1 rounded px-2.5 py-1 text-xs text-red-400 hover:bg-red-950/40 border border-transparent hover:border-red-800/50 transition-colors"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Удалить слайд</span>
+              </button>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="admin-label">Метка над заголовком</label>
+              <label className="admin-label">Метка над заголовком (бейдж)</label>
               <input
                 type="text"
                 value={slide.tag || ''}
                 onChange={(e) => updateSlide(i, 'tag', e.target.value)}
+                placeholder="Например: Отраслевой стандарт"
                 className="admin-input"
               />
             </div>
             <div>
-              <label className="admin-label">Текст кнопки действия</label>
+              <label className="admin-label">Подпись вкладки внизу слайдера (0{i + 1})</label>
               <input
                 type="text"
-                value={slide.ctaText || ''}
-                onChange={(e) => updateSlide(i, 'ctaText', e.target.value)}
+                value={
+                  slide.tabLabel ??
+                  (i === 0 ? 'Стандарты и Реестр' : i === 1 ? 'Carve CUP 🔥' : i === 2 ? 'Правительство МО' : '')
+                }
+                onChange={(e) => updateSlide(i, 'tabLabel', e.target.value)}
+                placeholder="Например: Стандарты и Реестр"
                 className="admin-input"
-              />
-            </div>
-            <div>
-              <label className="admin-label">Ссылка кнопки (href)</label>
-              <input
-                type="text"
-                value={slide.ctaHref || ''}
-                onChange={(e) => updateSlide(i, 'ctaHref', e.target.value)}
-                className="admin-input font-mono"
               />
             </div>
           </div>
 
           <div>
-            <label className="admin-label">Главный заголовок слайда</label>
+            <label className="admin-label">Главный заголовок слайда (H1)</label>
             <textarea
               rows={2}
               value={slide.title || ''}
@@ -556,6 +615,99 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               onChange={(e) => updateSlide(i, 'desc', e.target.value)}
               className="admin-textarea"
             />
+          </div>
+
+          {/* Кнопки слайда (1, 2, 3) */}
+          <div className="rounded-lg border border-[#1e293b] bg-[#0b0f19] p-4 space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-300">
+              Кнопки действий слайда (оставьте текст пустым, чтобы скрыть дополнительную кнопку)
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="admin-label">Кнопка 1 (Основная) — Текст</label>
+                <input
+                  type="text"
+                  value={slide.ctaText || ''}
+                  onChange={(e) => updateSlide(i, 'ctaText', e.target.value)}
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Кнопка 1 — Ссылка (href)</label>
+                <input
+                  type="text"
+                  value={slide.ctaHref || ''}
+                  onChange={(e) => updateSlide(i, 'ctaHref', e.target.value)}
+                  className="admin-input font-mono text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#1e293b]/60">
+              <div>
+                <label className="admin-label">Кнопка 2 (Вторая) — Текст</label>
+                <input
+                  type="text"
+                  value={
+                    slide.secondaryBtnText ??
+                    (i === 0
+                      ? 'Нормативная база и стандарты'
+                      : i === 1
+                      ? 'Регламент и правила кубка'
+                      : i === 2
+                      ? 'Регистрация делегатов'
+                      : '')
+                  }
+                  onChange={(e) => updateSlide(i, 'secondaryBtnText', e.target.value)}
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Кнопка 2 — Ссылка (href)</label>
+                <input
+                  type="text"
+                  value={
+                    slide.secondaryBtnHref ??
+                    (i === 0 ? '/documents' : i === 1 ? '/documents' : i === 2 ? '/contacts' : '')
+                  }
+                  onChange={(e) => updateSlide(i, 'secondaryBtnHref', e.target.value)}
+                  className="admin-input font-mono text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#1e293b]/60">
+              <div>
+                <label className="admin-label">Кнопка 3 (Третья) — Текст</label>
+                <input
+                  type="text"
+                  value={
+                    slide.tertiaryBtnText ??
+                    (i === 0
+                      ? 'Программы аттестации'
+                      : i === 1
+                      ? 'Календарь этапов'
+                      : i === 2
+                      ? 'Схема проезда в Дом Правительства'
+                      : '')
+                  }
+                  onChange={(e) => updateSlide(i, 'tertiaryBtnText', e.target.value)}
+                  className="admin-input"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Кнопка 3 — Ссылка (href)</label>
+                <input
+                  type="text"
+                  value={
+                    slide.tertiaryBtnHref ??
+                    (i === 0 ? '/education' : i === 1 ? '/events' : i === 2 ? '/contacts' : '')
+                  }
+                  onChange={(e) => updateSlide(i, 'tertiaryBtnHref', e.target.value)}
+                  className="admin-input font-mono text-xs"
+                />
+              </div>
+            </div>
           </div>
 
           <div>

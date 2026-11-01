@@ -4,18 +4,18 @@ import React, { useState, useEffect } from 'react';
 import NextLink from 'next/link';
 import {
   ArrowLeft,
-  Sliders,
   Save,
-  Check,
-  AlertCircle,
+  CheckCircle2,
+  Sliders,
   Plus,
   Trash2,
+  ArrowRight,
 } from 'lucide-react';
-import { DEFAULT_LANDING } from '@/data/defaultContent';
+import { DEFAULT_LANDING, LandingContent } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 
 export default function AdminLandingHeroPage() {
-  const [data, setData] = useState(DEFAULT_LANDING);
+  const [data, setData] = useState<LandingContent>(DEFAULT_LANDING);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -27,12 +27,7 @@ export default function AdminLandingHeroPage() {
 
   async function loadLanding() {
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? '/api/admin/content/landing'
-          : '/api/admin/content/landing';
-
-      const res = await fetch(apiEndpoint);
+      const res = await fetch('/api/admin/content/landing');
       if (res.ok) {
         const json = await res.json();
         if (json && typeof json === 'object') {
@@ -54,12 +49,7 @@ export default function AdminLandingHeroPage() {
     setSaved(false);
     setError('');
     try {
-      const apiEndpoint =
-        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
-          ? '/api/admin/content/landing'
-          : '/api/admin/content/landing';
-
-      const res = await fetch(apiEndpoint, {
+      const res = await fetch('/api/admin/content/landing', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -79,46 +69,35 @@ export default function AdminLandingHeroPage() {
     setSaving(false);
   }
 
-  function updateHeader(field: string, value: any) {
+  const updateHeader = (key: keyof LandingContent['header'], val: any) => {
     setData({
       ...data,
-      header: { ...data.header, [field]: value },
+      header: { ...data.header, [key]: val },
     });
-  }
+  };
 
-  function updateNavLink(idx: number, field: 'label' | 'href', val: string) {
-    const navLinks = [...(data.header.navLinks || [])];
-    navLinks[idx] = { ...navLinks[idx], [field]: val };
-    updateHeader('navLinks', navLinks);
-  }
+  const updateNavLink = (idx: number, key: 'label' | 'href', val: string) => {
+    const next = [...(data.header.navLinks || [])];
+    next[idx] = { ...next[idx], [key]: val };
+    updateHeader('navLinks', next);
+  };
 
-  function addNavLink() {
-    const navLinks = [...(data.header.navLinks || []), { label: 'Новый раздел', href: '#about' }];
-    updateHeader('navLinks', navLinks);
-  }
+  const addNavLink = () => {
+    updateHeader('navLinks', [
+      ...(data.header.navLinks || []),
+      { label: 'Новый пункт', href: '#about' },
+    ]);
+  };
 
-  function removeNavLink(idx: number) {
-    const navLinks = (data.header.navLinks || []).filter((_, i) => i !== idx);
-    updateHeader('navLinks', navLinks);
-  }
-
-  function updateHero(field: string, value: any) {
-    setData({
-      ...data,
-      hero: { ...data.hero, [field]: value },
-    });
-  }
-
-  function updateMetric(idx: number, field: string, val: string) {
-    const metrics = [...(data.hero.metrics || [])];
-    metrics[idx] = { ...metrics[idx], [field]: val };
-    updateHero('metrics', metrics);
-  }
+  const removeNavLink = (idx: number) => {
+    const next = (data.header.navLinks || []).filter((_, i) => i !== idx);
+    updateHeader('navLinks', next);
+  };
 
   if (loading) {
     return (
-      <div className="flex h-60 items-center justify-center text-slate-500 text-sm">
-        Загрузка данных шапки и главного экрана лендинга...
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -135,58 +114,82 @@ export default function AdminLandingHeroPage() {
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Назад к дашборду</span>
           </NextLink>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide flex items-center gap-2">
-              <Sliders className="w-7 h-7 text-amber-500" />
-              <span>Шапка и Главный экран (Лендинг)</span>
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide">
+              Шапка сайта (Режим: Лендинг)
             </h1>
-            <span className="rounded bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300 uppercase">
+            <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-mono uppercase">
               Блок Лендинга
             </span>
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            Навигация шапки, H1 заголовок, надзаголовок, лид-абзац, кнопки CTA и 3 фактоида/метрики лендинга АНО «ЦЗСТ»
+            Настройка логотипа, подзаголовка, навигационных ссылок и кнопки обращения в верхней шапке лендинга
           </p>
         </div>
 
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:bg-amber-500 transition-all shadow-lg shadow-amber-950/20 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-orange-600 to-amber-500 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white hover:from-orange-500 hover:to-amber-400 disabled:opacity-50 transition-all shadow-lg shadow-orange-950/30 shrink-0"
         >
-          {saved ? <Check className="h-4 w-4 text-white" /> : <Save className={`h-4 w-4 ${saving ? 'animate-spin' : ''}`} />}
-          <span>{saving ? 'Сохранение...' : saved ? 'Сохранено ✓' : 'Сохранить изменения'}</span>
+          <Save className="h-4 w-4" />
+          <span>{saving ? 'Сохранение...' : 'Сохранить изменения'}</span>
         </button>
       </div>
 
+      {/* Быстрый переход к редактированию Слайдера Hero */}
+      <div className="rounded-xl border border-amber-500/30 bg-amber-950/15 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-start gap-3.5">
+          <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+            <Sliders className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-white">
+              Главный экран лендинга использует общий Слайдер Hero (1 в 1 с версией Портал)
+            </h2>
+            <p className="text-xs text-slate-300 mt-1">
+              Редактирование заголовков, описаний, кнопок и изображений каждого слайда доступно в разделе «Слайдер Hero».
+            </p>
+          </div>
+        </div>
+        <NextLink
+          href="/admin/hero"
+          className="inline-flex items-center gap-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 px-4 py-2.5 text-xs font-bold transition-colors shrink-0"
+        >
+          <span>Редактировать Слайдер Hero</span>
+          <ArrowRight className="w-4 h-4" />
+        </NextLink>
+      </div>
+
       {saved && (
-        <div className="flex items-center gap-2 rounded-lg bg-emerald-950/40 border border-emerald-800 p-3 text-xs text-emerald-300">
-          <Check className="h-4 w-4 text-emerald-400 shrink-0" />
-          <span>Шапка и главный экран лендинга успешно сохранены!</span>
+        <div className="flex items-center gap-2 rounded-lg border border-emerald-800/60 bg-emerald-950/40 p-3.5 text-xs text-emerald-300">
+          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+          <span>Изменения шапки лендинга сохранены в Cloudflare R2!</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 rounded-lg bg-red-950/40 border border-red-800 p-3 text-xs text-red-300">
-          <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
-          <span>{error}</span>
+        <div className="rounded-lg border border-red-800 bg-red-950/40 p-3.5 text-xs text-red-300">
+          {error}
         </div>
       )}
 
-      {/* 1. Шапка Лендинга (Header) */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          4.1. Шапка лендинга (Header)
-        </h3>
+      {/* 4.1. ШАПКА (HEADER) */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-6 space-y-5">
+        <h2 className="text-base font-bold text-white border-b border-[#222] pb-3 flex items-center gap-2">
+          <Sliders className="h-4 w-4 text-amber-400" />
+          <span>4.1. Шапка лендинга (Header)</span>
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="admin-label">Краткое название у логотипа</label>
+            <label className="admin-label">Наименование у логотипа</label>
             <input
               type="text"
               value={data.header.logoTitle || ''}
               onChange={(e) => updateHeader('logoTitle', e.target.value)}
               className="admin-input font-bold"
+              placeholder="АНО «ЦЗСТ»"
             />
           </div>
           <div>
@@ -196,6 +199,7 @@ export default function AdminLandingHeroPage() {
               value={data.header.logoSubtitle || ''}
               onChange={(e) => updateHeader('logoSubtitle', e.target.value)}
               className="admin-input"
+              placeholder="Центр развития зимнего спорта, спортивных технологий и туризма"
             />
           </div>
         </div>
@@ -207,30 +211,32 @@ export default function AdminLandingHeroPage() {
               type="text"
               value={data.header.ctaText || ''}
               onChange={(e) => updateHeader('ctaText', e.target.value)}
-              className="admin-input font-semibold"
+              className="admin-input"
+              placeholder="Обращение / Партнёрство"
             />
           </div>
           <div>
-            <label className="admin-label">Якорь кнопки в шапке</label>
+            <label className="admin-label">Ссылка кнопки в шапке (якорь)</label>
             <input
               type="text"
               value={data.header.ctaHref || ''}
               onChange={(e) => updateHeader('ctaHref', e.target.value)}
               className="admin-input font-mono text-xs"
+              placeholder="#appeal-form"
             />
           </div>
         </div>
 
-        <div className="pt-2 space-y-3">
+        <div className="pt-2 border-t border-[#222] space-y-3">
           <div className="flex items-center justify-between">
-            <label className="admin-label mb-0">Якорные ссылки навигации лендинга</label>
+            <label className="admin-label mb-0">Пункты якорной навигации шапки</label>
             <button
               type="button"
               onClick={addNavLink}
               className="inline-flex items-center gap-1 rounded bg-[#1e2638] border border-[#334155] px-2.5 py-1 text-xs text-slate-200 hover:bg-[#28334a]"
             >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Добавить пункт</span>
+              <Plus className="h-3.5 w-3.5" />
+              <span>Добавить ссылку</span>
             </button>
           </div>
 
@@ -242,7 +248,7 @@ export default function AdminLandingHeroPage() {
                   value={item.label}
                   onChange={(e) => updateNavLink(idx, 'label', e.target.value)}
                   className="admin-input flex-1"
-                  placeholder="Название (напр. О Центре)"
+                  placeholder="Название раздела"
                 />
                 <input
                   type="text"
@@ -254,138 +260,14 @@ export default function AdminLandingHeroPage() {
                 <button
                   type="button"
                   onClick={() => removeNavLink(idx)}
-                  className="p-2 text-red-400 hover:text-red-300 rounded hover:bg-red-950/40"
+                  className="p-2 rounded text-slate-500 hover:text-red-400 hover:bg-red-950/30"
+                  title="Удалить"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* 2. Главный экран (Hero Section) */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          4.2. Главный экран (Hero Section)
-        </h3>
-
-        <div>
-          <label className="admin-label">Надзаголовок (Badge)</label>
-          <input
-            type="text"
-            value={data.hero.badge || ''}
-            onChange={(e) => updateHero('badge', e.target.value)}
-            className="admin-input"
-          />
-        </div>
-
-        <div>
-          <label className="admin-label">Главный заголовок (H1)</label>
-          <textarea
-            rows={2}
-            value={data.hero.title || ''}
-            onChange={(e) => updateHero('title', e.target.value)}
-            className="admin-textarea font-bold text-base"
-          />
-        </div>
-
-        <div>
-          <label className="admin-label">Лид-абзац (Подзаголовок)</label>
-          <textarea
-            rows={3}
-            value={data.hero.lead || ''}
-            onChange={(e) => updateHero('lead', e.target.value)}
-            className="admin-textarea"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="admin-label">Основная кнопка (CTA 1) — Текст</label>
-            <input
-              type="text"
-              value={data.hero.primaryCtaText || ''}
-              onChange={(e) => updateHero('primaryCtaText', e.target.value)}
-              className="admin-input font-bold"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Основная кнопка (CTA 1) — Ссылка/Якорь</label>
-            <input
-              type="text"
-              value={data.hero.primaryCtaHref || ''}
-              onChange={(e) => updateHero('primaryCtaHref', e.target.value)}
-              className="admin-input font-mono text-xs"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="admin-label">Вторая кнопка (CTA 2) — Текст</label>
-            <input
-              type="text"
-              value={data.hero.secondaryCtaText || ''}
-              onChange={(e) => updateHero('secondaryCtaText', e.target.value)}
-              className="admin-input"
-            />
-          </div>
-          <div>
-            <label className="admin-label">Вторая кнопка (CTA 2) — Ссылка/Якорь</label>
-            <input
-              type="text"
-              value={data.hero.secondaryCtaHref || ''}
-              onChange={(e) => updateHero('secondaryCtaHref', e.target.value)}
-              className="admin-input font-mono text-xs"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Фактоиды / Метрики Hero */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Фактоиды и метрики главного экрана (3 плашки)
-        </h3>
-
-        <div className="grid grid-cols-1 gap-4">
-          {(data.hero.metrics || []).map((m, idx) => (
-            <div
-              key={idx}
-              className="rounded-lg border border-[#252d3d] bg-[#0d1118] p-4 space-y-3"
-            >
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="admin-label">Метка (Tag)</label>
-                  <input
-                    type="text"
-                    value={m.tag || ''}
-                    onChange={(e) => updateMetric(idx, 'tag', e.target.value)}
-                    className="admin-input font-mono text-xs"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="admin-label">Заголовок фактоида</label>
-                  <input
-                    type="text"
-                    value={m.title || ''}
-                    onChange={(e) => updateMetric(idx, 'title', e.target.value)}
-                    className="admin-input font-bold"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="admin-label">Краткое пояснение</label>
-                <input
-                  type="text"
-                  value={m.desc || ''}
-                  onChange={(e) => updateMetric(idx, 'desc', e.target.value)}
-                  className="admin-input"
-                />
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

@@ -38,10 +38,10 @@ interface SectionItem {
 
 const sections: SectionItem[] = [
   { id: 'settings', label: 'Режим отображения (Лендинг / Портал)', desc: 'Переключение режима отображения сайта и видимости перекрёстных блоков', icon: Settings, href: '/admin/settings', scope: 'both' },
-  { id: 'landing-hero', label: 'Шапка и Главный экран (Лендинг)', desc: 'Логотип АНО «ЦЗСТ», навигация, H1, подзаголовок и метрики главного экрана', icon: Sparkles, href: '/admin/landing-hero', scope: 'landing' },
+  { id: 'hero', label: 'Главный экран (Hero Слайдер)', desc: 'Слайды главного экрана, заголовки, описания, кнопки, изображения и плашки', icon: Sliders, href: '/admin/hero', scope: 'both' },
+  { id: 'landing-hero', label: 'Шапка сайта (Header Лендинга)', desc: 'Логотип АНО «ЦЗСТ», подзаголовок, якорная навигация и кнопка обращения в шапке', icon: Sparkles, href: '/admin/landing-hero', scope: 'landing' },
   { id: 'landing-ideology', label: 'Идеология, Методология и Господдержка', desc: 'Формула эффективности, системные принципы работы и взаимодействие с госсектором', icon: Scale, href: '/admin/landing-ideology', scope: 'landing' },
   { id: 'header', label: 'Меню и навигация (Портал)', desc: 'Ссылки главного меню, Drag & Drop порядок, подсветка и телефон', icon: MenuIcon, href: '/admin/header', scope: 'portal' },
-  { id: 'hero', label: 'Главный экран (Hero Слайдер Портала)', desc: 'Слайды, заголовки, слоганы, режим отдельного блока или картинки', icon: Sliders, href: '/admin/hero', scope: 'portal' },
   { id: 'section-order', label: 'Порядок разделов (Портал)', desc: 'Drag & Drop порядок отображения модулей на главной странице портала', icon: SlidersVertical, href: '/admin/section-order', scope: 'portal' },
   { id: 'pages', label: 'Страницы и модули (Портал)', desc: 'Создание произвольных контентных страниц и секций портала', icon: Layers, href: '/admin/pages', scope: 'portal' },
   { id: 'organization', label: 'О нас и Философия (О Центре)', desc: 'Полное наименование АНО «ЦЗСТ», уставная роль, принципы, ИНН, ОГРН и адреса', icon: Building2, href: '/admin/organization', scope: 'both' },

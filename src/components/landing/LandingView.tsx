@@ -33,6 +33,7 @@ import {
 import { useSiteContent, resolveMediaUrl } from '@/lib/content';
 import { ORGANIZATION } from '@/data/organization';
 import { DEFAULT_LANDING, DEFAULT_FOOTER, DEFAULT_SETTINGS } from '@/data/defaultContent';
+import { HeroSlider } from '@/components/HeroSlider';
 
 export function LandingView() {
   const { content } = useSiteContent();
@@ -237,176 +238,11 @@ export function LandingView() {
 
       <main className="flex-1">
         {/* =====================================================================
-            4.2. ГЛАВНЫЙ ЭКРАН (HERO SECTION)
+            4.2. ГЛАВНЫЙ ЭКРАН (HERO SLIDER — 1 В 1 ИЗ ВЕРСИИ ПОРТАЛ)
            ===================================================================== */}
-        <section
-          id="hero"
-          className="relative bg-gradient-to-b from-[#F8F9FA] to-[#FFFFFF] border-b border-[#E2E8F0] pt-10 pb-14 lg:pt-16 lg:pb-20 overflow-hidden"
-        >
-          {/* Тонкая ведомственная координатная сетка на фоне */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-[0.35]"
-            style={{
-              backgroundImage:
-                'linear-gradient(to right, #E2E8F0 1px, transparent 1px), linear-gradient(to bottom, #E2E8F0 1px, transparent 1px)',
-              backgroundSize: '48px 48px',
-            }}
-          />
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-              {/* Левая колонка: Надзаголовок, H1, Лид-абзац, Кнопки CTA */}
-              <div className="lg:col-span-7 space-y-6">
-                {/* Надзаголовок (Badge) */}
-                <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-md bg-[#FFFFFF] border border-[#E2E8F0] shadow-2xs">
-                  <span className="w-2 h-2 rounded-full bg-gradient-to-r from-orange-600 to-amber-500" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-[#1E293B]">
-                    {hero.badge || 'Автономная некоммерческая организация'}
-                  </span>
-                </div>
-
-                {/* H1 */}
-                <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold text-[#0F172A] leading-[1.15] tracking-tight">
-                  {hero.title ||
-                    'Развитие спортивных технологий, зимних дисциплин и активного долголетия'}
-                </h1>
-
-                {/* Лид-абзац */}
-                <p className="text-base sm:text-lg text-[#334155] leading-relaxed max-w-2xl">
-                  {hero.lead ||
-                    'Реализация социально значимых программ, внедрение научно обоснованных методик спортивной подготовки, биомеханики и организация физкультурно-туристских мероприятий на территории РФ.'}
-                </p>
-
-                {/* Кнопки действия (CTA) */}
-                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
-                  <a
-                    href={hero.primaryCtaHref || '#directions'}
-                    className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-lg text-sm font-bold text-white bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-700 hover:to-amber-600 shadow-sm transition-all"
-                  >
-                    <span>{hero.primaryCtaText || 'Ознакомиться с направлениями'}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
-
-                  <a
-                    href={hero.secondaryCtaHref || '#appeal-form'}
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-sm font-semibold text-[#0F172A] bg-[#FFFFFF] hover:bg-[#F8F9FA] border border-[#CBD5E1] transition-colors"
-                  >
-                    <FileText className="w-4 h-4 text-orange-600" />
-                    <span>{hero.secondaryCtaText || 'Направить проектное предложение'}</span>
-                  </a>
-                </div>
-
-                {/* Краткая строка государственной ориентации */}
-                <div className="pt-4 border-t border-[#E2E8F0] flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#334155]">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-orange-600 shrink-0" />
-                    <span>Уставная деятельность НКО РФ</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Landmark className="w-4 h-4 text-orange-600 shrink-0" />
-                    <span>Содействие национальным проектам спорта и туризма</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Правая колонка: Официальный ведомственный паспорт организации */}
-              <div className="lg:col-span-5">
-                <div className="rounded-xl bg-[#0F172A] text-white p-6 sm:p-7 border border-slate-800 shadow-lg relative overflow-hidden">
-                  {/* Декоративная верхняя полоса в цветах Устава АНО */}
-                  <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400" />
-
-                  <div className="flex items-start justify-between gap-4 pb-5 border-b border-slate-800">
-                    <div>
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 block">
-                        Уставный профиль организации
-                      </span>
-                      <h2 className="text-lg font-bold text-white mt-1">
-                        {org.shortName || 'АНО «ЦЗСТ»'}
-                      </h2>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        Центр развития зимнего спорта, современных спортивных технологий и туризма
-                      </p>
-                    </div>
-                    <div className="w-12 h-12 rounded-lg bg-slate-900 border border-slate-700 p-2 flex items-center justify-center shrink-0">
-                      <img
-                        src="/logo_sign.png"
-                        alt="Уставный знак АНО ЦЗСТ"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Формула эффективности внутри паспорта */}
-                  <div className="py-4 border-b border-slate-800 space-y-2.5">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                      Формула системной эффективности:
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      {(ideology.formulaItems || DEFAULT_LANDING.ideology.formulaItems).map(
-                        (item: string, idx: number) => (
-                          <div
-                            key={idx}
-                            className="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800 flex items-center gap-2"
-                          >
-                            <span className="w-5 h-5 rounded bg-gradient-to-br from-orange-600 to-amber-500 text-white font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
-                              {idx + 1}
-                            </span>
-                            <span className="font-medium text-slate-200 leading-tight text-[11px]">
-                              {item}
-                            </span>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Юридические данные и локация */}
-                  <dl className="pt-4 space-y-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <dt className="text-slate-400">Организационно-правовая форма:</dt>
-                      <dd className="font-semibold text-slate-200">Автономная НКО</dd>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <dt className="text-slate-400">ОГРН / ИНН:</dt>
-                      <dd className="font-mono text-slate-200">
-                        {org.ogrn} / {org.inn}
-                      </dd>
-                    </div>
-                    <div className="pt-2 border-t border-slate-800/80 flex items-start gap-2 text-slate-300">
-                      <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                      <span className="text-[11px] leading-snug">
-                        Местонахождение: {org.legalAddress || 'РФ, Московская обл., Красногорск г.о., п. Архангельское'}
-                      </span>
-                    </div>
-                  </dl>
-                </div>
-              </div>
-            </div>
-
-            {/* Фактоиды / Метрики (3 ключевых блока) */}
-            <div className="mt-10 lg:mt-12 grid grid-cols-1 md:grid-cols-3 gap-5">
-              {(hero.metrics || DEFAULT_LANDING.hero.metrics).map((metric: any, idx: number) => (
-                <article
-                  key={idx}
-                  className="bg-[#FFFFFF] rounded-xl p-5 sm:p-6 border border-[#E2E8F0] shadow-2xs relative overflow-hidden group hover:border-amber-500/60 transition-colors"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-[11px] font-mono font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-amber-50 text-orange-800 border border-amber-200/80">
-                      {metric.tag || `Направление 0${idx + 1}`}
-                    </span>
-                    <Activity className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <h2 className="text-base font-bold text-[#0F172A] leading-snug">
-                    {metric.title}
-                  </h2>
-                  <p className="mt-2 text-xs text-[#334155] leading-relaxed">
-                    {metric.desc}
-                  </p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <div id="hero">
+          <HeroSlider />
+        </div>
 
         {/* =====================================================================
             4.3. О ЦЕНТРЕ И МИССИИ (УСТАВНЫЕ ЦЕЛИ И ФИЛОСОФИЯ)

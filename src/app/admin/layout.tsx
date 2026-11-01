@@ -43,12 +43,12 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard, href: '/admin', modes: ['landing', 'portal'] },
   { id: 'settings', label: 'Настройки (Режим)', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'], badge: 'Режим' },
+  { id: 'hero', label: 'Слайдер Hero', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
   // Landing-only blocks
-  { id: 'landing-hero', label: 'Шапка и Главный экран', icon: Sliders, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },
+  { id: 'landing-hero', label: 'Шапка лендинга', icon: Menu, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },
   { id: 'landing-ideology', label: 'Методология и Ведомства', icon: Landmark, href: '/admin/landing-ideology', modes: ['landing'], badge: 'Лендинг' },
   // Portal-only blocks
   { id: 'header', label: 'Меню портала', icon: Menu, href: '/admin/header', modes: ['portal'], badge: 'Портал' },
-  { id: 'hero', label: 'Слайдер Hero', icon: Sliders, href: '/admin/hero', modes: ['portal'], badge: 'Портал' },
   { id: 'section-order', label: 'Порядок разделов', icon: SlidersHorizontal, href: '/admin/section-order', modes: ['portal'], badge: 'Портал' },
   { id: 'pages', label: 'Страницы портала', icon: Layers, href: '/admin/pages', modes: ['portal'], badge: 'Портал' },
   { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists', modes: ['portal'], badge: 'Портал' },
