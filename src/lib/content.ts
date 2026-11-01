@@ -18,16 +18,71 @@ export function getDefaultContent(): SiteContent {
   return DEFAULT_CONTENT;
 }
 
-export async function getContent(): Promise<SiteContent> {
+function mergeWithDefaults(data: any): SiteContent {
+  if (!data || typeof data !== 'object') return DEFAULT_CONTENT;
+  return {
+    ...DEFAULT_CONTENT,
+    ...data,
+    settings: {
+      ...DEFAULT_CONTENT.settings,
+      ...(data.settings || {}),
+    },
+    landing: {
+      ...DEFAULT_CONTENT.landing,
+      ...(data.landing || {}),
+      header: {
+        ...DEFAULT_CONTENT.landing.header,
+        ...(data.landing?.header || {}),
+      },
+      hero: {
+        ...DEFAULT_CONTENT.landing.hero,
+        ...(data.landing?.hero || {}),
+      },
+      ideology: {
+        ...DEFAULT_CONTENT.landing.ideology,
+        ...(data.landing?.ideology || {}),
+      },
+    },
+    organization: {
+      ...DEFAULT_CONTENT.organization,
+      ...(data.organization || {}),
+      principles:
+        Array.isArray(data.organization?.principles) && data.organization.principles.length > 0
+          ? data.organization.principles
+          : DEFAULT_CONTENT.organization.principles,
+      directions:
+        Array.isArray(data.organization?.directions) && data.organization.directions.length > 0
+          ? data.organization.directions
+          : DEFAULT_CONTENT.organization.directions,
+      stats:
+        Array.isArray(data.organization?.stats) && data.organization.stats.length > 0
+          ? data.organization.stats
+          : DEFAULT_CONTENT.organization.stats,
+      bankRequisites: {
+        ...DEFAULT_CONTENT.organization.bankRequisites,
+        ...(data.organization?.bankRequisites || {}),
+      },
+    },
+    footer: {
+      ...DEFAULT_CONTENT.footer,
+      ...(data.footer || {}),
+    },
+  };
+}
+
+export async function getContent(forceRefresh = false): Promise<SiteContent> {
+  if (!forceRefresh && cachedContent) {
+    return cachedContent;
+  }
   if (typeof window !== 'undefined') {
     try {
       const apiEndpoint = window.location.hostname.includes('pages.dev')
         ? 'https://ano-crzs.101filmstudio.workers.dev/api/content'
         : '/api/content';
-      const res = await fetch(apiEndpoint);
+      const res = await fetch(apiEndpoint, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        const fullContent: SiteContent = { ...DEFAULT_CONTENT, ...data };
+        const fullContent = mergeWithDefaults(data);
         cachedContent = fullContent;
         return fullContent;
       }
@@ -40,6 +95,18 @@ export async function getContent(): Promise<SiteContent> {
 
 export function setCachedContent(content: SiteContent) {
   cachedContent = content;
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('site-content-updated', { detail: content }));
+  }
+}
+
+export function notifyContentUpdated() {
+  cachedContent = null;
+  if (typeof window !== 'undefined') {
+    getContent(true).then((fresh) => {
+      window.dispatchEvent(new CustomEvent('site-content-updated', { detail: fresh }));
+    });
+  }
 }
 
 export async function updateSection(section: string, data: unknown): Promise<boolean> {
@@ -52,6 +119,9 @@ export async function updateSection(section: string, data: unknown): Promise<boo
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    if (res.ok) {
+      notifyContentUpdated();
+    }
     return res.ok;
   } catch {
     return false;
@@ -61,9 +131,9 @@ export async function updateSection(section: string, data: unknown): Promise<boo
 /**
  * React hook to get live content with instant fallback to static defaults
  */
-export function useSiteContent(): { content: SiteContent; loading: boolean } {
+export function useSiteContent(): { content: SiteContent; loading: boolean; refresh: () => void } {
   const [content, setContent] = useState<SiteContent>(cachedContent ?? DEFAULT_CONTENT);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cachedContent);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,10 +143,29 @@ export function useSiteContent(): { content: SiteContent; loading: boolean } {
         setLoading(false);
       }
     });
+
+    const handleUpdate = (e: Event) => {
+      const customEvt = e as CustomEvent<SiteContent>;
+      if (isMounted && customEvt.detail) {
+        setContent(customEvt.detail);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('site-content-updated', handleUpdate);
+    }
+
     return () => {
       isMounted = false;
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('site-content-updated', handleUpdate);
+      }
     };
   }, []);
 
-  return { content, loading };
+  return {
+    content,
+    loading,
+    refresh: () => notifyContentUpdated(),
+  };
 }

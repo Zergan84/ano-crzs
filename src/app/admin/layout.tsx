@@ -24,8 +24,11 @@ import {
   SlidersHorizontal,
   Layers,
   Type,
-  LayoutTemplate
+  LayoutTemplate,
+  Settings,
+  Landmark,
 } from 'lucide-react';
+import { useSiteContent } from '@/lib/content';
 import './globals.css';
 
 interface NavItem {
@@ -33,35 +36,46 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   href: string;
+  modes: ('landing' | 'portal')[];
+  badge?: string;
 }
 
 const navItems: NavItem[] = [
-  { id: 'header', label: 'Меню', icon: Menu, href: '/admin/header' },
-  { id: 'hero', label: 'Главный экран', icon: Sliders, href: '/admin/hero' },
-  { id: 'sections', label: 'Разделы', icon: LayoutDashboard, href: '/admin/sections' },
-  { id: 'section-order', label: 'Порядок', icon: SlidersHorizontal, href: '/admin/section-order' },
-  { id: 'pages', label: 'Страницы', icon: Layers, href: '/admin/pages' },
-  { id: 'organization', label: 'Организация', icon: Building2, href: '/admin/organization' },
-  { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists' },
-  { id: 'news', label: 'Новости', icon: Newspaper, href: '/admin/news' },
-  { id: 'events', label: 'Мероприятия', icon: Calendar, href: '/admin/events' },
-  { id: 'documents', label: 'Документы', icon: FileText, href: '/admin/documents' },
-  { id: 'directions', label: 'Направления', icon: Compass, href: '/admin/directions' },
-  { id: 'partners', label: 'Партнёры', icon: Handshake, href: '/admin/partners' },
-  { id: 'contacts', label: 'Контакты', icon: Phone, href: '/admin/contacts' },
-  { id: 'media', label: 'Медиа', icon: ImageIcon, href: '/admin/media' },
-  { id: 'fonts', label: 'Шрифты', icon: Type, href: '/admin/fonts' },
-  { id: 'footer', label: 'Подвал', icon: LayoutTemplate, href: '/admin/footer' },
+  { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard, href: '/admin', modes: ['landing', 'portal'] },
+  { id: 'settings', label: 'Настройки (Режим)', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'], badge: 'Режим' },
+  // Landing-only blocks
+  { id: 'landing-hero', label: 'Шапка и Главный экран', icon: Sliders, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },
+  { id: 'landing-ideology', label: 'Методология и Ведомства', icon: Landmark, href: '/admin/landing-ideology', modes: ['landing'], badge: 'Лендинг' },
+  // Portal-only blocks
+  { id: 'header', label: 'Меню портала', icon: Menu, href: '/admin/header', modes: ['portal'], badge: 'Портал' },
+  { id: 'hero', label: 'Слайдер Hero', icon: Sliders, href: '/admin/hero', modes: ['portal'], badge: 'Портал' },
+  { id: 'section-order', label: 'Порядок разделов', icon: SlidersHorizontal, href: '/admin/section-order', modes: ['portal'], badge: 'Портал' },
+  { id: 'pages', label: 'Страницы портала', icon: Layers, href: '/admin/pages', modes: ['portal'], badge: 'Портал' },
+  { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists', modes: ['portal'], badge: 'Портал' },
+  { id: 'news', label: 'Новости', icon: Newspaper, href: '/admin/news', modes: ['portal'], badge: 'Портал' },
+  { id: 'events', label: 'Мероприятия', icon: Calendar, href: '/admin/events', modes: ['portal'], badge: 'Портал' },
+  // Shared Cross-blocks (Перекрестные блоки для Лендинга и Портала)
+  { id: 'organization', label: 'О нас и Философия', icon: Building2, href: '/admin/organization', modes: ['landing', 'portal'] },
+  { id: 'directions', label: 'Направления', icon: Compass, href: '/admin/directions', modes: ['landing', 'portal'] },
+  { id: 'documents', label: 'Документы', icon: FileText, href: '/admin/documents', modes: ['landing', 'portal'] },
+  { id: 'partners', label: 'Партнёры и спонсоры', icon: Handshake, href: '/admin/partners', modes: ['landing', 'portal'] },
+  { id: 'contacts', label: 'Контакты и реквизиты', icon: Phone, href: '/admin/contacts', modes: ['landing', 'portal'] },
+  { id: 'footer', label: 'Подвал (Footer)', icon: LayoutTemplate, href: '/admin/footer', modes: ['landing', 'portal'] },
+  { id: 'media', label: 'Медиатека R2', icon: ImageIcon, href: '/admin/media', modes: ['landing', 'portal'] },
+  { id: 'fonts', label: 'Шрифты', icon: Type, href: '/admin/fonts', modes: ['landing', 'portal'] },
 ];
-
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { content } = useSiteContent();
   const [auth, setAuth] = useState(false);
   const [loading, setLoading] = useState(true);
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const siteMode: 'landing' | 'portal' = content?.settings?.siteMode || 'landing';
+  const visibleNavItems = navItems.filter((item) => item.modes.includes(siteMode));
 
   useEffect(() => {
     checkAuth();
@@ -69,7 +83,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   async function checkAuth() {
     try {
-      const res = await fetch('/api/admin/check');
+      const apiEndpoint =
+        typeof window !== 'undefined' && window.location.hostname.includes('pages.dev')
+          ? 'https://ano-crzs.101filmstudio.workers.dev/api/admin/check'
+          : '/api/admin/check';
+      const res = await fetch(apiEndpoint);
       const isAuth = res.ok;
       setAuth(isAuth);
       if (!isAuth && pathname !== '/admin/login') {
@@ -94,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] text-white">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-red-500 border-t-transparent"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent"></div>
           <span className="font-mono text-xs uppercase tracking-widest text-slate-400">Загрузка панели...</span>
         </div>
       </div>
@@ -114,8 +132,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile Top Header */}
       <div className="fixed top-0 inset-x-0 z-40 flex h-14 items-center justify-between border-b border-[#222] bg-[#111] px-4 md:hidden">
         <div className="flex items-center gap-2">
-          <span className="font-black text-sm tracking-widest text-white">АНО «ЦРЗС»</span>
-          <span className="rounded bg-red-600/20 px-1.5 py-0.5 font-mono text-[10px] text-red-400">CMS</span>
+          <span className="font-black text-sm tracking-widest text-white">АНО «ЦЗСТ»</span>
+          <span
+            className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase ${
+              siteMode === 'landing'
+                ? 'bg-amber-500/20 text-amber-400'
+                : 'bg-blue-500/20 text-blue-400'
+            }`}
+          >
+            {siteMode === 'landing' ? 'ЛЕНДИНГ' : 'ПОРТАЛ'}
+          </span>
         </div>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -135,8 +161,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex h-14 items-center justify-between border-b border-[#222] px-4">
           {!collapsed && (
             <div className="flex items-center gap-2">
-              <span className="font-black text-sm tracking-wider text-white">АНО «ЦРЗС»</span>
-              <span className="rounded bg-red-600 px-1.5 py-0.5 font-mono text-[9px] font-bold text-white uppercase">R2 CMS</span>
+              <span className="font-black text-sm tracking-wider text-white">АНО «ЦЗСТ»</span>
+              <span
+                className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase ${
+                  siteMode === 'landing'
+                    ? 'bg-amber-600 text-white'
+                    : 'bg-blue-600 text-white'
+                }`}
+              >
+                {siteMode === 'landing' ? 'ЛЕНДИНГ' : 'ПОРТАЛ'}
+              </span>
             </div>
           )}
           <button
@@ -148,9 +182,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
 
+        {/* Active Mode Quick Banner */}
+        {!collapsed && (
+          <div className="px-3 py-2 border-b border-[#222] bg-[#0d1118] flex items-center justify-between text-[11px]">
+            <span className="text-slate-400">
+              Режим: <strong className="text-white">{siteMode === 'landing' ? 'Лендинг' : 'Портал'}</strong>
+            </span>
+            <NextLink
+              href="/admin/settings"
+              className="text-amber-400 hover:text-amber-300 font-semibold underline"
+            >
+              Изменить
+            </NextLink>
+          </div>
+        )}
+
         {/* Navigation list */}
         <nav className="flex-1 overflow-y-auto p-2 space-y-1">
-          {navItems.map((item) => {
+          {visibleNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
@@ -159,14 +208,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 title={collapsed ? item.label : undefined}
-                className={`flex items-center gap-3 rounded px-3 py-2 text-xs font-medium transition-colors ${
+                className={`flex items-center justify-between gap-2 rounded px-3 py-2 text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-red-600/20 text-red-400 border-l-2 border-red-500 font-semibold'
+                    ? 'bg-amber-600/20 text-amber-400 border-l-2 border-amber-500 font-semibold'
                     : 'text-slate-400 hover:bg-[#1a1a1a] hover:text-white'
                 } ${collapsed ? 'justify-center px-0' : ''}`}
               >
-                <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-red-400' : 'text-slate-400'}`} />
-                {!collapsed && <span>{item.label}</span>}
+                <div className="flex items-center gap-3 min-w-0">
+                  <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                </div>
+                {!collapsed && item.badge && (
+                  <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-white/5 text-slate-400 shrink-0">
+                    {item.badge}
+                  </span>
+                )}
               </NextLink>
             );
           })}

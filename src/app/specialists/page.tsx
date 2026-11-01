@@ -91,7 +91,7 @@ function SpecialistsRegistryContent() {
                 Единый реестр аттестованных специалистов и инструкторов
               </h1>
               <p className="mt-2 text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
-                Реестр ведется АНО «ЦРЗС» в целях подтверждения легитимности квалификации тренеров, инструкторов по горнолыжному спорту и сноуборду, а также спортивных судей в соответствии с отраслевыми стандартами РФ.
+                Реестр ведется АНО «ЦЗСТ» в целях подтверждения легитимности квалификации тренеров, инструкторов по горнолыжному спорту и сноуборду, а также спортивных судей в соответствии с отраслевыми стандартами РФ.
               </p>
             </div>
 
@@ -112,7 +112,7 @@ function SpecialistsRegistryContent() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Поиск по ФИО, номеру свидетельства (напр. RU-ЦРЗС-...), региону или месту работы..."
+                placeholder="Поиск по ФИО, номеру свидетельства (напр. RU-ЦЗСТ-...), региону или месту работы..."
                 className="w-full pl-9 pr-8 py-2 text-sm bg-slate-50 border border-slate-300 rounded focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
               {query && (
@@ -286,7 +286,7 @@ function SpecialistsRegistryContent() {
                     <h3 className="text-sm font-bold tracking-wide">
                       Электронная выписка из Единого Реестра
                     </h3>
-                    <p className="text-[11px] text-slate-300">АНО «ЦРЗС» • Официальное подтверждение</p>
+                    <p className="text-[11px] text-slate-300">АНО «ЦЗСТ» • Официальное подтверждение</p>
                   </div>
                 </div>
                 <button
@@ -350,7 +350,7 @@ function SpecialistsRegistryContent() {
                   {/* Stamp / Verification footer inside certificate */}
                   <div className="pt-3 border-t-2 border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
                     <div>
-                      <p>Уполномоченный орган аттестации: <strong>АНО «ЦРЗС»</strong></p>
+                      <p>Уполномоченный орган аттестации: <strong>АНО «ЦЗСТ»</strong></p>
                       <p>Сведения внесены в информационную систему учета кадров</p>
                     </div>
                     <div className="w-12 h-12 rounded-full border-2 border-blue-600/30 flex items-center justify-center text-blue-800 font-bold text-[8px] text-center leading-tight">
@@ -361,7 +361,7 @@ function SpecialistsRegistryContent() {
               </div>
 
                 <p className="text-[11px] text-slate-500 text-center">
-                  Настоящая выписка сформирована в режиме реального времени на основании официальной базы данных АНО «ЦРЗС».
+                  Настоящая выписка сформирована в режиме реального времени на основании официальной базы данных АНО «ЦЗСТ».
                 </p>
               </div>
 

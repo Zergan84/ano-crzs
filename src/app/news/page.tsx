@@ -37,7 +37,7 @@ export default function NewsPage() {
             Официальные сообщения
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
-            Пресс-центр АНО «ЦРЗС»
+            Пресс-центр АНО «ЦЗСТ»
           </h1>
           <p className="mt-2 text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
             Публикация пресс-релизов, итогов заседаний коллегиальных органов, оперативных уведомлений для спортивных комплексов и информационных писем.
@@ -154,7 +154,7 @@ export default function NewsPage() {
 
               <div className="p-3 bg-slate-50 border-t border-slate-200 flex justify-between items-center shrink-0 text-xs">
                 <span className="text-[11px] text-slate-500">
-                  АНО «ЦРЗС» • Все материалы открыты для цитирования со ссылкой на источник
+                  АНО «ЦЗСТ» • Все материалы открыты для цитирования со ссылкой на источник
                 </span>
                 <button
                   onClick={() => setActiveArticle(null)}

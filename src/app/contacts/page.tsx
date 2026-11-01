@@ -68,7 +68,7 @@ export default function ContactsPage() {
             Контактная информация
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
-            Контакты, реквизиты и электронная приемная АНО «ЦРЗС»
+            Контакты, реквизиты и электронная приемная АНО «ЦЗСТ»
           </h1>
           <p className="mt-2 text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
             Центральный офис организации расположен по адресу: 143420, Московская обл., Красногорск г.о., Архангельское п., д. 29. Прием посетителей и выдача оригиналов документов осуществляются по предварительной записи.
@@ -315,7 +315,7 @@ export default function ContactsPage() {
             <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px]"></div>
             <div className="relative z-10 text-center space-y-2 p-4 max-w-md bg-white/90 backdrop-blur-xs rounded-md border border-slate-200 shadow-sm">
               <MapPin className="w-8 h-8 text-red-600 mx-auto animate-bounce" />
-              <div className="font-bold text-sm text-slate-900">АНО «ЦРЗС» • Центральный офис</div>
+              <div className="font-bold text-sm text-slate-900">АНО «ЦЗСТ» • Центральный офис</div>
               <div className="text-xs text-slate-600">
                 143420, Московская обл., Красногорск г.о., Архангельское п., д. 29
               </div>

@@ -5,7 +5,7 @@ import { STRUCTURE_MEMBERS } from '@/data/structure';
 import { Users, Award, ShieldCheck, ChevronRight } from 'lucide-react';
 
 export const metadata = {
-  title: 'Органы управления и структура — АНО «ЦРЗС»',
+  title: 'Органы управления и структура — АНО «ЦЗСТ»',
   description: 'Руководство, Правление, Экспертный совет и комиссии АНО «Центр развития зимнего спорта, современных спортивных технологий и туризма».',
 };
 
@@ -39,7 +39,7 @@ export default function StructurePage() {
         {/* Governance Model Overview */}
         <div className="bg-slate-100 p-6 rounded-md border border-slate-200">
           <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wide mb-3">
-            Система коллегиального управления АНО «ЦРЗС»
+            Система коллегиального управления АНО «ЦЗСТ»
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
             <div className="bg-white p-4 rounded border border-slate-200">

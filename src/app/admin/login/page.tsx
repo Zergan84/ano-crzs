@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-red-600/10 border border-red-500/20 text-red-500">
             <ShieldCheck className="h-8 w-8" />
           </div>
-          <h1 className="text-2xl font-black tracking-wider text-white">АНО «ЦРЗС»</h1>
+          <h1 className="text-2xl font-black tracking-wider text-white">АНО «ЦЗСТ»</h1>
           <p className="mt-1 font-mono text-xs uppercase tracking-widest text-slate-400">
             Панель управления сайтом (Cloudflare R2)
           </p>

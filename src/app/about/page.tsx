@@ -5,7 +5,7 @@ import { ORGANIZATION } from '@/data/organization';
 import { ShieldCheck, Target, Award, Users, BookOpen, FileCheck, CheckCircle } from 'lucide-react';
 
 export const metadata = {
-  title: 'Об организации — АНО «ЦРЗС»',
+  title: 'Об организации — АНО «ЦЗСТ»',
   description: 'История создания, уставные цели, миссия и правовой статус АНО «Центр развития зимнего спорта, современных спортивных технологий и туризма».',
 };
 
@@ -22,7 +22,7 @@ export default function AboutPage() {
             Официальный статус и правовые основы
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
-            Об организации: АНО «ЦРЗС»
+            Об организации: АНО «ЦЗСТ»
           </h1>
           <p className="mt-2 text-slate-600 text-sm max-w-3xl leading-relaxed">
             Автономная некоммерческая организация «Центр развития зимнего спорта, современных спортивных технологий и туризма» создана в 2012 году для консолидации экспертного потенциала, создания единых профессиональных стандартов и содействия развитию индустрии зимних видов спорта в Российской Федерации.

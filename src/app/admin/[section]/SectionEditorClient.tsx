@@ -16,17 +16,18 @@ import {
 } from 'lucide-react';
 import { MediaPickerModal } from '@/components/admin/MediaPickerModal';
 import { DEFAULT_CONTENT } from '@/data/defaultContent';
+import { notifyContentUpdated } from '@/lib/content';
 
 const sectionTitles: Record<string, { title: string; desc: string }> = {
-  organization: { title: 'Организация', desc: 'Наименование, юридические реквизиты, адреса и ключевые показатели' },
-  hero: { title: 'Слайдер Hero (Главный экран)', desc: 'Управление слайдами, текстами, слоганами и изображениями стартового экрана' },
-  news: { title: 'Новости и статьи', desc: 'Публикация новостей, анонсов и статей с фотографиями и датами' },
-  events: { title: 'Мероприятия', desc: 'Календарь всероссийских семинаров, курсов подготовки и конференций' },
-  specialists: { title: 'Единый реестр специалистов', desc: 'Управление базой аттестованных инструкторов, тренеров и судей' },
-  documents: { title: 'Официальные документы', desc: 'Учредительные документы, регламенты, стандарты безопасности и приказы' },
-  directions: { title: 'Направления деятельности', desc: 'Ключевые сферы отраслевой работы АНО «ЦРЗС»' },
-  partners: { title: 'Партнёры и спонсоры', desc: 'Список официальных, генеральных и технических спонсоров' },
-  contacts: { title: 'Контакты и реквизиты', desc: 'Телефоны, адреса электронной почты отделов, режим работы и банк' },
+  organization: { title: 'О нас, Философия и Реквизиты (Общий блок)', desc: 'Наименование АНО «ЦЗСТ», уставная миссия, 4 опорных принципа работы, юридические реквизиты и показатели' },
+  hero: { title: 'Слайдер Hero (Портал)', desc: 'Управление слайдами, текстами, слоганами и изображениями стартового экрана портала' },
+  news: { title: 'Новости и статьи (Портал)', desc: 'Публикация новостей, анонсов и статей с фотографиями и датами' },
+  events: { title: 'Мероприятия (Портал)', desc: 'Календарь всероссийских семинаров, курсов подготовки и конференций' },
+  specialists: { title: 'Единый реестр специалистов (Портал)', desc: 'Управление базой аттестованных инструкторов, тренеров и судей' },
+  documents: { title: 'Официальные документы (Общий блок)', desc: 'Учредительные документы, регламенты, стандарты безопасности и приказы' },
+  directions: { title: 'Направления деятельности (Общий блок)', desc: '6 ключевых направлений уставной работы АНО «ЦЗСТ» для лендинга и портала' },
+  partners: { title: 'Партнёры и спонсоры (Общий блок)', desc: 'Список официальных, генеральных и технических партнёров' },
+  contacts: { title: 'Контакты и реквизиты (Общий блок)', desc: 'Телефоны, электронная приёмная, адрес в п. Архангельское г.о. Красногорск и банк' },
 };
 
 export default function SectionEditorClient({ section }: { section: string }) {
@@ -40,6 +41,9 @@ export default function SectionEditorClient({ section }: { section: string }) {
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
   const [mediaPickerCallback, setMediaPickerCallback] = useState<((url: string) => void) | null>(null);
 
+  const storageKey =
+    section === 'directions' || section === 'contacts' ? 'organization' : section;
+
   useEffect(() => {
     loadSectionData();
   }, [section]);
@@ -49,19 +53,34 @@ export default function SectionEditorClient({ section }: { section: string }) {
     setStatusMessage(null);
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${section}`
-        : `/api/admin/content/${section}`;
+        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${storageKey}`
+        : `/api/admin/content/${storageKey}`;
       const res = await fetch(apiEndpoint);
       if (res.ok) {
         const json = await res.json();
-        setData(json);
+        if (storageKey === 'organization') {
+          setData({
+            ...DEFAULT_CONTENT.organization,
+            ...(json || {}),
+            principles:
+              Array.isArray(json?.principles) && json.principles.length > 0
+                ? json.principles
+                : DEFAULT_CONTENT.organization.principles,
+            directions:
+              Array.isArray(json?.directions) && json.directions.length > 0
+                ? json.directions
+                : DEFAULT_CONTENT.organization.directions,
+          });
+        } else {
+          setData(json);
+        }
       } else {
         // Fallback to default
-        const def = (DEFAULT_CONTENT as any)[section] || {};
+        const def = (DEFAULT_CONTENT as any)[storageKey] || {};
         setData(def);
       }
     } catch {
-      const def = (DEFAULT_CONTENT as any)[section] || {};
+      const def = (DEFAULT_CONTENT as any)[storageKey] || {};
       setData(def);
     }
     setLoading(false);
@@ -72,8 +91,8 @@ export default function SectionEditorClient({ section }: { section: string }) {
     setStatusMessage(null);
     try {
       const apiEndpoint = (typeof window !== 'undefined' && window.location.hostname.includes('pages.dev'))
-        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${section}`
-        : `/api/admin/content/${section}`;
+        ? `https://ano-crzs.101filmstudio.workers.dev/api/admin/content/${storageKey}`
+        : `/api/admin/content/${storageKey}`;
 
       const res = await fetch(apiEndpoint, {
         method: 'PUT',
@@ -82,6 +101,7 @@ export default function SectionEditorClient({ section }: { section: string }) {
       });
 
       if (res.ok) {
+        notifyContentUpdated();
         setStatusMessage({ type: 'success', text: 'Изменения успешно сохранены и отображаются на сайте!' });
         setTimeout(() => setStatusMessage(null), 4000);
       } else {
@@ -240,6 +260,12 @@ function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
     setData({ ...data, [field]: val });
   };
 
+  const updatePrinciple = (index: number, key: string, val: string) => {
+    const principles = [...(data.principles || DEFAULT_CONTENT.organization.principles)];
+    principles[index] = { ...principles[index], [key]: val };
+    setData({ ...data, principles });
+  };
+
   const updateStat = (index: number, key: string, val: string) => {
     const stats = [...(data.stats || [])];
     stats[index] = { ...stats[index], [key]: val };
@@ -262,7 +288,7 @@ function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
     <div className="space-y-6">
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
         <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Основные сведения
+          Основные сведения и миссия (О Центре)
         </h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -292,6 +318,26 @@ function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
             rows={2}
             value={data.tagline || ''}
             onChange={(e) => updateField('tagline', e.target.value)}
+            className="admin-textarea"
+          />
+        </div>
+
+        <div>
+          <label className="admin-label">Формулировка роли организации (4.3. О Центре и миссии)</label>
+          <textarea
+            rows={2}
+            value={data.missionRole || ''}
+            onChange={(e) => updateField('missionRole', e.target.value)}
+            className="admin-textarea"
+          />
+        </div>
+
+        <div>
+          <label className="admin-label">Философия: системность и методология вместо коммерции</label>
+          <textarea
+            rows={2}
+            value={data.ideologyStatement || ''}
+            onChange={(e) => updateField('ideologyStatement', e.target.value)}
             className="admin-textarea"
           />
         </div>
@@ -354,6 +400,38 @@ function OrganizationEditor({ data, setData }: { data: any; setData: any }) {
               className="admin-input"
             />
           </div>
+        </div>
+      </div>
+
+      {/* 4 опорных принципа работы */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
+        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
+          4 опорных принципа работы (Уставные цели и Философия)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {(data.principles || DEFAULT_CONTENT.organization.principles).map((p: any, i: number) => (
+            <div key={p.id || i} className="rounded-lg border border-[#2a2a2a] bg-[#161a24] p-4 space-y-2.5">
+              <div className="text-xs font-mono text-amber-400 font-bold">Принцип 0{i + 1}</div>
+              <div>
+                <label className="admin-label">Заголовок принципа</label>
+                <input
+                  type="text"
+                  value={p.title || ''}
+                  onChange={(e) => updatePrinciple(i, 'title', e.target.value)}
+                  className="admin-input font-bold"
+                />
+              </div>
+              <div>
+                <label className="admin-label">Описание</label>
+                <textarea
+                  rows={2}
+                  value={p.description || ''}
+                  onChange={(e) => updatePrinciple(i, 'description', e.target.value)}
+                  className="admin-textarea"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -678,7 +756,7 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
       excerpt: 'Краткий анонс новости...',
       content: 'Полный текст новости...',
       imageUrl: '',
-      author: 'Пресс-служба АНО «ЦРЗС»',
+      author: 'Пресс-служба АНО «ЦЗСТ»',
       readTime: '3 мин',
     };
     setData({ ...data, items: [newItem, ...items] });
@@ -845,7 +923,7 @@ function EventsEditor({ data, setData }: { data: any; setData: any }) {
       region: 'Центральный ФО',
       status: 'Открыта регистрация',
       targetAudience: 'Инструкторы и специалисты',
-      organizer: 'АНО «ЦРЗС»',
+      organizer: 'АНО «ЦЗСТ»',
       seatsTotal: 50,
       seatsLeft: 20,
     };
@@ -991,7 +1069,7 @@ function SpecialistsEditor({ data, setData }: { data: any; setData: any }) {
       validUntil: '2028-01-15',
       status: 'Действителен',
       region: 'г. Москва',
-      organization: 'АНО «ЦРЗС»',
+      organization: 'АНО «ЦЗСТ»',
     };
     setData({ ...data, items: [newSpec, ...items] });
   };
@@ -1283,6 +1361,21 @@ function DirectionsEditor({ data, setData }: { data: any; setData: any }) {
               value={dir.description || ''}
               onChange={(e) => updateDir(i, 'description', e.target.value)}
               className="admin-textarea"
+            />
+          </div>
+          <div>
+            <label className="admin-label">Подпункты / направления (по одному в строке)</label>
+            <textarea
+              rows={3}
+              value={(dir.topics || []).join('\n')}
+              onChange={(e) =>
+                updateDir(
+                  i,
+                  'topics',
+                  e.target.value.split('\n').filter((line) => line.trim() !== '')
+                )
+              }
+              className="admin-textarea font-mono text-xs"
             />
           </div>
         </div>

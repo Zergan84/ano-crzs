@@ -3,7 +3,7 @@ import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Camera, Calendar, MapPin, Tag } from 'lucide-react';
 
 export const metadata = {
-  title: 'Фотохроника мероприятий — АНО «ЦРЗС»',
+  title: 'Фотохроника мероприятий — АНО «ЦЗСТ»',
   description: 'Официальная фотохроника всероссийских семинаров, аттестаций инструкторов, полевых испытаний оборудования и аудитов горнолыжных трасс.',
 };
 
@@ -25,7 +25,7 @@ export default function GalleryPage() {
       date: 'Январь 2025',
       category: 'Безопасность трасс',
       photosCount: 18,
-      description: 'Проверка эластичности защитных сетей классов В и С, оценка уклонов перегибов и соответствия стандартам СТО-ЦРЗС.',
+      description: 'Проверка эластичности защитных сетей классов В и С, оценка уклонов перегибов и соответствия стандартам СТО-ЦЗСТ.',
     },
     {
       id: 'g-03',
@@ -124,7 +124,7 @@ export default function GalleryPage() {
                 </div>
 
                 <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-[11px] text-slate-400">Пресс-служба АНО «ЦРЗС»</span>
+                  <span className="text-[11px] text-slate-400">Пресс-служба АНО «ЦЗСТ»</span>
                   <span className="text-blue-800 font-semibold hover:underline cursor-pointer">
                     Смотреть альбом →
                   </span>

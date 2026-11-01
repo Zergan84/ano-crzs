@@ -69,7 +69,7 @@ function DocumentsContent() {
             Нормативно-правовая база организации
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
-            Электронный депозитарий документов и стандартов АНО «ЦРЗС»
+            Электронный депозитарий документов и стандартов АНО «ЦЗСТ»
           </h1>
           <p className="mt-2 text-slate-600 text-xs sm:text-sm max-w-3xl leading-relaxed">
             В разделе размещены учредительные документы, свидетельства Минюста РФ, отраслевые стандарты категорирования трасс, программы подготовки кадров и публичные отчеты о деятельности организации.
@@ -95,7 +95,7 @@ function DocumentsContent() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Поиск по названию документа, номеру (например, УСТ-2023, СТО-ЦРЗС)..."
+                placeholder="Поиск по названию документа, номеру (например, УСТ-2023, СТО-ЦЗСТ)..."
                 className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-300 rounded focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>

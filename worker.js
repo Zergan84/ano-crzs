@@ -1,7 +1,7 @@
 import { DEFAULT_CONTENT } from './src/data/defaultContent.ts';
 
 /**
- * Cloudflare Worker entry point for АНО «ЦРЗС»
+ * Cloudflare Worker entry point for АНО «ЦЗСТ»
  * Supports:
  * - Admin Authentication with Cloudflare Secrets (ADMIN_LOGIN, ADMIN_PASSWORD, TOKEN_SECRET)
  * - Cloudflare R2 Storage (R2_BUCKET: ano-crzs) for content.json and uploaded media files

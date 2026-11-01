@@ -5,13 +5,16 @@ import FontProvider from '@/components/FontProvider';
 import { ORGANIZATION } from '@/data/organization';
 
 export const metadata: Metadata = {
-  title: `${ORGANIZATION.shortName} — Центр развития зимнего спорта, современных спортивных технологий и туризма`,
-  description: 'Официальный портал АНО «ЦРЗС»: Единый реестр аттестованных специалистов и инструкторов, стандартизация трасс, курсы подготовки, судейские семинары и методические регламенты зимних видов спорта в РФ.',
-  keywords: 'ЦРЗС, АНО ЦРЗС, реестр инструкторов, горнолыжный спорт, сноуборд, аттестация тренеров, стандарты горнолыжных трасс, зимний спорт, спортивные технологии',
+  title: 'АНО «ЦЗСТ» — Центр развития зимнего спорта, современных спортивных технологий и туризма',
+  description:
+    'Автономная некоммерческая организация «Центр развития зимнего спорта, современных спортивных технологий и туризма» (АНО «ЦЗСТ»): реализация социально значимых программ, внедрение научно обоснованных методик спортивной подготовки, биомеханики и организация физкультурно-туристских мероприятий на территории РФ.',
+  keywords:
+    'АНО ЦЗСТ, Центр развития зимнего спорта, спортивные технологии, биомеханика спорта, бутфитинг, горнолыжный спорт, сноуборд, горнолыжный туризм, наставничество в спорте, Красногорск Архангельское',
   authors: [{ name: ORGANIZATION.shortName }],
   openGraph: {
-    title: `${ORGANIZATION.shortName} — Официальный портал`,
-    description: ORGANIZATION.tagline,
+    title: 'АНО «ЦЗСТ» — Центр развития зимнего спорта, современных спортивных технологий и туризма',
+    description:
+      'Развитие спортивных технологий, зимних дисциплин и активного долголетия. Методическая экспертиза, биомеханика, подготовка кадров и содействие нацпроектам спорта и туризма РФ.',
     type: 'website',
     locale: 'ru_RU',
   },
@@ -23,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
-      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 selection:bg-blue-900 selection:text-white">
+    <html lang="ru" className="scroll-smooth">
+      <body className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1E293B] antialiased selection:bg-amber-500/20 selection:text-[#0F172A]">
         <FontProvider>
           <SiteShell>
             {children}
@@ -34,4 +37,3 @@ export default function RootLayout({
     </html>
   );
 }
-

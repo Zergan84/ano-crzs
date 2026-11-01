@@ -3,7 +3,7 @@ import { Specialist } from '@/types';
 export const SPECIALISTS_DATA: Specialist[] = [
   {
     id: 'sp-001',
-    regNumber: 'RU-ЦРЗС-2024-0019',
+    regNumber: 'RU-ЦЗСТ-2024-0019',
     fullName: 'Воронов Алексей Дмитриевич',
     discipline: 'Горнолыжный спорт',
     qualificationCategory: 'Категория А (Высшая)',
@@ -12,11 +12,11 @@ export const SPECIALISTS_DATA: Specialist[] = [
     certDate: '15.02.2024',
     validUntil: '15.02.2027',
     status: 'Действителен',
-    workplace: 'ГЛК «Воробьевы Горы» / Экспертный совет ЦРЗС',
+    workplace: 'ГЛК «Воробьевы Горы» / Экспертный совет ЦЗСТ',
   },
   {
     id: 'sp-002',
-    regNumber: 'RU-ЦРЗС-2023-0142',
+    regNumber: 'RU-ЦЗСТ-2023-0142',
     fullName: 'Кузнецова Елена Сергеевна',
     discipline: 'Сноуборд',
     qualificationCategory: 'Категория А (Высшая)',
@@ -29,7 +29,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-003',
-    regNumber: 'RU-ЦРЗС-2024-0310',
+    regNumber: 'RU-ЦЗСТ-2024-0310',
     fullName: 'Михайлов Сергей Владимирович',
     discipline: 'Горнолыжный спорт',
     qualificationCategory: 'Категория B (Первая)',
@@ -42,7 +42,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-004',
-    regNumber: 'RU-ЦРЗС-2022-0088',
+    regNumber: 'RU-ЦЗСТ-2022-0088',
     fullName: 'Смирнова Анна Игоревна',
     discipline: 'Фристайл',
     qualificationCategory: 'Категория B (Первая)',
@@ -55,7 +55,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-005',
-    regNumber: 'RU-ЦРЗС-2024-0551',
+    regNumber: 'RU-ЦЗСТ-2024-0551',
     fullName: 'Петров Дмитрий Николаевич',
     discipline: 'Беговые лыжи',
     qualificationCategory: 'Категория А (Высшая)',
@@ -68,7 +68,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-006',
-    regNumber: 'RU-ЦРЗС-2023-0890',
+    regNumber: 'RU-ЦЗСТ-2023-0890',
     fullName: 'Соколов Артем Михайлович',
     discipline: 'Ски-альпинизм',
     qualificationCategory: 'Категория B (Первая)',
@@ -81,7 +81,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-007',
-    regNumber: 'RU-ЦРЗС-2024-0612',
+    regNumber: 'RU-ЦЗСТ-2024-0612',
     fullName: 'Тарасов Игорь Андреевич',
     discipline: 'Горнолыжный спорт',
     qualificationCategory: 'Всероссийская судейская категория',
@@ -90,11 +90,11 @@ export const SPECIALISTS_DATA: Specialist[] = [
     certDate: '22.01.2024',
     validUntil: '22.01.2027',
     status: 'Действителен',
-    workplace: 'Главная судейская коллегия ЦРЗС',
+    workplace: 'Главная судейская коллегия ЦЗСТ',
   },
   {
     id: 'sp-008',
-    regNumber: 'RU-ЦРЗС-2024-0701',
+    regNumber: 'RU-ЦЗСТ-2024-0701',
     fullName: 'Васильева Ольга Павловна',
     discipline: 'Сноуборд',
     qualificationCategory: 'Категория C (Вторая)',
@@ -106,7 +106,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-009',
-    regNumber: 'RU-ЦРЗС-2023-0442',
+    regNumber: 'RU-ЦЗСТ-2023-0442',
     fullName: 'Романов Кирилл Олегович',
     discipline: 'Инструкторская деятельность',
     qualificationCategory: 'Инструктор начального уровня',
@@ -118,7 +118,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-010',
-    regNumber: 'RU-ЦРЗС-2021-0012',
+    regNumber: 'RU-ЦЗСТ-2021-0012',
     fullName: 'Григорьев Виктор Семенович',
     discipline: 'Горнолыжный спорт',
     qualificationCategory: 'Категория А (Высшая)',
@@ -131,7 +131,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-011',
-    regNumber: 'RU-ЦРЗС-2024-0994',
+    regNumber: 'RU-ЦЗСТ-2024-0994',
     fullName: 'Федорова Мария Викторовна',
     discipline: 'Беговые лыжи',
     qualificationCategory: 'Категория B (Первая)',
@@ -144,7 +144,7 @@ export const SPECIALISTS_DATA: Specialist[] = [
   },
   {
     id: 'sp-012',
-    regNumber: 'RU-ЦРЗС-2024-1045',
+    regNumber: 'RU-ЦЗСТ-2024-1045',
     fullName: 'Николаев Максим Юрьевич',
     discipline: 'Горнолыжный спорт',
     qualificationCategory: 'Спортивный судья I категории',
