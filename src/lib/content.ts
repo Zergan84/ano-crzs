@@ -80,6 +80,8 @@ function mergeWithDefaults(data: any): SiteContent {
         typeof data.hero?.slideDuration === 'number' && data.hero.slideDuration > 0
           ? data.hero.slideDuration
           : DEFAULT_CONTENT.hero.slideDuration,
+      sliderHeight:
+        data.hero?.sliderHeight || DEFAULT_CONTENT.hero.sliderHeight,
       transitionEffect:
         data.hero?.transitionEffect || DEFAULT_CONTENT.hero.transitionEffect,
       slides:

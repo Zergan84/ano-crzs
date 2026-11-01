@@ -507,7 +507,26 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
             />
           </div>
 
-          {/* 3. Выпадающий список эффекта смены слайда */}
+          {/* 3. Высота слайдера */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 whitespace-nowrap">
+              Высота:
+            </span>
+            <select
+              value={data?.sliderHeight || 'compact'}
+              onChange={(e) =>
+                setData({ ...data, sliderHeight: e.target.value })
+              }
+              className="rounded-md border border-[#2d3748] bg-[#0c0f16] px-2.5 py-1 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
+            >
+              <option value="compact">Компактная (как в образце Lovable ~560px)</option>
+              <option value="medium">Средняя (~680px)</option>
+              <option value="tall">Высокая (~820px)</option>
+              <option value="fullscreen">100% высота экрана (Fullscreen)</option>
+            </select>
+          </div>
+
+          {/* 4. Выпадающий список эффекта смены слайда */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-400 whitespace-nowrap">
               Эффект смены:
@@ -519,11 +538,12 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
               }
               className="rounded-md border border-[#2d3748] bg-[#0c0f16] px-2.5 py-1 text-xs font-semibold text-white focus:border-amber-500 focus:outline-none"
             >
-              <option value="motion-blur">Motion blur</option>
-              <option value="fast-wind">Fast wind</option>
-              <option value="transparent">transparent</option>
-              <option value="dip-to-white">dip to white</option>
-              <option value="dip-to-color">dip to color</option>
+              <option value="motion-blur">Motion blur (мягкое размытие)</option>
+              <option value="fade">Fade (плавное растворение без прыжков)</option>
+              <option value="fast-wind">Fast wind (динамичный сдвиг)</option>
+              <option value="transparent">Transparent</option>
+              <option value="dip-to-white">Dip to white</option>
+              <option value="dip-to-color">Dip to color</option>
             </select>
           </div>
 

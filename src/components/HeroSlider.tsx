@@ -22,6 +22,7 @@ import { useSiteContent, resolveMediaUrl } from '@/lib/content';
 
 export type HeroTransitionEffect =
   | 'motion-blur'
+  | 'fade'
   | 'fast-wind'
   | 'transparent'
   | 'dip-to-white'
@@ -64,6 +65,7 @@ export function HeroSlider() {
 
   const showControls = Boolean(content?.hero?.showControls);
   const slideDurationSec = Math.max(1, Number(content?.hero?.slideDuration) || 8);
+  const sliderHeight = (content?.hero as any)?.sliderHeight || 'compact';
   const transitionEffect: HeroTransitionEffect =
     (content?.hero?.transitionEffect as HeroTransitionEffect) || 'motion-blur';
 
@@ -388,7 +390,7 @@ export function HeroSlider() {
       timeoutRef.current = setTimeout(() => {
         setCurrentSlide((prev) => getTargetIdx(prev));
         setAnimPhase('idle');
-      }, 210);
+      }, 140);
     },
     []
   );
@@ -446,23 +448,27 @@ export function HeroSlider() {
   // Compute CSS transition classes based on selected transitionEffect
   const getSlideTransitionClasses = () => {
     switch (transitionEffect) {
+      case 'fade':
+        return animPhase === 'out'
+          ? 'opacity-0'
+          : 'opacity-100';
       case 'motion-blur':
         return animPhase === 'out'
-          ? 'opacity-0 blur-[10px] translate-x-8 scale-x-[1.03]'
-          : 'opacity-100 blur-0 translate-x-0 scale-x-100';
+          ? 'opacity-0 blur-[6px]'
+          : 'opacity-100 blur-0';
       case 'fast-wind':
         return animPhase === 'out'
-          ? 'opacity-0 -translate-x-16 -skew-x-6 scale-95'
-          : 'opacity-100 translate-x-0 skew-x-0 scale-100';
+          ? 'opacity-0 -translate-x-6'
+          : 'opacity-100 translate-x-0';
       case 'transparent':
         return animPhase === 'out'
-          ? 'opacity-0 scale-[0.99]'
-          : 'opacity-100 scale-100';
+          ? 'opacity-0'
+          : 'opacity-100';
       case 'dip-to-white':
       case 'dip-to-color':
         return animPhase === 'out'
-          ? 'opacity-10 scale-[0.99]'
-          : 'opacity-100 scale-100';
+          ? 'opacity-20'
+          : 'opacity-100';
       default:
         return animPhase === 'out' ? 'opacity-0' : 'opacity-100';
     }
@@ -524,14 +530,29 @@ export function HeroSlider() {
         ? 'justify-end'
         : 'justify-start';
 
+    const heightClasses = (() => {
+      switch (sliderHeight) {
+        case 'compact':
+          return 'min-h-[520px] md:min-h-[580px] py-12 md:py-20';
+        case 'medium':
+          return 'min-h-[640px] md:min-h-[700px] py-16 md:py-24';
+        case 'tall':
+          return 'min-h-[780px] md:min-h-[860px] py-20 md:py-32';
+        case 'fullscreen':
+          return 'min-h-screen py-16 md:py-24';
+        default:
+          return isTricolor
+            ? 'min-h-[520px] md:min-h-[580px] py-12 md:py-20'
+            : 'min-h-screen py-16 md:py-24';
+      }
+    })();
+
     return (
       <section
         id="top"
-        className={`relative isolate flex w-full flex-col overflow-hidden ${
-          isTricolor
-            ? 'bg-[#0F2147] py-12 md:py-24'
-            : 'min-h-screen bg-[#071A33]'
-        }`}
+        className={`relative isolate flex w-full flex-col justify-center overflow-hidden transition-all duration-300 ${
+          isTricolor ? 'bg-[#0F2147]' : 'bg-[#071A33]'
+        } ${heightClasses}`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
@@ -578,11 +599,11 @@ export function HeroSlider() {
 
         <div
           className={`mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-5 md:px-6 relative z-10 ${
-            isTricolor ? 'pb-14' : 'pb-28 pt-32'
+            isTricolor ? 'pb-14 pt-8' : 'pb-28 pt-32'
           }`}
         >
           <div
-            className={`w-full max-w-2xl transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
+            className={`w-full max-w-2xl min-h-[340px] flex flex-col justify-center transition-all duration-300 ease-out will-change-transform ${alignContainerClasses} ${getSlideTransitionClasses()}`}
           >
             {boltBadge && (
               isTricolor ? (
