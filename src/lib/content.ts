@@ -18,6 +18,23 @@ export function getDefaultContent(): SiteContent {
   return DEFAULT_CONTENT;
 }
 
+function mergeThemesList(storedItems: any[] | undefined): any[] {
+  const defaults = DEFAULT_CONTENT.themes.items;
+  if (!Array.isArray(storedItems) || storedItems.length === 0) {
+    return defaults;
+  }
+  const merged = storedItems.map((item) => {
+    const def = defaults.find((d) => d.id === item.id);
+    return def ? { ...def, ...item } : item;
+  });
+  for (const def of defaults) {
+    if (!merged.some((m) => m.id === def.id)) {
+      merged.push(def);
+    }
+  }
+  return merged;
+}
+
 function mergeWithDefaults(data: any): SiteContent {
   if (!data || typeof data !== 'object') return DEFAULT_CONTENT;
   return {
@@ -34,10 +51,7 @@ function mergeWithDefaults(data: any): SiteContent {
         data.themes?.activeThemeId ||
         data.settings?.activeThemeId ||
         DEFAULT_CONTENT.themes.activeThemeId,
-      items:
-        Array.isArray(data.themes?.items) && data.themes.items.length > 0
-          ? data.themes.items
-          : DEFAULT_CONTENT.themes.items,
+      items: mergeThemesList(data.themes?.items),
     },
     landing: {
       ...DEFAULT_CONTENT.landing,

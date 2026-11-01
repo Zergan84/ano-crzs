@@ -59,7 +59,15 @@ export default function AdminThemesPage() {
         if (tJson && typeof tJson === 'object') {
           if (tJson.activeThemeId) activeId = tJson.activeThemeId;
           if (Array.isArray(tJson.items) && tJson.items.length > 0) {
-            items = tJson.items;
+            items = tJson.items.map((it: ThemeConfig) => {
+              const def = DEFAULT_THEMES_LIST.find((d) => d.id === it.id);
+              return def ? { ...def, ...it } : it;
+            });
+            for (const def of DEFAULT_THEMES_LIST) {
+              if (!items.some((m) => m.id === def.id)) {
+                items.push(def);
+              }
+            }
           }
         }
       }
@@ -692,6 +700,45 @@ export default function AdminThemesPage() {
                   <option value="md">Выраженная (md)</option>
                   <option value="lg">Глубокая (lg)</option>
                 </select>
+              </div>
+            </div>
+
+            {/* 5. ФОНОВЫЕ И ДЕКОРАТИВНЫЕ ИЗОБРАЖЕНИЯ ТЕМЫ (Bolt style и др.) */}
+            <div className="pt-3 border-t border-[#1e2636] space-y-3">
+              <div className="text-xs font-bold text-slate-300">
+                5. Тематические изображения шаблона (для Bolt style и кастомных тем)
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <div>
+                  <label className="admin-label">Фоновое фото первого экрана (Hero Background URL)</label>
+                  <input
+                    type="text"
+                    value={currentTheme.heroBgImage || ''}
+                    onChange={(e) => updateThemeField('heroBgImage', e.target.value)}
+                    className="admin-input font-mono text-xs"
+                    placeholder="https://images.pexels.com/photos/5961806/..."
+                  />
+                </div>
+                <div>
+                  <label className="admin-label">Фото блока «О Центре» (#about Image URL)</label>
+                  <input
+                    type="text"
+                    value={currentTheme.aboutImage || ''}
+                    onChange={(e) => updateThemeField('aboutImage', e.target.value)}
+                    className="admin-input font-mono text-xs"
+                    placeholder="https://images.pexels.com/photos/7207549/..."
+                  />
+                </div>
+                <div>
+                  <label className="admin-label">Фото блока «Сотрудничество и партнёрство» (Partner Image URL)</label>
+                  <input
+                    type="text"
+                    value={currentTheme.partnerImage || ''}
+                    onChange={(e) => updateThemeField('partnerImage', e.target.value)}
+                    className="admin-input font-mono text-xs"
+                    placeholder="https://images.pexels.com/photos/4963360/..."
+                  />
+                </div>
               </div>
             </div>
           </div>

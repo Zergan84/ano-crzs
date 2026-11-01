@@ -40,6 +40,10 @@ export interface ThemeConfig {
   cardRadius: '0px' | '6px' | '12px' | '20px';
   buttonRadius: '0px' | '6px' | '8px' | '9999px';
   cardShadow: 'none' | 'sm' | 'md' | 'lg';
+  // Дополнительные изображения и стилевые параметры темы (например, Bolt style)
+  heroBgImage?: string;
+  aboutImage?: string;
+  partnerImage?: string;
 }
 
 export const DEFAULT_THEMES_LIST: ThemeConfig[] = [
@@ -72,6 +76,39 @@ export const DEFAULT_THEMES_LIST: ThemeConfig[] = [
     cardRadius: '12px',
     buttonRadius: '8px',
     cardShadow: 'sm',
+  },
+  {
+    id: 'bolt-style',
+    name: 'Bolt style',
+    description: 'Дизайн-шаблон 1-в-1 по референсу Bolt: шрифт Onest, глубокий морской сапфир (#071A33), тёплое золото (#E8B93E), бирюзовые акценты (#0F7B7A), капсульные кнопки и фото-блоки',
+    isBuiltin: true,
+    headingFont: 'Onest',
+    bodyFont: 'Onest',
+    uppercaseHeadings: false,
+    baseFontSize: '16px',
+    bgPrimary: '#FFFFFF',
+    bgSecondary: '#F8FAFC',
+    cardBg: '#FFFFFF',
+    cardBorder: '#E2E8F0',
+    headerBg: '#071A33',
+    darkPanelBg: '#071A33',
+    textHeading: '#071A33',
+    textBody: '#475569',
+    textMuted: '#64748B',
+    btnPrimaryFrom: '#E8B93E',
+    btnPrimaryTo: '#F0CF6A',
+    btnPrimaryText: '#071A33',
+    btnSecondaryBg: '#EEF3F9',
+    btnSecondaryText: '#071A33',
+    accentColor: '#0F7B7A',
+    badgeBg: '#E9F7F6',
+    badgeText: '#0B6160',
+    cardRadius: '20px',
+    buttonRadius: '9999px',
+    cardShadow: 'md',
+    heroBgImage: 'https://images.pexels.com/photos/5961806/pexels-photo-5961806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    aboutImage: 'https://images.pexels.com/photos/7207549/pexels-photo-7207549.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
+    partnerImage: 'https://images.pexels.com/photos/4963360/pexels-photo-4963360.jpeg?auto=compress&cs=tinysrgb&h=650&w=940',
   },
   {
     id: 'state-navy',

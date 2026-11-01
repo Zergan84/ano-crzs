@@ -28,9 +28,9 @@ function getShadowCss(shadow: ThemeConfig['cardShadow']): string {
     case 'sm':
       return '0 1px 3px 0 rgba(15, 23, 42, 0.05)';
     case 'md':
-      return '0 6px 18px -4px rgba(15, 23, 42, 0.10), 0 2px 6px -2px rgba(15, 23, 42, 0.05)';
+      return '0 1px 2px rgba(7, 26, 51, 0.04), 0 8px 24px -12px rgba(7, 26, 51, 0.12)';
     case 'lg':
-      return '0 16px 32px -8px rgba(15, 23, 42, 0.16), 0 4px 12px -2px rgba(15, 23, 42, 0.08)';
+      return '0 2px 4px rgba(7, 26, 51, 0.06), 0 20px 40px -16px rgba(7, 26, 51, 0.25)';
     default:
       return '0 1px 3px 0 rgba(15, 23, 42, 0.05)';
   }
@@ -93,15 +93,15 @@ function buildThemeCss(t: ThemeConfig): string {
     }
 
     /* Шапка лендинга */
-    .site-themed-root > div > header,
+    .site-themed-root > div > header:not(.bolt-header),
     .site-themed-root header.bg-\\[\\#FFFFFF\\]\\/95 {
       background-color: ${t.headerBg} !important;
       border-color: ${t.cardBorder} !important;
     }
 
     /* Карточки */
-    .site-themed-root article,
-    .site-themed-root .rounded-xl.border:not(.bg-\\[\\#0F172A\\]):not(.bg-slate-900) {
+    .site-themed-root article:not(.bolt-card-dark),
+    .site-themed-root .rounded-xl.border:not(.bg-\\[\\#0F172A\\]):not(.bg-slate-900):not(.bg-\\[\\#071A33\\]):not(.bolt-keep-bg) {
       background-color: ${t.cardBg} !important;
       border-color: ${t.cardBorder} !important;
       border-radius: ${t.cardRadius} !important;

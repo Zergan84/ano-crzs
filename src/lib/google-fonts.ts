@@ -6,6 +6,7 @@ export interface GoogleFont {
 
 export const GOOGLE_FONTS: GoogleFont[] = [
   { family: 'Inter', category: 'sans-serif', weights: '100..900' },
+  { family: 'Onest', category: 'sans-serif', weights: '100..900' },
   { family: 'Roboto', category: 'sans-serif', weights: '100..900' },
   { family: 'Montserrat', category: 'sans-serif', weights: '100..900' },
   { family: 'Open Sans', category: 'sans-serif', weights: '300..800' },

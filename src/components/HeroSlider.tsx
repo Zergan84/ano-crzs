@@ -63,6 +63,23 @@ export function HeroSlider() {
   const transitionEffect: HeroTransitionEffect =
     (content?.hero?.transitionEffect as HeroTransitionEffect) || 'motion-blur';
 
+  const activeThemeId =
+    content?.themes?.activeThemeId ||
+    content?.settings?.activeThemeId ||
+    'basic-light';
+  const activeTheme =
+    (content?.themes?.items || []).find((t: any) => t.id === activeThemeId) || null;
+  const isBoltStyle = activeThemeId === 'bolt-style';
+  const boltHeroBg =
+    activeTheme?.heroBgImage ||
+    'https://images.pexels.com/photos/5961806/pexels-photo-5961806.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
+  const statsList = content?.organization?.stats || [
+    { value: '1250+', label: 'Аттестованных специалистов' },
+    { value: '45+', label: 'Спортивных комплексов и курортов' },
+    { value: '85', label: 'Субъектов Российской Федерации' },
+    { value: '18', label: 'Отраслевых стандартов и программ' },
+  ];
+
   const baseSlides: Slide[] = [
     {
       id: 'standards',
@@ -436,15 +453,34 @@ export function HeroSlider() {
 
   return (
     <section 
-      className="bg-white text-slate-900 pt-10 pb-12 lg:pt-14 lg:pb-16 border-b border-slate-200 relative overflow-hidden"
+      className={
+        isBoltStyle
+          ? 'relative isolate flex flex-col overflow-hidden bg-[#071A33] text-white pt-10 pb-0 border-b border-white/10'
+          : 'bg-white text-slate-900 pt-10 pb-12 lg:pt-14 lg:pb-16 border-b border-slate-200 relative overflow-hidden'
+      }
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Parametric Script-Generated Guilloche Background Curves */}
-      <GuillochePattern variant="full" theme="light" opacity={1.15} />
+      {isBoltStyle ? (
+        <>
+          <img
+            src={boltHeroBg}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 -z-20 h-full w-full object-cover opacity-45"
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#071A33] via-[#071A33]/85 to-[#0C2444]/40" />
+          <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#071A33] to-transparent" />
+        </>
+      ) : (
+        <>
+          {/* Parametric Script-Generated Guilloche Background Curves */}
+          <GuillochePattern variant="full" theme="light" opacity={1.15} />
 
-      {/* Subtle geometric pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]" />
+          {/* Subtle geometric pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]" />
+        </>
+      )}
 
       {/* Dip to White / Dip to Color Flash Overlay */}
       {transitionEffect === 'dip-to-white' && (
@@ -462,25 +498,49 @@ export function HeroSlider() {
         />
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full ${isBoltStyle ? 'pb-12 pt-4 lg:pt-8' : ''}`}>
         {/* Slide Content */}
         <div
           className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center min-h-[440px] transition-all duration-300 ease-out will-change-transform ${getSlideTransitionClasses()}`}
         >
           {/* Left Column: Text & Actions */}
           <div className="lg:col-span-7">
-            {slide.badge && (
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold uppercase tracking-wider mb-4">
-                <span className="w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse" />
-                {slide.badge}
+            {(slide.badge || isBoltStyle) && (
+              <div
+                className={
+                  isBoltStyle
+                    ? 'inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#D9E4F0] backdrop-blur mb-5'
+                    : 'inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-100 border border-slate-200 text-slate-800 text-xs font-semibold uppercase tracking-wider mb-4'
+                }
+              >
+                <span
+                  className={
+                    isBoltStyle
+                      ? 'h-1.5 w-1.5 rounded-full bg-[#E8B93E] inline-block'
+                      : 'w-2 h-2 rounded-full bg-red-600 inline-block animate-pulse'
+                  }
+                />
+                {slide.badge || 'Автономная некоммерческая организация'}
               </div>
             )}
 
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight min-h-[2.6em] flex items-center">
+            <h1
+              className={
+                isBoltStyle
+                  ? 'text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.12] tracking-[-0.02em] min-h-[2.4em] flex items-center'
+                  : 'text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight min-h-[2.6em] flex items-center'
+              }
+            >
               {slide.title}
             </h1>
 
-            <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed min-h-[4.5em]">
+            <p
+              className={
+                isBoltStyle
+                  ? 'mt-5 text-[#D9E4F0] text-base sm:text-lg leading-relaxed min-h-[4.2em]'
+                  : 'mt-4 text-slate-600 text-sm sm:text-base leading-relaxed min-h-[4.5em]'
+              }
+            >
               {slide.description}
             </p>
 
@@ -488,11 +548,15 @@ export function HeroSlider() {
               {slide.primaryBtn.isExternal ? (
                 <a
                   href={slide.primaryBtn.href}
-                  className={`inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm transition-all shadow-sm hover:shadow ${
-                    slide.primaryBtn.isHot
-                      ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200'
-                      : 'bg-[#0A2540] hover:bg-[#123962] text-white'
-                  }`}
+                  className={
+                    isBoltStyle
+                      ? 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-sm sm:text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
+                      : `inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm transition-all shadow-sm hover:shadow ${
+                          slide.primaryBtn.isHot
+                            ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200'
+                            : 'bg-[#0A2540] hover:bg-[#123962] text-white'
+                        }`
+                  }
                 >
                   {slide.primaryBtn.icon}
                   <span>{slide.primaryBtn.label}</span>
@@ -500,7 +564,11 @@ export function HeroSlider() {
               ) : (
                 <Link
                   href={slide.primaryBtn.href}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow"
+                  className={
+                    isBoltStyle
+                      ? 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-sm sm:text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
+                      : 'inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow'
+                  }
                 >
                   {slide.primaryBtn.icon}
                   <span>{slide.primaryBtn.label}</span>
@@ -510,14 +578,18 @@ export function HeroSlider() {
               {slide.secondaryBtn && (
                 <Link
                   href={slide.secondaryBtn.href}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors"
+                  className={
+                    isBoltStyle
+                      ? 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3.5 text-sm sm:text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
+                      : 'inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors'
+                  }
                 >
                   {slide.secondaryBtn.icon}
                   <span>{slide.secondaryBtn.label}</span>
                 </Link>
               )}
 
-              {slide.tertiaryBtn && (
+              {slide.tertiaryBtn && !isBoltStyle && (
                 <Link
                   href={slide.tertiaryBtn.href}
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
@@ -537,7 +609,7 @@ export function HeroSlider() {
 
         {/* Slider Controls & Progress Indicators (Optional via showControls checkbox in Admin) */}
         {showControls && (
-          <div className="mt-8 pt-4 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className={`mt-8 pt-4 border-t ${isBoltStyle ? 'border-white/15' : 'border-slate-200/80'} flex flex-col sm:flex-row sm:items-center justify-between gap-4`}>
             {/* Dot & Slide Selectors */}
             <div className="flex flex-wrap items-center gap-2">
               {activeSlides.map((s, idx) => (
@@ -547,7 +619,11 @@ export function HeroSlider() {
                   aria-label={`Перейти к слайду ${idx + 1}`}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                     currentSlide === idx
-                      ? 'bg-[#0A2540] text-white shadow-xs'
+                      ? isBoltStyle
+                        ? 'bg-[#E8B93E] text-[#071A33] shadow-xs'
+                        : 'bg-[#0A2540] text-white shadow-xs'
+                      : isBoltStyle
+                      ? 'bg-white/10 text-[#D9E4F0] hover:bg-white/20'
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -564,14 +640,22 @@ export function HeroSlider() {
               <button
                 onClick={prevSlide}
                 aria-label="Предыдущий слайд"
-                className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
+                className={`p-2 rounded-lg border transition-colors shadow-2xs ${
+                  isBoltStyle
+                    ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                    : 'bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={nextSlide}
                 aria-label="Следующий слайд"
-                className="p-2 rounded-lg bg-slate-100 border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200 transition-colors shadow-2xs"
+                className={`p-2 rounded-lg border transition-colors shadow-2xs ${
+                  isBoltStyle
+                    ? 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+                    : 'bg-slate-100 border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -579,6 +663,27 @@ export function HeroSlider() {
           </div>
         )}
       </div>
+
+      {/* Bottom Stats Bar in Bolt Style (1-in-1 with Kp bottom bar on bolt.host) */}
+      {isBoltStyle && (
+        <div className="relative z-10 border-t border-white/10 bg-[#071A33]/75 backdrop-blur">
+          <dl className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-8">
+            {statsList.slice(0, 4).map((st: any, sIdx: number) => (
+              <div key={sIdx} className="py-5 lg:py-7 lg:pr-8">
+                <dt className="sr-only">{st.label}</dt>
+                <dd>
+                  <span className="block text-2xl sm:text-3xl font-bold text-white">
+                    {st.value}
+                  </span>
+                  <span className="mt-1 block text-xs sm:text-sm text-[#B3C9E0]">
+                    {st.label}
+                  </span>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
     </section>
   );
 }

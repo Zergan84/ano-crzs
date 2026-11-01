@@ -56,13 +56,24 @@ export default function AdminSettingsPage() {
       if (themesRes.ok) {
         const tJson = await themesRes.json();
         if (tJson && typeof tJson === 'object') {
+          let loadedItems: ThemeConfig[] =
+            Array.isArray(tJson.items) && tJson.items.length > 0
+              ? tJson.items
+              : DEFAULT_THEMES_LIST;
+          // Ensure all builtin themes (like Bolt style) are present
+          loadedItems = loadedItems.map((it) => {
+            const def = DEFAULT_THEMES_LIST.find((d) => d.id === it.id);
+            return def ? { ...def, ...it } : it;
+          });
+          for (const def of DEFAULT_THEMES_LIST) {
+            if (!loadedItems.some((m) => m.id === def.id)) {
+              loadedItems.push(def);
+            }
+          }
           mergedThemes = {
             activeThemeId:
               tJson.activeThemeId || mergedSettings.activeThemeId || 'basic-light',
-            items:
-              Array.isArray(tJson.items) && tJson.items.length > 0
-                ? tJson.items
-                : DEFAULT_THEMES_LIST,
+            items: loadedItems,
           };
         }
       } else {
