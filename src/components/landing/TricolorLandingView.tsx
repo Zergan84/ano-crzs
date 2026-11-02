@@ -25,6 +25,8 @@ import { HeroSlider } from '@/components/HeroSlider';
 import { resolveMediaUrl } from '@/lib/content';
 import { ColorTintedLogo } from '@/components/ui/ColorTintedLogo';
 import { CustomSectionRenderer } from './CustomSectionRenderer';
+import { WidgetsBar, WidgetItem } from './WidgetsBar';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TricolorLandingProps {
   header: any;
@@ -40,6 +42,7 @@ interface TricolorLandingProps {
   scrolled: boolean;
   sectionOrder?: string[];
   customSections?: any[];
+  widgets?: WidgetItem[];
 }
 
 export function TricolorLandingView({
@@ -56,7 +59,9 @@ export function TricolorLandingView({
   scrolled,
   sectionOrder,
   customSections = [],
+  widgets = [],
 }: TricolorLandingProps) {
+  const [showAllNews, setShowAllNews] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [partnerModalOpen, setPartnerModalOpen] = useState(false);
   const [docCategoryFilter, setDocCategoryFilter] = useState('Все');
@@ -189,7 +194,7 @@ export function TricolorLandingView({
   const footerLogoUrl = resolveMediaUrl(footer?.logoUrl) || logoUrl;
 
 
-  const defaultOrder = ['hero', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'];
+  const defaultOrder = ['hero', 'widgets', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'];
   const activeOrder = Array.isArray(sectionOrder) && sectionOrder.length > 0 ? sectionOrder : defaultOrder;
 
   const renderSectionById = (secId: string) => {
@@ -207,24 +212,53 @@ export function TricolorLandingView({
           </div>
         );
 
-      case 'about':
+      case 'widgets':
+        return (
+          <div key="widgets" id="widgets">
+            <WidgetsBar widgets={widgets} theme="tricolor" />
+          </div>
+        );
+
+      case 'about': {
+        const aboutAlign = org?.aboutHeaderAlign || 'left';
+        const aboutVAlign = org?.aboutVerticalAlign || 'center';
+        const vAlignClass = 
+          aboutVAlign === 'top' 
+            ? 'items-start' 
+            : aboutVAlign === 'bottom' 
+            ? 'items-end' 
+            : 'items-center';
+
+        const alignClasses = {
+          left: 'text-left items-start',
+          center: 'text-center items-center mx-auto',
+          right: 'text-right items-end ml-auto',
+        }[aboutAlign as 'left' | 'center' | 'right'] || 'text-left items-start';
+
         return (
           <section key="about" id="about" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
-            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-              <div>
-                <div className="mb-10 max-w-3xl">
-                  <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-                    <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                    {aboutEyebrow}
-                  </div>
-                  <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-                    {aboutTitle}
-                  </h2>
-                  <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-                    {aboutDescription}
-                  </p>
-                </div>
+            {/* 100% ширина для надзаголовка, заголовка и подзаголовка с поддержкой двойного тире по центру */}
+            <div className={`mb-12 max-w-4xl ${alignClasses}`}>
+              <div className={`mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20] ${aboutAlign === 'center' ? 'justify-center' : aboutAlign === 'right' ? 'justify-end' : 'justify-start'}`}>
+                <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                <span>{aboutEyebrow}</span>
+                {aboutAlign === 'center' && (
+                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                )}
+              </div>
+              <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                {aboutTitle}
+              </h2>
+              {aboutDescription && (
+                <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
+                  {aboutDescription}
+                </p>
+              )}
+            </div>
 
+            {/* Колонки контента с настраиваемым вертикальным выравниванием */}
+            <div className={`grid gap-10 lg:grid-cols-2 lg:gap-16 ${vAlignClass}`}>
+              <div>
                 <ul className="space-y-4">
                   {aboutBullets.map((bullet, idx) => (
                     <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed md:text-base text-[#1B263B]">
@@ -238,7 +272,7 @@ export function TricolorLandingView({
               </div>
 
               <div className="relative">
-                <div className="overflow-hidden rounded-sm border border-[#E2E8F0] bg-white shadow-sm">
+                <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
                   <img
                     src={aboutImgUrl}
                     alt="О центре развития спорта"
@@ -249,6 +283,7 @@ export function TricolorLandingView({
             </div>
           </section>
         );
+      }
 
       case 'projects':
         return (
@@ -286,10 +321,19 @@ export function TricolorLandingView({
                           {item.description}
                         </p>
                       </div>
-                      <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6]">
-                        <span>Подробнее о проекте</span>
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                      </div>
+                      {item.showLink !== false && (
+                        <div className="mt-6 pt-4 border-t border-[#E2E8F0]">
+                          <a
+                            href={item.linkHref || '#contacts'}
+                            target={item.linkHref?.startsWith('http') ? '_blank' : undefined}
+                            rel={item.linkHref?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6] hover:text-[#0F2147] transition-colors"
+                          >
+                            <span>{item.linkText || 'Подробнее о проекте'}</span>
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                          </a>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -298,7 +342,10 @@ export function TricolorLandingView({
           </section>
         );
 
-      case 'news':
+      case 'news': {
+        const visibleLimit = (org as any)?.newsVisibleCount || (newsItems as any)?.visibleCount || 3;
+        const displayedNews = showAllNews ? newsList : newsList.slice(0, visibleLimit);
+
         return (
           <section key="news" id="news" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
             <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -311,67 +358,78 @@ export function TricolorLandingView({
                   Пресс-центр
                 </h2>
               </div>
-              <a
-                href="#contacts"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#1447E6] hover:text-[#0F2147]"
-              >
-                <span>Все публикации</span>
-                <ArrowRight className="h-4 w-4" />
-              </a>
+              {newsList.length > visibleLimit && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllNews(!showAllNews)}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-[#1447E6] hover:text-[#0F2147] transition-colors cursor-pointer"
+                >
+                  <span>{showAllNews ? 'Свернуть публикации' : 'Все публикации'}</span>
+                  {showAllNews ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+              )}
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              {newsList.slice(0, 3).map((item, idx) => (
-                <article
-                  key={item.id || idx}
-                  className="flex flex-col overflow-hidden rounded-sm border border-[#E2E8F0] bg-white shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md"
-                >
-                  {item.imageUrl && (
-                    <div className="relative h-48 w-full overflow-hidden bg-slate-100">
-                      <img
-                        src={resolveMediaUrl(item.imageUrl)}
-                        alt={item.title}
-                        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
-                      />
-                    </div>
-                  )}
-                  <div className="flex flex-1 flex-col justify-between p-6">
-                    <div>
-                      <div className="mb-3 flex items-center gap-3 text-xs text-[#606E85]">
-                        <span className="inline-flex items-center gap-1">
-                          <Calendar className="h-3.5 w-3.5" />
-                          {item.date || 'Недавно'}
-                        </span>
-                        {item.category && (
-                          <span className="rounded-sm bg-[#EFF3F8] px-2 py-0.5 font-medium text-[#0F2147]">
-                            {item.category}
+            <div className="grid gap-6 md:grid-cols-3 transition-all duration-500 ease-in-out">
+              {displayedNews.map((item: any, idx: number) => {
+                const targetLink = item.externalUrl || item.link || '#contacts';
+                const isExternal = Boolean(item.externalUrl || item.link);
+
+                return (
+                  <article
+                    key={item.id || idx}
+                    className="flex flex-col overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md animate-in fade-in duration-300"
+                  >
+                    {item.imageUrl && (
+                      <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                        <img
+                          src={resolveMediaUrl(item.imageUrl)}
+                          alt={item.title}
+                          className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <div className="flex flex-1 flex-col justify-between p-6">
+                      <div>
+                        <div className="mb-3 flex items-center gap-3 text-xs text-[#606E85]">
+                          <span className="inline-flex items-center gap-1">
+                            <Calendar className="h-3.5 w-3.5" />
+                            {item.date || 'Недавно'}
                           </span>
+                          {item.category && (
+                            <span className="rounded-sm bg-[#EFF3F8] px-2 py-0.5 font-medium text-[#0F2147]">
+                              {item.category}
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-base font-bold leading-snug text-[#0F2147]">
+                          {item.title}
+                        </h3>
+                        {(item.summary || item.excerpt) && (
+                          <p className="mt-2 text-sm leading-relaxed text-[#606E85]">
+                            {item.summary || item.excerpt}
+                          </p>
                         )}
                       </div>
-                      <h3 className="text-base font-bold leading-snug text-[#0F2147]">
-                        {item.title}
-                      </h3>
-                      {item.summary && (
-                        <p className="mt-2 text-sm leading-relaxed text-[#606E85]">
-                          {item.summary}
-                        </p>
-                      )}
+                      <div className="mt-5 border-t border-[#E2E8F0] pt-4">
+                        <a
+                          href={targetLink}
+                          target={isExternal ? '_blank' : undefined}
+                          rel={isExternal ? 'noopener noreferrer' : undefined}
+                          className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6] hover:text-[#0F2147] transition-colors"
+                        >
+                          <span>Читать подробнее</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </a>
+                      </div>
                     </div>
-                    <div className="mt-5 border-t border-[#E2E8F0] pt-4">
-                      <a
-                        href="#contacts"
-                        className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6] hover:text-[#0F2147]"
-                      >
-                        <span>Читать полностью</span>
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </a>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           </section>
         );
+      }
 
       case 'documents':
         return (

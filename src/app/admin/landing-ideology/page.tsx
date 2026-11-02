@@ -129,7 +129,7 @@ export default function AdminLandingIdeologyPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide flex items-center gap-2">
               <Landmark className="w-7 h-7 text-amber-500" />
-              <span>8. Сотрудничество (#partnership)</span>
+              <span>Сотрудничество (#partnership)</span>
             </h1>
             <span className="rounded bg-amber-500/20 border border-amber-500/40 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300 uppercase">
               Блок 08 • #partnership

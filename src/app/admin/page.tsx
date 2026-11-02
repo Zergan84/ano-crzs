@@ -23,6 +23,7 @@ import {
   Palette,
   Menu,
   SlidersHorizontal,
+  LayoutGrid,
 } from 'lucide-react';
 import { useSiteContent, updateSection } from '@/lib/content';
 import { DEFAULT_SETTINGS } from '@/data/defaultContent';
@@ -109,6 +110,17 @@ export default function AdminDashboardPage() {
       icon: Sliders,
       modes: ['landing', 'portal'],
       scopeTag: 'Main Hero',
+    },
+    // Виджеты (Trust Bar)
+    {
+      id: 'widgets',
+      title: 'Виджеты (Trust Bar / Highlights)',
+      description: 'Плашка с ключевыми преимуществами (Зимний спорт, Здоровье, Инновации, Сообщество) с иконками, от 3 до 5 элементов.',
+      countLabel: `${((content.landing as any)?.widgets || []).length || 4} виджета`,
+      href: '/admin/widgets',
+      icon: LayoutGrid,
+      modes: ['landing', 'portal'],
+      scopeTag: 'Траст-бар',
     },
     // Порядок отображения
     {
@@ -219,6 +231,17 @@ export default function AdminDashboardPage() {
       icon: Building2,
       modes: ['landing', 'portal'],
       scopeTag: 'Footer',
+    },
+    // Политика конфиденциальности
+    {
+      id: 'privacy-policy',
+      title: 'Политика конфиденциальности (152-ФЗ РФ)',
+      description: 'Настройка всплывающей плашки согласия на обработку персональных данных, авто-скрытие, эффект всплывания, цвета и текст политики.',
+      countLabel: '152-ФЗ РФ',
+      href: '/admin/privacy-policy',
+      icon: ShieldCheck,
+      modes: ['landing', 'portal'],
+      scopeTag: '152-ФЗ РФ',
     },
     // Portal-only blocks (отображаются только в режиме ПОРТАЛ)
     {

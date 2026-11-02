@@ -13,9 +13,23 @@ export function PrivacyConsentModal() {
 
   const org = content?.organization || {};
   const footer = content?.footer || {};
+  const privacyConfig = (org as any)?.privacyConfig || {};
+
+  // Visual options
+  const bannerBg = privacyConfig.bannerBg || '#0F2147';
+  const bannerTextColor = privacyConfig.bannerTextColor || '#FFFFFF';
+  const btnBg = privacyConfig.btnBg || '#D92D20';
+  const btnTextColor = privacyConfig.btnTextColor || '#FFFFFF';
+  const fullWidth = privacyConfig.fullWidth !== false; // default true
+  const autoHideSeconds = Number(privacyConfig.autoHideSeconds) || 0;
+  const animationEffect = privacyConfig.animationEffect || 'slide-up';
+  const bannerTitle = privacyConfig.bannerTitle || 'Обработка персональных данных и файлов cookie';
+  const bannerText =
+    privacyConfig.bannerText ||
+    'Мы используем файлы cookie и обрабатываем персональные данные пользователей в соответствии с требованиями Федерального закона № 152-ФЗ «О персональных данных». Продолжая просмотр и использование сайта, вы даете согласие на обработку данных и принимаете условия';
 
   useEffect(() => {
-    // Проверяем согласие в localStorage
+    // Check acceptance in localStorage
     try {
       const accepted = localStorage.getItem(STORAGE_KEY);
       if (!accepted) {
@@ -25,7 +39,15 @@ export function PrivacyConsentModal() {
       setShowBanner(true);
     }
 
-    // Слушаем глобальное событие открытия окна политики (из футера или шапки)
+    // Auto hide timer if configured
+    let timer: NodeJS.Timeout;
+    if (autoHideSeconds > 0) {
+      timer = setTimeout(() => {
+        setShowBanner(false);
+      }, autoHideSeconds * 1000);
+    }
+
+    // Global event listener to open privacy policy
     const handleOpenPrivacy = () => {
       setShowModal(true);
     };
@@ -33,8 +55,9 @@ export function PrivacyConsentModal() {
     window.addEventListener('open-privacy-policy', handleOpenPrivacy);
     return () => {
       window.removeEventListener('open-privacy-policy', handleOpenPrivacy);
+      if (timer) clearTimeout(timer);
     };
-  }, []);
+  }, [autoHideSeconds]);
 
   const handleAccept = () => {
     try {
@@ -54,60 +77,78 @@ export function PrivacyConsentModal() {
     'РФ, Московская обл., Красногорск г.о., п. Архангельское, д. 29';
   const orgEmail = footer.email || org.receptionEmail || 'info@crzs-sport.ru';
 
+  // Animation class
+  const animClass =
+    animationEffect === 'fade-in'
+      ? 'animate-in fade-in duration-500'
+      : animationEffect === 'scale'
+      ? 'animate-in zoom-in-95 fade-in duration-300'
+      : 'animate-in slide-in-from-bottom-8 fade-in duration-500';
+
   return (
     <>
-      {/* 1. Легкий аккуратный баннер внизу экрана (десктоп, планшет, мобильные) */}
+      {/* 1. Всплывающая плашка согласия: 100% полезная ширина, по центру, плавная анимация */}
       {showBanner && (
         <aside
           role="region"
           aria-label="Согласие на обработку персональных данных и использование файлов cookie"
-          className="fixed bottom-3 left-3 right-3 sm:left-6 sm:right-6 md:left-auto md:right-6 md:max-w-xl z-50 rounded-xl bg-[#0F2147]/95 backdrop-blur-md border border-[#1e3a6a] text-white p-4 sm:p-5 shadow-2xl transition-all animate-in fade-in slide-in-from-bottom-5 duration-300"
+          className={`fixed bottom-0 inset-x-0 z-50 p-3 sm:p-4 ${animClass} transition-all`}
         >
-          <div className="flex items-start gap-3.5">
-            <div className="mt-0.5 rounded-lg bg-[#1447E6]/20 p-2 text-[#4682FA] shrink-0 border border-[#1447E6]/40">
-              <ShieldCheck className="h-5 w-5" />
-            </div>
-            <div className="flex-1 text-xs text-slate-200 leading-relaxed">
-              <p className="font-semibold text-white text-sm mb-1">
-                Обработка персональных данных и файлов cookie
-              </p>
-              <p>
-                Мы используем файлы cookie и обрабатываем персональные данные пользователей в соответствии с требованиями Федерального закона{' '}
-                <span className="font-semibold text-white">№ 152-ФЗ «О персональных данных»</span>. Продолжая просмотр и использование сайта, вы даете согласие на обработку данных и принимаете условия{' '}
-                <button
-                  type="button"
-                  onClick={() => setShowModal(true)}
-                  className="font-medium text-amber-400 underline underline-offset-2 hover:text-amber-300 transition-colors"
-                >
-                  Политики конфиденциальности
-                </button>
-                .
-              </p>
-              <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
+          <div
+            style={{ backgroundColor: bannerBg, color: bannerTextColor }}
+            className={`mx-auto rounded-2xl border border-white/15 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all ${
+              fullWidth ? 'max-w-7xl w-full' : 'max-w-2xl'
+            }`}
+          >
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3.5 min-w-0 flex-1 text-center md:text-left">
+                <div className="hidden sm:flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-amber-400">
+                  <ShieldCheck className="h-6 w-6 stroke-[2.2]" />
+                </div>
+                <div className="text-xs leading-relaxed opacity-95">
+                  <h4 className="font-bold text-sm mb-1 tracking-tight" style={{ color: bannerTextColor }}>
+                    {bannerTitle}
+                  </h4>
+                  <p>
+                    {bannerText}{' '}
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(true)}
+                      className="font-semibold underline underline-offset-2 hover:opacity-80 transition-opacity text-amber-400"
+                    >
+                      Политики конфиденциальности
+                    </button>
+                    .
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-2.5 shrink-0">
                 <button
                   type="button"
                   onClick={handleAccept}
-                  className="rounded-lg bg-[#D92D20] px-4 py-2 text-xs font-bold text-white hover:bg-[#b92419] shadow-md transition-colors"
+                  style={{ backgroundColor: btnBg, color: btnTextColor }}
+                  className="rounded-xl px-5 py-2.5 text-xs font-bold shadow-lg transition-transform hover:scale-[1.02] active:scale-95"
                 >
                   Принять и продолжить
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(true)}
-                  className="rounded-lg bg-white/10 hover:bg-white/15 px-3.5 py-2 text-xs text-slate-200 hover:text-white transition-colors"
+                  className="rounded-xl bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs font-medium text-white transition-colors"
                 >
                   Подробнее
                 </button>
+                <button
+                  type="button"
+                  onClick={handleAccept}
+                  className="p-1.5 text-white/60 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
+                  aria-label="Закрыть уведомление"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={handleAccept}
-              className="text-slate-400 hover:text-white p-1 rounded transition-colors"
-              aria-label="Закрыть уведомление"
-            >
-              <X className="h-4 w-4" />
-            </button>
           </div>
         </aside>
       )}
@@ -117,7 +158,7 @@ export function PrivacyConsentModal() {
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-3 sm:p-5"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-5"
         >
           <div className="relative flex max-h-[90vh] w-full max-w-3xl flex-col rounded-2xl border border-slate-700 bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Modal Header */}
@@ -143,8 +184,14 @@ export function PrivacyConsentModal() {
               </button>
             </div>
 
-            {/* Modal Body: Официальный текст политики Гарант */}
+            {/* Modal Body: Официальный текст политики Гарант + кастомный текст при наличии */}
             <div className="flex-1 overflow-y-auto px-6 py-5 text-xs sm:text-sm text-[#1B263B] leading-relaxed space-y-4">
+              {privacyConfig.policyCustomText && (
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-[#0F2147] whitespace-pre-line font-medium mb-4">
+                  {privacyConfig.policyCustomText}
+                </div>
+              )}
+
               <section className="space-y-2">
                 <h3 className="font-bold text-[#0F2147] text-sm sm:text-base border-b border-slate-200 pb-1">
                   1. Общие положения

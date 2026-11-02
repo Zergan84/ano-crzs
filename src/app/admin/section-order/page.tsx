@@ -22,12 +22,14 @@ import {
   Sparkles,
   Layers,
   Lock,
+  LayoutGrid,
 } from 'lucide-react';
 import { DEFAULT_LANDING } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 
 const DEFAULT_LANDING_ORDER = [
   'hero',
+  'widgets',
   'about',
   'projects',
   'news',
@@ -39,6 +41,7 @@ const DEFAULT_LANDING_ORDER = [
 
 const MODULE_META: Record<string, { label: string; desc: string; icon: React.ElementType }> = {
   hero: { label: 'Главный экран (Hero Слайдер)', desc: 'Первый экран с баннерами и заголовками', icon: Sliders },
+  widgets: { label: 'Виджеты (Trust Bar / Highlights)', desc: 'Траст-бар с ключевыми преимуществами и иконками (3-5 шт.)', icon: LayoutGrid },
   about: { label: 'О центре (#about)', desc: 'Миссия, 4 ключевых принципа и фотография', icon: Building2 },
   projects: { label: 'Проекты и программы (#projects)', desc: 'Спортивные и социальные проекты центра', icon: Compass },
   news: { label: 'Новости (#news)', desc: 'Пресс-релизы и лента публикаций', icon: Newspaper },

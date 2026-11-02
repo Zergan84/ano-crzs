@@ -110,7 +110,7 @@ export default function AdminLandingHeroPage() {
           </NextLink>
           <div className="flex items-center gap-2.5">
             <h1 className="text-2xl sm:text-3xl font-black text-white tracking-wide">
-              1. Шапка сайта (Header)
+              Шапка сайта (Header)
             </h1>
             <span className="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-mono uppercase">
               Блок 01 • Шапка

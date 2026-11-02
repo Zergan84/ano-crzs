@@ -338,6 +338,7 @@ export const DEFAULT_LANDING = {
   },
   sectionOrder: [
     'hero',
+    'widgets',
     'about',
     'projects',
     'news',

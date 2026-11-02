@@ -19,15 +19,15 @@ import { DEFAULT_CONTENT } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 
 const sectionTitles: Record<string, { title: string; desc: string }> = {
-  organization: { title: '3. О центре (#about)', desc: 'Надзаголовок, заголовок «Миссия: спорт доступен каждому», описание центра, 4 пункта преимуществ и фотография справа' },
-  hero: { title: '2. Главный экран — Слайдер (Main Hero)', desc: 'Управление главным экраном (100% ширины и высоты). Сейчас отображается 1 слайд. При добавлении 2-го и 3-го слайдов включается слайдер.' },
-  news: { title: '5. Лента новостей и пресс-релизов (#news)', desc: 'Публикация новостей, пресс-релизов, событий и отчётов с категориями, датами и краткими анонсами' },
+  organization: { title: 'О центре (#about)', desc: 'Надзаголовок, заголовок «Миссия: спорт доступен каждому», описание центра, 4 пункта преимуществ и фотография справа' },
+  hero: { title: 'Главный экран — Слайдер (Hero)', desc: 'Управление первым экраном сайта. Настройка слайдов, предпросмотр 1-в-1, смещение фона, эффекты и оверлеи.' },
+  news: { title: 'Новости и пресс-релизы (#news)', desc: 'Публикация новостей, пресс-релизов, событий и отчётов с категориями, датами и краткими анонсами' },
   events: { title: 'Мероприятия (Портал)', desc: 'Календарь всероссийских семинаров, курсов подготовки и конференций' },
   specialists: { title: 'Единый реестр специалистов (Портал)', desc: 'Управление базой аттестованных инструкторов, тренеров и судей' },
-  documents: { title: '6. Документы и отчёты (#documents)', desc: 'Устав, свидетельство о регистрации, годовые отчёты и положения с фильтром по категориям и PDF-файлами' },
-  directions: { title: '4. Проекты и программы (#projects)', desc: 'Спортивные и социальные проекты центра (6 карточек проектов с категориями и описаниями)' },
-  partners: { title: '7. Партнёры (#partners)', desc: 'Организации-партнёры по категориям: «Министерства и ведомства», «Федерации» и «Спонсоры и партнёры»' },
-  contacts: { title: '9. Контакты и форма связи (#contacts)', desc: 'Заголовок и описание секции «Свяжитесь с нами», настройки формы обращения, телефон, email, часы работы и адрес' },
+  documents: { title: 'Документы и отчёты (#documents)', desc: 'Устав, свидетельство о регистрации, годовые отчёты и положения с фильтром по категориям и PDF-файлами' },
+  directions: { title: 'Проекты и программы (#projects)', desc: 'Спортивные и социальные проекты центра (карточки проектов с категориями, описаниями и ссылками «Подробнее»)' },
+  partners: { title: 'Партнёры (#partners)', desc: 'Организации-партнёры по категориям: «Министерства и ведомства», «Федерации» и «Спонсоры и партнёры»' },
+  contacts: { title: 'Контакты и форма связи (#contacts)', desc: 'Заголовок и описание секции «Свяжитесь с нами», настройки формы обращения, телефон, email, часы работы и адрес' },
 };
 
 export default function SectionEditorClient({ section }: { section: string }) {
@@ -324,6 +324,33 @@ function OrganizationEditor({
               placeholder="Миссия: спорт доступен каждому"
               className="admin-input font-bold"
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="admin-label">Выравнивание блока заголовка (100% ширина)</label>
+            <select
+              value={data.aboutHeaderAlign || 'left'}
+              onChange={(e) => updateField('aboutHeaderAlign', e.target.value)}
+              className="admin-input"
+            >
+              <option value="left">По левому краю (Left)</option>
+              <option value="center">По центру (Center)</option>
+              <option value="right">По правому краю (Right)</option>
+            </select>
+          </div>
+          <div>
+            <label className="admin-label">Вертикальное равнение контента колонок</label>
+            <select
+              value={data.aboutVerticalAlign || 'center'}
+              onChange={(e) => updateField('aboutVerticalAlign', e.target.value)}
+              className="admin-input"
+            >
+              <option value="top">По верху (Top)</option>
+              <option value="center">По центру (Center)</option>
+              <option value="bottom">По низу (Bottom)</option>
+            </select>
           </div>
         </div>
 
@@ -1033,6 +1060,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
    ========================================================================= */
 function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: any; openMediaPicker: any }) {
   const items = data?.items || [];
+  const visibleCount = data?.visibleCount ?? 3;
 
   const updateNews = (index: number, key: string, val: any) => {
     const next = [...items];
@@ -1054,6 +1082,7 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
       excerpt: 'Краткий анонс новости или пресс-релиза...',
       summary: 'Краткий анонс новости или пресс-релиза...',
       content: ['Полный текст новости...'],
+      externalUrl: '',
     };
     setData({ ...data, items: [newItem, ...items] });
   };
@@ -1066,6 +1095,33 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
 
   return (
     <div className="space-y-6">
+      {/* Настройка количества видимых записей */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-3">
+        <h3 className="text-base font-bold text-white border-b border-[#222] pb-2">
+          Отображение в блоке лендинга
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+          <div>
+            <label className="admin-label">
+              Количество видимых записей по умолчанию на странице
+            </label>
+            <select
+              value={visibleCount}
+              onChange={(e) => setData({ ...data, visibleCount: Number(e.target.value) })}
+              className="admin-input"
+            >
+              <option value={3}>3 записи (один ряд)</option>
+              <option value={6}>6 записей (два ряда)</option>
+              <option value={9}>9 записей</option>
+              <option value={12}>12 записей</option>
+            </select>
+          </div>
+          <p className="text-xs text-slate-400">
+            Остальные публикации открываются мягким дропдауном при клике на кнопку «Все публикации» в шапке модуля новостей.
+          </p>
+        </div>
+      </div>
+
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
           Всего публикаций в ленте: {items.length}
@@ -1131,6 +1187,23 @@ function NewsEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                   className="admin-input font-mono text-xs"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="admin-label">Ссылка на новость для кнопки «Читать подробнее» (URL или якорь)</label>
+              <input
+                type="text"
+                value={item.externalUrl || item.link || ''}
+                onChange={(e) => {
+                  updateNews(i, 'externalUrl', e.target.value);
+                  updateNews(i, 'link', e.target.value);
+                }}
+                placeholder="https://tass.ru/... или /news/123 (открывается в новом окне)"
+                className="admin-input font-mono text-xs text-amber-300"
+              />
+              <p className="text-[11px] text-slate-500 mt-1">
+                Если ссылка указана, при клике «Читать полностью / подробнее» она откроется в новом окне браузера (_blank).
+              </p>
             </div>
 
             <div>
@@ -1714,6 +1787,46 @@ function DirectionsEditor({ data, setData }: { data: any; setData: any }) {
                 onChange={(e) => updateDir(i, 'description', e.target.value)}
                 className="admin-textarea"
               />
+            </div>
+            <div className="pt-2 border-t border-[#222] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-slate-300">
+                  Кнопка-ссылка «Подробнее о проекте»
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-amber-400">
+                  <input
+                    type="checkbox"
+                    checked={dir.showLink !== false}
+                    onChange={(e) => updateDir(i, 'showLink', e.target.checked)}
+                    className="rounded border-slate-700 bg-black text-amber-500 focus:ring-amber-500"
+                  />
+                  <span>Показывать ссылку</span>
+                </label>
+              </div>
+              {dir.showLink !== false && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[11px] text-slate-400">Текст ссылки</label>
+                    <input
+                      type="text"
+                      value={dir.linkText || 'Подробнее о проекте'}
+                      onChange={(e) => updateDir(i, 'linkText', e.target.value)}
+                      placeholder="Подробнее о проекте"
+                      className="admin-input text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-slate-400">Ссылка (URL или якорь)</label>
+                    <input
+                      type="text"
+                      value={dir.linkHref || ''}
+                      onChange={(e) => updateDir(i, 'linkHref', e.target.value)}
+                      placeholder="#contacts или /projects/123"
+                      className="admin-input text-xs font-mono text-amber-300"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}

@@ -559,8 +559,9 @@ export function LandingView() {
     };
   });
 
-  const sectionOrder = (landing as any)?.sectionOrder || ['hero', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'];
+  const sectionOrder = (landing as any)?.sectionOrder || ['hero', 'widgets', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'];
   const customSections = (landing as any)?.customSections || [];
+  const widgets = (landing as any)?.widgets || [];
 
   // =========================================================================
   // 1-IN-1 TRICOLOR STYLE RENDERING (exact match to state-sports-showcase.lovable.app, fully editable via Admin)
@@ -581,6 +582,7 @@ export function LandingView() {
         scrolled={scrolled}
         sectionOrder={sectionOrder}
         customSections={customSections}
+        widgets={widgets}
       />
     );
   }

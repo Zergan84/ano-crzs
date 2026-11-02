@@ -58,6 +58,9 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
           <div className={`mb-3 flex items-center gap-3 text-xs font-semibold uppercase ${eyebrowColor} ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}>
             <span className={`h-0.5 w-8 ${eyebrowLineColor}`} aria-hidden="true" />
             <span>{section.eyebrow}</span>
+            {align === 'center' && (
+              <span className={`h-0.5 w-8 ${eyebrowLineColor}`} aria-hidden="true" />
+            )}
           </div>
         )}
         <h2 className={`text-3xl font-bold leading-tight md:text-4xl ${headingColor}`}>
