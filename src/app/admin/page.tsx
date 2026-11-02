@@ -21,6 +21,8 @@ import {
   Layout,
   Globe,
   Palette,
+  Menu,
+  SlidersHorizontal,
 } from 'lucide-react';
 import { useSiteContent, updateSection } from '@/lib/content';
 import { DEFAULT_SETTINGS } from '@/data/defaultContent';
@@ -79,12 +81,23 @@ export default function AdminDashboardPage() {
     {
       id: 'landing-hero',
       title: '1. Шапка сайта (Header)',
-      description: 'Логотип Центра, 6 ссылок якорной навигации («О центре», «Проекты», «Новости», «Документы», «Партнёры», «Контакты») и кнопка «Стать партнёром»',
-      countLabel: `${(content.landing?.header?.navLinks || []).length || 6} пунктов меню`,
+      description: 'Верхняя строка контактов (телефон, email, статус), логотип Центра с эффектами и цветом подложки, кнопка действия в шапке',
+      countLabel: 'Шапка и контакты',
       href: '/admin/landing-hero',
-      icon: Sliders,
-      modes: ['landing'],
+      icon: SlidersHorizontal,
+      modes: ['landing', 'portal'],
       scopeTag: 'Блок 01 • Шапка',
+    },
+    // Меню сайта (общее)
+    {
+      id: 'menu',
+      title: 'Меню сайта (Навигация)',
+      description: 'Пункты меню для верхней навигации и подвала сайта. Названия разделов, ссылки, якоря и Drag & Drop сортировка.',
+      countLabel: `${(content.landing?.header?.navLinks || []).length || 6} пунктов меню`,
+      href: '/admin/menu',
+      icon: Menu,
+      modes: ['landing', 'portal'],
+      scopeTag: 'Навигация',
     },
     // 2. Главный экран (Main Hero / Слайдер)
     {

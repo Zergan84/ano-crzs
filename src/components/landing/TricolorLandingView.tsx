@@ -55,20 +55,29 @@ export function TricolorLandingView({
   const [partnerModalOpen, setPartnerModalOpen] = useState(false);
   const [docCategoryFilter, setDocCategoryFilter] = useState('Все');
 
-  const navLinks = [
-    { label: 'О центре', href: '#about' },
-    { label: 'Проекты', href: '#projects' },
-    { label: 'Новости', href: '#news' },
-    { label: 'Документы', href: '#documents' },
-    { label: 'Партнёры', href: '#partners' },
-    { label: 'Контакты', href: '#contacts' },
-  ];
+  const navLinks: Array<{ label: string; href: string }> =
+    Array.isArray(header?.navLinks) && header.navLinks.length > 0
+      ? header.navLinks
+      : [
+          { label: 'О центре', href: '#about' },
+          { label: 'Проекты', href: '#projects' },
+          { label: 'Новости', href: '#news' },
+          { label: 'Документы', href: '#documents' },
+          { label: 'Партнёры', href: '#partners' },
+          { label: 'Контакты', href: '#contacts' },
+        ];
 
   const logoUrl = resolveMediaUrl(header?.logoUrl) || '/logo.png';
   const logoColor = (header as any)?.logoColor || '';
   const logoOpacity = (header as any)?.logoOpacity;
   const headerCtaText = header?.ctaText || 'Стать партнёром';
   const headerCtaHref = header?.ctaHref || '#partnership';
+  const headerShowCta = (header as any)?.showCta !== false && Boolean(headerCtaText?.trim());
+
+  // Top Bar Contact fields
+  const topBarOrgStatus = (header as any)?.topBarOrgStatus || 'Автономная некоммерческая организация';
+  const topBarPhone = (header as any)?.phone || org?.phone || footer?.phone || '+7 (495) 000-00-00';
+  const topBarEmail = (header as any)?.email || org?.receptionEmail || footer?.email || 'info@crzs-sport.ru';
 
   // About
   const aboutEyebrow = org?.aboutEyebrow || 'О центре';
@@ -187,19 +196,19 @@ export function TricolorLandingView({
       {/* 2. TOP BLUE SUBHEADER (Гос. шапка с контактами) */}
       <div className="bg-[#0F2147] text-white/80">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-2 text-xs md:px-6">
-          <span>Автономная некоммерческая организация</span>
+          <span>{topBarOrgStatus}</span>
           <div className="flex flex-wrap gap-x-6 gap-y-1">
             <a
-              href={`tel:${(org?.phone || footer?.phone || '+7 (495) 000-00-00').replace(/[^+\d]/g, '')}`}
+              href={`tel:${topBarPhone.replace(/[^+\d]/g, '')}`}
               className="hover:text-white transition-colors"
             >
-              {org?.phone || footer?.phone || '+7 (495) 000-00-00'}
+              {topBarPhone}
             </a>
             <a
-              href={`mailto:${org?.receptionEmail || footer?.email || 'info@crzs-sport.ru'}`}
+              href={`mailto:${topBarEmail}`}
               className="break-all hover:text-white transition-colors"
             >
-              {org?.receptionEmail || footer?.email || 'info@crzs-sport.ru'}
+              {topBarEmail}
             </a>
           </div>
         </div>
@@ -234,13 +243,15 @@ export function TricolorLandingView({
             ))}
           </nav>
 
-          <a
-            href={headerCtaHref}
-            className="hidden items-center justify-center gap-2 whitespace-nowrap text-sm font-medium cursor-pointer transition-colors shadow-sm bg-[#D92D20] text-white hover:bg-[#b92419] h-auto rounded-sm px-5 py-3 lg:inline-flex"
-          >
-            <span>{headerCtaText}</span>
-            <ArrowRight className="h-4 w-4" />
-          </a>
+          {headerShowCta && (
+            <a
+              href={headerCtaHref}
+              className="hidden items-center justify-center gap-2 whitespace-nowrap text-sm font-medium cursor-pointer transition-colors shadow-sm bg-[#D92D20] text-white hover:bg-[#b92419] h-auto rounded-sm px-5 py-3 lg:inline-flex"
+            >
+              <span>{headerCtaText}</span>
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          )}
 
           <button
             type="button"
@@ -270,14 +281,16 @@ export function TricolorLandingView({
                 {item.label}
               </a>
             ))}
-            <a
-              href={headerCtaHref}
-              onClick={() => setMobileMenuOpen(false)}
-              className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-[#D92D20] text-sm font-semibold text-white hover:bg-[#b92419]"
-            >
-              <span>{headerCtaText}</span>
-              <ArrowRight className="h-4 w-4" />
-            </a>
+            {headerShowCta && (
+              <a
+                href={headerCtaHref}
+                onClick={() => setMobileMenuOpen(false)}
+                className="mt-4 flex h-11 w-full items-center justify-center gap-2 rounded-sm bg-[#D92D20] text-sm font-semibold text-white hover:bg-[#b92419]"
+              >
+                <span>{headerCtaText}</span>
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            )}
           </nav>
         )}
       </header>
@@ -731,12 +744,24 @@ export function TricolorLandingView({
         </div>
 
         <div className="border-t border-white/15">
-          <div className="mx-auto flex max-w-7xl flex-col justify-between gap-3 px-5 py-6 text-xs md:flex-row md:px-6">
+          <div className="mx-auto flex max-w-7xl flex-col justify-between items-center gap-3 px-5 py-6 text-xs md:flex-row md:px-6">
             <p>{footer?.copyright || '© 2026 АНО «ЦРЗС». Все права защищены.'}</p>
-            <p>
-              {footer?.disclosureNote ||
-                'Информация о деятельности организации раскрывается в разделе «Документы».'}
-            </p>
+            <div className="flex flex-wrap items-center gap-4 text-white/70">
+              <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-privacy-policy'));
+                }}
+                className="hover:text-white underline underline-offset-2 transition-colors cursor-pointer"
+              >
+                Политика конфиденциальности (152-ФЗ РФ)
+              </button>
+              <span className="hidden sm:inline text-white/30">•</span>
+              <p className="text-white/60">
+                {footer?.disclosureNote ||
+                  'Информация о деятельности организации раскрывается в разделе «Документы».'}
+              </p>
+            </div>
           </div>
         </div>
 

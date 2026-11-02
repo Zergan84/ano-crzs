@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { LandingView } from '@/components/landing/LandingView';
+import { PrivacyConsentModal } from '@/components/ui/PrivacyConsentModal';
 import { useSiteContent } from '@/lib/content';
 import { DEFAULT_THEMES_LIST, ThemeConfig } from '@/data/defaultContent';
 import { getFontUrl } from '@/lib/google-fonts';
@@ -235,6 +236,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
           <Footer />
         </>
       )}
+      {/* Стандартный легкий попап и политика конфиденциальности 152-ФЗ РФ */}
+      <PrivacyConsentModal />
     </div>
   );
 }

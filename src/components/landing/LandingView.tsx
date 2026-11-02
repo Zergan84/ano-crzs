@@ -1267,10 +1267,22 @@ export function LandingView() {
           <div className="border-t border-white/10">
             <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-6 text-xs text-[#7EA3C9] sm:flex-row sm:items-center sm:justify-between lg:px-8">
               <p>{footer.copyright || '© 2026 Центр развития спорта. Все права защищены.'}</p>
-              <p>
-                {(footer as any).disclosureNote ||
-                  'Информация о деятельности организации раскрывается в разделе «Документы».'}
-              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.dispatchEvent(new CustomEvent('open-privacy-policy'));
+                  }}
+                  className="hover:text-white underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Политика конфиденциальности (152-ФЗ)
+                </button>
+                <span className="hidden sm:inline text-white/30">•</span>
+                <p>
+                  {(footer as any).disclosureNote ||
+                    'Информация о деятельности организации раскрывается в разделе «Документы».'}
+                </p>
+              </div>
             </div>
           </div>
         </footer>
@@ -2190,10 +2202,12 @@ export function LandingView() {
             <div className="flex flex-wrap items-center gap-4">
               <button
                 type="button"
-                onClick={() => setPrivacyModalOpen(true)}
-                className="hover:text-white underline transition-colors"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('open-privacy-policy'));
+                }}
+                className="hover:text-white underline transition-colors cursor-pointer"
               >
-                Политика обработки персональных данных (152-ФЗ РФ)
+                Политика конфиденциальности (152-ФЗ РФ)
               </button>
             </div>
           </div>

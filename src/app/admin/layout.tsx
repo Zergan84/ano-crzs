@@ -46,7 +46,9 @@ const navItems: NavItem[] = [
   { id: 'settings', label: 'Настройки', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'] },
   { id: 'themes', label: 'Темы', icon: Palette, href: '/admin/themes', modes: ['landing', 'portal'] },
   // 1. Шапка сайта (Лендинг)
-  { id: 'landing-hero', label: '1. Шапка сайта', icon: Menu, href: '/admin/landing-hero', modes: ['landing'], badge: 'Лендинг' },
+  { id: 'landing-hero', label: '1. Шапка сайта', icon: SlidersHorizontal, href: '/admin/landing-hero', modes: ['landing', 'portal'], badge: 'Шапка' },
+  // Меню сайта (общее для шапки и подвала)
+  { id: 'menu', label: 'Меню сайта', icon: Menu, href: '/admin/menu', modes: ['landing', 'portal'], badge: 'Навигация' },
   // 2. Главный экран (Main Hero / Слайдер)
   { id: 'hero', label: '2. Главный экран (Hero)', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
   // 3. О центре (#about)

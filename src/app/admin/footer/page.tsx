@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import NextLink from 'next/link';
-import { ArrowLeft, LayoutTemplate, Save, Check, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, LayoutTemplate, Save, Check, AlertCircle, Image as ImageIcon, ShieldCheck, ArrowRight } from 'lucide-react';
 import { DEFAULT_FOOTER } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 import { MediaPickerModal } from '@/components/admin/MediaPickerModal';
@@ -170,6 +170,22 @@ export default function AdminFooterPage() {
               className="admin-input text-xs"
             />
           </div>
+        </div>
+
+        {/* Пункт Политики конфиденциальности в подвале */}
+        <div className="rounded-lg border border-slate-700/60 bg-[#0c101a] p-3.5 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-bold text-white">Пункт «Политика конфиденциальности (152-ФЗ)»</span>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+              Включено по закону РФ
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-400 leading-relaxed">
+            Ссылка на политику конфиденциальности и согласие на обработку персональных данных автоматически размещена в нижней строке подвала сайта рядом со сноской и открывает утверждённый текст (152-ФЗ РФ) в модальном окне.
+          </p>
         </div>
       </div>
 
