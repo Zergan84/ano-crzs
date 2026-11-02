@@ -32,6 +32,8 @@ export interface CustomSectionBlock {
   col3Image?: string;
   col3VAlign?: 'top' | 'center' | 'bottom';
   principles?: CustomSectionPrinciple[]; // Ключевые принципы с иконками/галочками в split layout
+  imageRounded?: 'none' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
+  imageVAlign?: 'top' | 'center' | 'bottom';
   ctaText?: string;
   ctaHref?: string;
 }
@@ -52,7 +54,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
   }[align];
 
   const cols = Number(section.columnsCount) || 1;
-  const isSplitLayout = section.layoutMode === 'split' && cols === 2;
+  const isSplitLayout = (section.layoutMode || 'split') === 'split' && cols === 2;
   const isHeaderOnRight = isSplitLayout && section.headerSide === 'right';
 
   // Global vertical align for the row grid
@@ -72,6 +74,30 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
       : v === 'bottom'
       ? 'justify-end'
       : 'justify-center';
+  };
+
+
+  // Image styling helpers
+  const getImageRoundedClass = (rounded?: string) => {
+    switch (rounded) {
+      case 'none': return 'rounded-none';
+      case 'md': return 'rounded-md';
+      case 'lg': return 'rounded-lg';
+      case '2xl': return 'rounded-2xl';
+      case '3xl': return 'rounded-3xl';
+      case 'full': return 'rounded-full';
+      case 'xl':
+      default: return 'rounded-xl';
+    }
+  };
+
+  const getImageVAlignClass = (valign?: string) => {
+    switch (valign) {
+      case 'top': return 'self-start';
+      case 'bottom': return 'self-end';
+      case 'center':
+      default: return 'self-center';
+    }
   };
 
   // Темы стилизации
@@ -163,7 +189,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
         {cols === 1 && (
           <div className={`max-w-4xl mx-auto flex flex-col ${getColVAlignClass(section.col1VAlign)} space-y-6`}>
             {section.col1Image && (
-              <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div className={`overflow-hidden ${getImageRoundedClass(section.imageRounded)} ${getImageVAlignClass(section.imageVAlign)} border border-slate-200 bg-white shadow-sm`}>
                 <img
                   src={resolveMediaUrl(section.col1Image)}
                   alt={section.title}
@@ -194,7 +220,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
               )}
 
               {/* Ключевые принципы с иконками/галочками в колонке с заголовком */}
-              {isSplitLayout && !isHeaderOnRight && Array.isArray(section.principles) && section.principles.length > 0 && (
+              {!isHeaderOnRight && Array.isArray(section.principles) && section.principles.length > 0 && (
                 <ul className="space-y-4 pt-2">
                   {section.principles.map((pr, pIdx) => {
                     const hasCustomIcon = Boolean(pr.customIcon && pr.customIcon.trim());
@@ -215,7 +241,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
               )}
 
               {section.col1Image && (
-                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div className={`overflow-hidden ${getImageRoundedClass(section.imageRounded)} ${getImageVAlignClass(section.imageVAlign)} border border-slate-200 bg-white shadow-sm`}>
                   <img
                     src={resolveMediaUrl(section.col1Image)}
                     alt="Изображение 1"
@@ -236,7 +262,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
                 </div>
               )}
 
-              {isSplitLayout && isHeaderOnRight && Array.isArray(section.principles) && section.principles.length > 0 && (
+              {isHeaderOnRight && Array.isArray(section.principles) && section.principles.length > 0 && (
                 <ul className="space-y-4 pt-2">
                   {section.principles.map((pr, pIdx) => {
                     const hasCustomIcon = Boolean(pr.customIcon && pr.customIcon.trim());
@@ -257,7 +283,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
               )}
 
               {section.col2Image && (
-                <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div className={`overflow-hidden ${getImageRoundedClass(section.imageRounded)} ${getImageVAlignClass(section.imageVAlign)} border border-slate-200 bg-white shadow-sm`}>
                   <img
                     src={resolveMediaUrl(section.col2Image)}
                     alt="Изображение 2"

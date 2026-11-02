@@ -381,31 +381,60 @@ export function TricolorLandingView({
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {directions.map((item, idx) => {
                   const Icon = projectIconList[idx % projectIconList.length];
+                  const numStr = String(idx + 1).padStart(2, '0');
+                  const categoryTitle = item.category || item.badge || (
+                    idx === 0 ? 'Массовый спорт' :
+                    idx === 1 ? 'Социальный проект' :
+                    idx === 2 ? 'Спорт высших достижений' :
+                    idx === 3 ? 'Образование' :
+                    idx === 4 ? 'Инфраструктура' :
+                    'События'
+                  );
+
                   return (
                     <div
                       key={item.id || idx}
-                      className="group flex flex-col justify-between rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md"
+                      className="group relative flex flex-col justify-between rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md overflow-hidden"
                     >
+                      {/* Верхняя акцентная полоса: по умолчанию тёмно-синяя #0F2147 или с красной полоской при ховере/активном как на скриншоте */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-[#0F2147] group-hover:bg-[#D92D20] transition-colors" />
+
                       <div>
-                        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-sm bg-[#0F2147] text-white transition-colors group-hover:bg-[#1447E6]">
-                          <Icon className="h-6 w-6" />
+                        {/* Верхняя строка: иконка слева и номер справа */}
+                        <div className="mb-4 flex items-center justify-between">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-sm text-[#1447E6] transition-colors group-hover:text-[#D92D20]">
+                            <Icon className="h-6 w-6 stroke-[1.8]" />
+                          </div>
+                          <span className="font-mono text-xs font-bold text-slate-400">
+                            {numStr}
+                          </span>
                         </div>
-                        <h3 className="text-lg font-bold text-[#0F2147] transition-colors group-hover:text-[#1447E6]">
+
+                        {/* Категория (красный мелкий надзаголовок) */}
+                        <div className="mb-1.5 text-[11px] font-bold uppercase text-[#D92D20]">
+                          {categoryTitle}
+                        </div>
+
+                        {/* Заголовок проекта */}
+                        <h3 className="text-base font-bold text-[#0F2147] transition-colors group-hover:text-[#1447E6]">
                           {item.title}
                         </h3>
-                        <p className="mt-3 text-sm leading-relaxed text-[#606E85]">
+
+                        {/* Описание проекта */}
+                        <p className="mt-2 text-xs leading-relaxed text-[#606E85]">
                           {item.description}
                         </p>
                       </div>
-                      {item.showLink !== false && (
-                        <div className="mt-6 pt-4 border-t border-[#E2E8F0]">
+
+                      {item.showLink && (
+                        <div className="mt-5 pt-3 border-t border-[#E2E8F0]">
                           <a
                             href={item.linkHref || '#contacts'}
                             target={item.linkHref?.startsWith('http') ? '_blank' : undefined}
                             rel={item.linkHref?.startsWith('http') ? 'noopener noreferrer' : undefined}
                             className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6] hover:text-[#0F2147] transition-colors"
                           >
-                            <span>{item.linkText || 'Подробнее о проекте'}</span>
+                            <span>{item.linkText || 'Подробнее'}</span>
                             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                           </a>
                         </div>

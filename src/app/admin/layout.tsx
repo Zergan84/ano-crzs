@@ -92,7 +92,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Custom modules created dynamically in "Разделы"
   const customSections = (content?.landing as any)?.customSections || [];
   const customNavItems: NavItem[] = customSections.map((cs: any) => ({
-    id: `custom-${cs.id}`,
+    id: cs.id.startsWith('custom-') ? cs.id : ('custom-' + cs.id),
     label: cs.title || cs.anchor || 'Новый раздел',
     icon: Layers,
     href: `/admin/sections?edit=${encodeURIComponent(cs.id)}`,

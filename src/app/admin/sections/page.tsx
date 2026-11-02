@@ -56,6 +56,8 @@ interface CustomSection {
   col3Text?: string;
   col3Image?: string;
   principles?: CustomSectionPrinciple[];
+  imageRounded?: 'none' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
+  imageVAlign?: 'top' | 'center' | 'bottom';
   ctaText?: string;
   ctaHref?: string;
 }
@@ -116,6 +118,8 @@ export default function SectionsManagerPage() {
       col2Image: '',
       col3Text: 'Текст третьей колонки с контактной информацией или призывом к действию.',
       col3Image: '',
+      imageRounded: 'xl',
+      imageVAlign: 'center',
       ctaText: '',
       ctaHref: '',
     };
@@ -148,6 +152,8 @@ export default function SectionsManagerPage() {
       col2Image: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80',
       col3Text: '',
       col3Image: '',
+      imageRounded: 'xl',
+      imageVAlign: 'center',
       ctaText: 'Подробнее',
       ctaHref: '#contacts',
     };
@@ -650,6 +656,77 @@ export default function SectionsManagerPage() {
                 className="w-full rounded-lg border border-slate-800 bg-[#0a0a0c] px-3 py-2 text-xs text-slate-200 focus:border-amber-500 focus:outline-none"
                 placeholder="Краткое описание назначения и основных тезисов этого модуля"
               />
+            </div>
+          </div>
+
+
+          {/* Настройки изображения блока (Скругление и Вертикальное выравнивание) */}
+          <div className="rounded-xl border border-slate-800 bg-[#0e1017] p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+                <ImageIcon className="h-4 w-4" />
+                <span>Настройки фотографии / изображения блока</span>
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Скругление углов фотографии (Border Radius)
+                </label>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                  {[
+                    { id: 'none', label: 'Прямые (0px)' },
+                    { id: 'md', label: 'Малые (6px)' },
+                    { id: 'lg', label: 'Средние (8px)' },
+                    { id: 'xl', label: 'Стандарт (12px)' },
+                    { id: '2xl', label: 'Большие (16px)' },
+                    { id: '3xl', label: 'Макс (24px)' },
+                  ].map((r) => (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setSelectedSection({ ...selectedSection, imageRounded: r.id as any })}
+                      className={`rounded px-2 py-1.5 text-[11px] font-medium border text-center transition-all ${
+                        (selectedSection.imageRounded || 'xl') === r.id
+                          ? 'border-amber-500 bg-amber-500/20 text-amber-300'
+                          : 'border-slate-800 bg-[#0a0a0c] text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-300 mb-1">
+                  Выравнивание картинки по высоте блока (Vertical Alignment)
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'top', label: 'По верху (Top)' },
+                    { id: 'center', label: 'По центру (Center)' },
+                    { id: 'bottom', label: 'По низу (Bottom)' },
+                  ].map((va) => (
+                    <button
+                      key={va.id}
+                      type="button"
+                      onClick={() => setSelectedSection({ ...selectedSection, imageVAlign: va.id as any })}
+                      className={`rounded px-3 py-1.5 text-[11px] font-medium border text-center transition-all ${
+                        (selectedSection.imageVAlign || 'center') === va.id
+                          ? 'border-amber-500 bg-amber-500/20 text-amber-300'
+                          : 'border-slate-800 bg-[#0a0a0c] text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {va.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Определяет привязку изображения относительно высоты текстовой колонки
+                </p>
+              </div>
             </div>
           </div>
 
