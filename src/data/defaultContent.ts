@@ -253,6 +253,8 @@ export const DEFAULT_LANDING = {
     logoUrl: '/logo.png',
     logoTitle: 'Центр развития спорта',
     logoSubtitle: 'Автономная некоммерческая организация',
+    logoColor: '',
+    logoOpacity: 100,
     ctaText: 'Стать партнёром',
     ctaHref: '#partnership',
     navLinks: [
@@ -463,6 +465,9 @@ export const DEFAULT_PARTNERS = [
 ];
 
 export const DEFAULT_HEADER = {
+  logoUrl: '/logo.png',
+  logoColor: '',
+  logoOpacity: 100,
   navLinks: [
     { 
       label: 'Carve CUP 🔥', 

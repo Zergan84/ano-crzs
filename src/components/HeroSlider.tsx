@@ -36,22 +36,22 @@ interface Slide {
   tabLabel?: string;
   title: string;
   description: string;
-  primaryBtn: {
+  primaryBtn?: {
     label: string;
     href: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
     isExternal?: boolean;
     isHot?: boolean;
   };
   secondaryBtn?: {
     label: string;
     href: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
   };
   tertiaryBtn?: {
     label: string;
     href: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
   };
   rightContent: React.ReactNode;
 }
@@ -340,26 +340,37 @@ export function HeroSlider() {
       );
     }
 
+    const primaryBtn =
+      dyn.ctaText !== undefined
+        ? dyn.ctaText.trim()
+          ? {
+              ...base.primaryBtn,
+              label: dyn.ctaText.trim(),
+              href: dyn.ctaHref || base.primaryBtn?.href || '#partnership',
+            }
+          : undefined
+        : base.primaryBtn;
+
     const secondaryBtn =
-      dyn.secondaryBtnText === ''
-        ? undefined
-        : dyn.secondaryBtnText
-        ? {
-            label: dyn.secondaryBtnText,
-            href: dyn.secondaryBtnHref || base.secondaryBtn?.href || '#documents',
-            icon: base.secondaryBtn?.icon || <FileText className="w-4 h-4 text-slate-500" />,
-          }
+      dyn.secondaryBtnText !== undefined
+        ? dyn.secondaryBtnText.trim()
+          ? {
+              label: dyn.secondaryBtnText.trim(),
+              href: dyn.secondaryBtnHref || base.secondaryBtn?.href || '#documents',
+              icon: base.secondaryBtn?.icon || <FileText className="w-4 h-4 text-slate-500" />,
+            }
+          : undefined
         : base.secondaryBtn;
 
     const tertiaryBtn =
-      dyn.tertiaryBtnText === ''
-        ? undefined
-        : dyn.tertiaryBtnText
-        ? {
-            label: dyn.tertiaryBtnText,
-            href: dyn.tertiaryBtnHref || base.tertiaryBtn?.href || '#contacts',
-            icon: base.tertiaryBtn?.icon || <GraduationCap className="w-4 h-4 text-blue-700" />,
-          }
+      dyn.tertiaryBtnText !== undefined
+        ? dyn.tertiaryBtnText.trim()
+          ? {
+              label: dyn.tertiaryBtnText.trim(),
+              href: dyn.tertiaryBtnHref || base.tertiaryBtn?.href || '#contacts',
+              icon: base.tertiaryBtn?.icon || <GraduationCap className="w-4 h-4 text-blue-700" />,
+            }
+          : undefined
         : base.tertiaryBtn;
 
     return {
@@ -374,11 +385,7 @@ export function HeroSlider() {
         base.tabLabel ||
         (idx === 0 ? 'Стандарты и Реестр' : idx === 1 ? 'Carve CUP 🔥' : idx === 2 ? 'Правительство МО' : dyn.tag || `Слайд ${idx + 1}`),
       rightContent,
-      primaryBtn: {
-        ...base.primaryBtn,
-        label: dyn.ctaText || base.primaryBtn.label,
-        href: dyn.ctaHref || base.primaryBtn.href,
-      },
+      primaryBtn,
       secondaryBtn,
       tertiaryBtn,
     };
@@ -497,15 +504,17 @@ export function HeroSlider() {
       slide.description ||
       '';
     const boltPrimaryText =
-      dyn0?.ctaText || slide.primaryBtn?.label || 'Стать партнёром';
+      dyn0?.ctaText !== undefined
+        ? dyn0.ctaText.trim()
+        : (slide.primaryBtn?.label || '');
     const boltPrimaryHref =
       dyn0?.ctaHref || slide.primaryBtn?.href || '#partnership';
     const boltSecondaryText =
       dyn0?.secondaryBtnText !== undefined
-        ? dyn0.secondaryBtnText
-        : 'Наши проекты';
+        ? dyn0.secondaryBtnText.trim()
+        : (slide.secondaryBtn?.label || '');
     const boltSecondaryHref =
-      dyn0?.secondaryBtnHref || '#projects';
+      dyn0?.secondaryBtnHref || slide.secondaryBtn?.href || '#projects';
     const textAlign: 'left' | 'center' | 'right' =
       dyn0?.textAlign === 'center' || dyn0?.textAlign === 'right'
         ? dyn0.textAlign
@@ -587,7 +596,7 @@ export function HeroSlider() {
                     ? `translateY(${sBgPaddingTop}px)`
                     : `translateY(${sBgPaddingTop - 104}px)`,
                 }}
-                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
+                className={`hero-slide-bg-responsive absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
                   isSlideActive ? 'opacity-100 z-10' : 'opacity-0 z-0'
                 }`}
               />
@@ -655,37 +664,39 @@ export function HeroSlider() {
               {boltDesc}
             </p>
 
-            <div className={`mt-6 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
-              {boltPrimaryText && (
-                <a
-                  href={boltPrimaryHref}
-                  className={
-                    isTricolor
-                      ? 'group inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:bg-[#b92419]'
-                      : 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
-                  }
-                >
-                  <span>{boltPrimaryText}</span>
-                  <ArrowRight
-                    className="h-5 w-5 transition-transform group-hover:translate-x-1"
-                    aria-hidden="true"
-                  />
-                </a>
-              )}
+            {(boltPrimaryText || boltSecondaryText) && (
+              <div className={`mt-6 flex w-full flex-col gap-3 sm:flex-row ${alignButtonsClasses}`}>
+                {boltPrimaryText && (
+                  <a
+                    href={boltPrimaryHref}
+                    className={
+                      isTricolor
+                        ? 'group inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-6 py-3.5 text-base font-semibold text-white shadow-sm transition-all hover:bg-[#b92419]'
+                        : 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
+                    }
+                  >
+                    <span>{boltPrimaryText}</span>
+                    <ArrowRight
+                      className="h-5 w-5 transition-transform group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </a>
+                )}
 
-              {boltSecondaryText && (
-                <a
-                  href={boltSecondaryHref}
-                  className={
-                    isTricolor
-                      ? 'inline-flex items-center justify-center gap-2 rounded-sm bg-white px-6 py-3.5 text-base font-semibold text-[#0F2147] shadow-sm transition-colors hover:bg-slate-100'
-                      : 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
-                  }
-                >
-                  {boltSecondaryText}
-                </a>
-              )}
-            </div>
+                {boltSecondaryText && (
+                  <a
+                    href={boltSecondaryHref}
+                    className={
+                      isTricolor
+                        ? 'inline-flex items-center justify-center gap-2 rounded-sm bg-white px-6 py-3.5 text-base font-semibold text-[#0F2147] shadow-sm transition-colors hover:bg-slate-100'
+                        : 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
+                    }
+                  >
+                    {boltSecondaryText}
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {showControls && activeSlides.length > 1 && (
@@ -855,61 +866,65 @@ export function HeroSlider() {
               {slide.description}
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3 sm:gap-4 items-center">
-              {slide.primaryBtn.isExternal ? (
-                <a
-                  href={slide.primaryBtn.href}
-                  className={
-                    isBoltStyle
-                      ? 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-sm sm:text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
-                      : `inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm transition-all shadow-sm hover:shadow ${
-                          slide.primaryBtn.isHot
-                            ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200'
-                            : 'bg-[#0A2540] hover:bg-[#123962] text-white'
-                        }`
-                  }
-                >
-                  {slide.primaryBtn.icon}
-                  <span>{slide.primaryBtn.label}</span>
-                </a>
-              ) : (
-                <Link
-                  href={slide.primaryBtn.href}
-                  className={
-                    isBoltStyle
-                      ? 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-sm sm:text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
-                      : 'inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow'
-                  }
-                >
-                  {slide.primaryBtn.icon}
-                  <span>{slide.primaryBtn.label}</span>
-                </Link>
-              )}
+            {(slide.primaryBtn || slide.secondaryBtn || slide.tertiaryBtn) && (
+              <div className="mt-8 flex flex-wrap gap-3 sm:gap-4 items-center">
+                {slide.primaryBtn && (
+                  slide.primaryBtn.isExternal ? (
+                    <a
+                      href={slide.primaryBtn.href}
+                      className={
+                        isBoltStyle
+                          ? 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-sm sm:text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
+                          : `inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm transition-all shadow-sm hover:shadow ${
+                              slide.primaryBtn.isHot
+                                ? 'bg-red-600 hover:bg-red-700 text-white shadow-red-200'
+                                : 'bg-[#0A2540] hover:bg-[#123962] text-white'
+                            }`
+                      }
+                    >
+                      {slide.primaryBtn.icon}
+                      <span>{slide.primaryBtn.label}</span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={slide.primaryBtn.href}
+                      className={
+                        isBoltStyle
+                          ? 'group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8B93E] px-7 py-3.5 text-sm sm:text-base font-semibold text-[#071A33] shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 hover:bg-[#F0CF6A]'
+                          : 'inline-flex items-center gap-2 px-5 py-3 rounded-md bg-[#0A2540] hover:bg-[#123962] text-white font-semibold text-sm transition-all shadow-sm hover:shadow'
+                      }
+                    >
+                      {slide.primaryBtn.icon}
+                      <span>{slide.primaryBtn.label}</span>
+                    </Link>
+                  )
+                )}
 
-              {slide.secondaryBtn && (
-                <Link
-                  href={slide.secondaryBtn.href}
-                  className={
-                    isBoltStyle
-                      ? 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3.5 text-sm sm:text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
-                      : 'inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors'
-                  }
-                >
-                  {slide.secondaryBtn.icon}
-                  <span>{slide.secondaryBtn.label}</span>
-                </Link>
-              )}
+                {slide.secondaryBtn && (
+                  <Link
+                    href={slide.secondaryBtn.href}
+                    className={
+                      isBoltStyle
+                        ? 'inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3.5 text-sm sm:text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10'
+                        : 'inline-flex items-center gap-2 px-5 py-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium text-sm border border-slate-300 transition-colors'
+                    }
+                  >
+                    {slide.secondaryBtn.icon}
+                    <span>{slide.secondaryBtn.label}</span>
+                  </Link>
+                )}
 
-              {slide.tertiaryBtn && !isBoltStyle && (
-                <Link
-                  href={slide.tertiaryBtn.href}
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
-                >
-                  {slide.tertiaryBtn.icon}
-                  <span>{slide.tertiaryBtn.label}</span>
-                </Link>
-              )}
-            </div>
+                {slide.tertiaryBtn && !isBoltStyle && (
+                  <Link
+                    href={slide.tertiaryBtn.href}
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-medium text-sm border border-slate-300 transition-colors"
+                  >
+                    {slide.tertiaryBtn.icon}
+                    <span>{slide.tertiaryBtn.label}</span>
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right Column: Visual Showcase */}

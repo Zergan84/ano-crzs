@@ -85,3 +85,12 @@ h1, h2, h3, h4, h5, h6 {
   animation: sponsor-marquee 35s linear infinite;
   will-change: transform;
 }
+
+/* На мобильных устройствах и планшетах (до lg / 1024px) изображение слайдера строго по центру без смещения */
+@media (max-width: 1023px) {
+  .hero-slide-bg-responsive {
+    object-position: center center !important;
+    transform: none !important;
+  }
+}
+

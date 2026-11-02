@@ -64,6 +64,8 @@ export function TricolorLandingView({
   ];
 
   const logoUrl = resolveMediaUrl(header?.logoUrl) || '/logo.png';
+  const logoColor = (header as any)?.logoColor || '';
+  const logoOpacity = (header as any)?.logoOpacity;
   const headerCtaText = header?.ctaText || 'Стать партнёром';
   const headerCtaHref = header?.ctaHref || '#partnership';
 
@@ -213,7 +215,11 @@ export function TricolorLandingView({
             <img
               src={logoUrl}
               alt={header?.logoTitle || 'АНО ЦЗСТ — Центр развития спорта'}
-              className="brand-logo h-auto w-52 max-w-full md:w-64"
+              style={{
+                opacity: typeof logoOpacity === 'number' ? logoOpacity / 100 : undefined,
+                filter: logoColor ? `drop-shadow(0px 0px 0px ${logoColor})` : undefined,
+              }}
+              className="brand-logo h-auto w-52 max-w-full md:w-64 transition-all"
             />
           </a>
 

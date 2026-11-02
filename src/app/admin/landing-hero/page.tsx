@@ -206,12 +206,66 @@ export default function AdminLandingHeroPage() {
             </button>
           </div>
           {((data.header as any).logoUrl || '/logo.png') && (
-            <div className="mt-2 inline-flex items-center rounded-lg border border-[#2a2a2a] bg-[#071A33] px-4 py-2">
-              <img
-                src={(data.header as any).logoUrl || '/logo.png'}
-                alt="Logo preview"
-                className="h-9 w-auto"
-              />
+            <div className="mt-3 rounded-lg border border-[#2a2a2a] bg-[#0c101a] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="inline-flex items-center rounded-lg border border-[#334155] bg-[#071A33] px-4 py-2.5">
+                  <img
+                    src={(data.header as any).logoUrl || '/logo.png'}
+                    alt="Logo preview"
+                    style={{
+                      opacity: typeof (data.header as any).logoOpacity === 'number' ? (data.header as any).logoOpacity / 100 : 1,
+                      filter: (data.header as any).logoColor ? `drop-shadow(0px 0px 0px ${(data.header as any).logoColor})` : undefined,
+                    }}
+                    className="h-9 w-auto max-w-[200px] object-contain transition-all"
+                  />
+                </div>
+                <div className="text-[11px] text-slate-400">
+                  <span>Предпросмотр логотипа с эффектами</span>
+                </div>
+              </div>
+
+              {/* Эффекты логотипа (цвет и прозрачность) */}
+              <div className="flex flex-wrap items-center gap-4 bg-[#141b27] px-3.5 py-2.5 rounded-lg border border-[#222]">
+                <div className="flex items-center gap-2">
+                  <label className="text-[11px] font-semibold text-slate-300 whitespace-nowrap">
+                    Цвет логотипа:
+                  </label>
+                  <input
+                    type="color"
+                    value={(data.header as any).logoColor || '#ffffff'}
+                    onChange={(e) => updateHeader('logoColor', e.target.value)}
+                    className="w-7 h-7 rounded cursor-pointer border border-[#445] bg-transparent p-0"
+                    title="Выбрать оттенок цвета"
+                  />
+                  {(data.header as any).logoColor && (
+                    <button
+                      type="button"
+                      onClick={() => updateHeader('logoColor', '')}
+                      className="text-[10px] text-slate-400 hover:text-red-400 underline"
+                      title="Сбросить цвет к исходному"
+                    >
+                      Сброс
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 min-w-[170px]">
+                  <label className="text-[11px] font-semibold text-slate-300 whitespace-nowrap">
+                    Прозрачность:
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={typeof (data.header as any).logoOpacity === 'number' ? (data.header as any).logoOpacity : 100}
+                    onChange={(e) => updateHeader('logoOpacity', Number(e.target.value))}
+                    className="w-20 accent-amber-500 cursor-pointer"
+                  />
+                  <span className="text-[11px] font-mono text-amber-400 font-bold w-9">
+                    {typeof (data.header as any).logoOpacity === 'number' ? (data.header as any).logoOpacity : 100}%
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </div>

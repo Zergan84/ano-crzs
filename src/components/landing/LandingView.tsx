@@ -589,6 +589,8 @@ export function LandingView() {
         : BOLT_NAV_LINKS;
 
     const boltLogoUrl = resolveMediaUrl((header as any).logoUrl) || '/logo.png';
+    const boltLogoColor = (header as any)?.logoColor || '';
+    const boltLogoOpacity = (header as any)?.logoOpacity;
     const boltHeaderCtaText = header.ctaText || 'Стать партнёром';
     const boltHeaderCtaHref = header.ctaHref || '#partnership';
 
@@ -758,7 +760,11 @@ export function LandingView() {
               <img
                 src={boltLogoUrl}
                 alt={header.logoTitle || 'Центр развития спорта'}
-                className="h-9 w-auto sm:h-10"
+                style={{
+                  opacity: typeof boltLogoOpacity === 'number' ? boltLogoOpacity / 100 : undefined,
+                  filter: boltLogoColor ? `drop-shadow(0px 0px 0px ${boltLogoColor})` : undefined,
+                }}
+                className="h-9 w-auto sm:h-10 transition-all"
               />
             </a>
 

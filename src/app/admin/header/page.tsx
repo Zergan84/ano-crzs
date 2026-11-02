@@ -37,6 +37,9 @@ interface NavLinkItem {
 }
 
 interface HeaderData {
+  logoUrl?: string;
+  logoColor?: string;
+  logoOpacity?: number;
   navLinks: NavLinkItem[];
   phone: string;
   phoneTel: string;
@@ -517,6 +520,74 @@ export default function HeaderMenuAdminPage() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* Header Logo Effects */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
+        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
+          Логотип шапки и визуальные эффекты
+        </h3>
+        <div>
+          <label className="admin-label">Логотип (URL)</label>
+          <input
+            type="text"
+            value={data.logoUrl || '/logo.png'}
+            onChange={(e) => setData({ ...data, logoUrl: e.target.value })}
+            className="admin-input font-mono text-xs"
+            placeholder="/logo.png"
+          />
+          <div className="mt-3 rounded-lg border border-[#2a2a2a] bg-[#0c101a] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="inline-flex items-center rounded-lg border border-[#334155] bg-[#071A33] px-4 py-2.5">
+              <img
+                src={data.logoUrl || '/logo.png'}
+                alt="Logo preview"
+                style={{
+                  opacity: typeof data.logoOpacity === 'number' ? data.logoOpacity / 100 : 1,
+                  filter: data.logoColor ? `drop-shadow(0px 0px 0px ${data.logoColor})` : undefined,
+                }}
+                className="h-9 w-auto max-w-[200px] object-contain transition-all"
+              />
+            </div>
+            <div className="flex flex-wrap items-center gap-4 bg-[#141b27] px-3.5 py-2.5 rounded-lg border border-[#222]">
+              <div className="flex items-center gap-2">
+                <label className="text-[11px] font-semibold text-slate-300 whitespace-nowrap">
+                  Цвет логотипа:
+                </label>
+                <input
+                  type="color"
+                  value={data.logoColor || '#ffffff'}
+                  onChange={(e) => setData({ ...data, logoColor: e.target.value })}
+                  className="w-7 h-7 rounded cursor-pointer border border-[#445] bg-transparent p-0"
+                />
+                {data.logoColor && (
+                  <button
+                    type="button"
+                    onClick={() => setData({ ...data, logoColor: '' })}
+                    className="text-[10px] text-slate-400 hover:text-red-400 underline"
+                  >
+                    Сброс
+                  </button>
+                )}
+              </div>
+              <div className="flex items-center gap-2 min-w-[170px]">
+                <label className="text-[11px] font-semibold text-slate-300 whitespace-nowrap">
+                  Прозрачность:
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={typeof data.logoOpacity === 'number' ? data.logoOpacity : 100}
+                  onChange={(e) => setData({ ...data, logoOpacity: Number(e.target.value) })}
+                  className="w-20 accent-amber-500 cursor-pointer"
+                />
+                <span className="text-[11px] font-mono text-amber-400 font-bold w-9">
+                  {typeof data.logoOpacity === 'number' ? data.logoOpacity : 100}%
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
