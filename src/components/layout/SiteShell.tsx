@@ -182,8 +182,18 @@ function buildThemeCss(t: ThemeConfig): string {
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { content } = useSiteContent();
+  const { content, loading } = useSiteContent();
   const isAdmin = pathname?.startsWith('/admin');
+
+  // Страница скрыта (см. inline-стиль в layout.tsx), пока не отрисован актуальный контент.
+  // Так в браузере никогда не мелькает «запечённый» при сборке контент по умолчанию.
+  useEffect(() => {
+    if (loading) return;
+    const raf = requestAnimationFrame(() => {
+      document.documentElement.classList.add('content-ready');
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [loading]);
 
   const activeThemeId =
     content?.themes?.activeThemeId ||

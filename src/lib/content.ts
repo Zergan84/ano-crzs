@@ -116,9 +116,31 @@ function mergeWithDefaults(data: any): SiteContent {
   };
 }
 
+/**
+ * Актуальный контент, встроенный в HTML middleware-функцией Cloudflare Pages
+ * (functions/_middleware.js) — позволяет отрисовать страницу сразу с верными данными.
+ */
+function readInjectedContent(): SiteContent | null {
+  if (typeof window === 'undefined') return null;
+  const injected = (window as any).__SITE_CONTENT__;
+  if (!injected || typeof injected !== 'object') return null;
+  try {
+    return mergeWithDefaults(injected);
+  } catch {
+    return null;
+  }
+}
+
 export async function getContent(forceRefresh = false): Promise<SiteContent> {
   if (!forceRefresh && cachedContent) {
     return cachedContent;
+  }
+  if (!forceRefresh) {
+    const injected = readInjectedContent();
+    if (injected) {
+      cachedContent = injected;
+      return injected;
+    }
   }
   if (typeof window !== 'undefined') {
     try {

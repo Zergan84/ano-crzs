@@ -48,7 +48,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru" className={`scroll-smooth ${onest.variable} ${inter.variable} ${golosText.variable}`}>
+    <html lang="ru" suppressHydrationWarning className={`scroll-smooth ${onest.variable} ${inter.variable} ${golosText.variable}`}>
+      <head>
+        {/* Скрываем сайт до отрисовки актуального контента из R2, чтобы не мелькал контент по умолчанию */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              'html:not(.content-ready) .site-themed-root{visibility:hidden;opacity:0}' +
+              '.site-themed-root{transition:opacity .2s ease-out}',
+          }}
+        />
+        <noscript>
+          <style>{'.site-themed-root{visibility:visible!important}'}</style>
+        </noscript>
+        {/* Страховка: если скрипты не загрузились, показываем страницу через 4 секунды */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "setTimeout(function(){document.documentElement.classList.add('content-ready')},4000);",
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#1E293B] antialiased selection:bg-amber-500/20 selection:text-[#0F172A]">
         <FontProvider>
           <SiteShell>
