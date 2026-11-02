@@ -570,8 +570,9 @@ export function HeroSlider() {
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        {/* Фоновые изображения всех слайдов: плавный cross-fade,
-            ровнение относительно блока слайдера (alignToBlock) либо экрана браузера */}
+        {/* Фоновые изображения всех слайдов: плавный cross-fade.
+            Изображение заполняет 100% высоты слайдера.
+            Сдвиг sBgPaddingTop и ровнение alignToBlock регулируют внутреннюю позицию фона (top 50% + translateY(-50% + offset) / calc(50% + offset)) через object-position/calc или расширенный контейнер, чтобы никогда не образовывалась пустая полоса подложки. */}
         <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
           {slidesData.map((s: any, idx: number) => {
             const isSlideActive = currentSlide === idx;
@@ -579,8 +580,16 @@ export function HeroSlider() {
             const sBgPaddingTop = typeof s.bgPaddingTop === 'number' 
               ? s.bgPaddingTop 
               : (typeof s.bgMarginTop === 'number' ? s.bgMarginTop : 0);
-            const sBgPosition = s.bgPosition || 'center';
             const alignToBlock = s.alignToBlock !== false;
+
+            // Вычисляем процент базового objectPosition
+            const basePos = s.bgPosition || 'center';
+            let basePercent = '50%';
+            if (basePos === 'top' || basePos === 'center top') basePercent = '0%';
+            else if (basePos === 'bottom' || basePos === 'center bottom') basePercent = '100%';
+
+            // При ровнении относительно экрана браузера добавляем смещение высоты шапки (-104px)
+            const netOffset = alignToBlock ? sBgPaddingTop : (sBgPaddingTop - 104);
 
             return (
               <img
@@ -589,12 +598,9 @@ export function HeroSlider() {
                 alt=""
                 aria-hidden="true"
                 style={{
-                  objectPosition: sBgPosition,
-                  // Полноразмерный слой на 100% высоты слайдера.
-                  // При ровнении от экрана смещаем на высоту шапки (-104px), плюс пользовательский сдвиг (sBgPaddingTop)
-                  transform: alignToBlock
-                    ? `translateY(${sBgPaddingTop}px)`
-                    : `translateY(${sBgPaddingTop - 104}px)`,
+                  // Изображение всегда занимает 100% блока и покрывает его полностью без зазоров (cover).
+                  // Сдвиг по вертикали задаётся через object-position: center calc(Y% + offset), что перемещает сам срез картинки без смещения границ тэга <img>!
+                  objectPosition: `center calc(${basePercent} + ${netOffset}px)`,
                 }}
                 className={`hero-slide-bg-responsive absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out ${
                   isSlideActive ? 'opacity-100 z-10' : 'opacity-0 z-0'

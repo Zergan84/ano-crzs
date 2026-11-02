@@ -852,18 +852,28 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
 
                   {/* 4. Блок слайдера ровно 50% экрана (соотношение 16:9 как в окне браузера) */}
                   <div className="relative aspect-[16/6] w-full bg-[#0F2147] overflow-hidden flex flex-col justify-center px-8 sm:px-12">
-                    {/* Фоновая картинка с абсолютным позиционированием и идентичным сдвигом */}
-                    <img
-                      src={slide.image}
-                      alt="Preview"
-                      style={{
-                        objectPosition: slide.bgPosition || 'center',
-                        transform: (slide.alignToBlock !== false)
-                          ? `translateY(${(slide.bgPaddingTop ?? slide.bgMarginTop ?? 0) * 0.65}px)`
-                          : `translateY(${((slide.bgPaddingTop ?? slide.bgMarginTop ?? 0) - 104) * 0.65}px)`,
-                      }}
-                      className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none transition-transform duration-200"
-                    />
+                    {/* Фоновая картинка с абсолютным позиционированием и идентичным сдвигом через object-position */}
+                    {(() => {
+                      const basePos = slide.bgPosition || 'center';
+                      let basePercent = '50%';
+                      if (basePos === 'top' || basePos === 'center top') basePercent = '0%';
+                      else if (basePos === 'bottom' || basePos === 'center bottom') basePercent = '100%';
+
+                      const sOffset = slide.bgPaddingTop ?? slide.bgMarginTop ?? 0;
+                      const alignToBlock = slide.alignToBlock !== false;
+                      const netOffset = (alignToBlock ? sOffset : (sOffset - 104)) * 0.65;
+
+                      return (
+                        <img
+                          src={slide.image}
+                          alt="Preview"
+                          style={{
+                            objectPosition: `center calc(${basePercent} + ${netOffset}px)`,
+                          }}
+                          className="absolute inset-0 h-full w-full object-cover select-none pointer-events-none transition-all duration-200"
+                        />
+                      );
+                    })()}
 
                     {/* Градиентное затемнение 1-в-1 с сайтом */}
                     <div
