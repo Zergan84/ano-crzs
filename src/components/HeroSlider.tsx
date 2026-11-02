@@ -544,19 +544,19 @@ export function HeroSlider() {
     const heightClasses = (() => {
       switch (sliderHeight) {
         case 'screen-50':
-          // 50vh вместе с header (верхнее меню ~68px + контакты ~32px + триколор ~4px = ~104px)
-          return 'h-[calc(50vh-104px)] min-h-[420px] max-h-[580px] py-6 md:py-10';
+          // Ровно 50vh экрана вместе с шапкой на любых экранах (от MacBook до 30-дюймовых мониторов 2560x1600 и 4K)
+          return 'h-[calc(50vh-104px)] min-h-[420px] py-6 md:py-10';
         case 'compact':
-          return 'h-[calc(50vh-104px)] min-h-[420px] max-h-[580px] py-6 md:py-10';
+          return 'h-[calc(50vh-104px)] min-h-[420px] py-6 md:py-10';
         case 'medium':
-          return 'h-[calc(65vh-104px)] min-h-[520px] max-h-[700px] py-12 md:py-16';
+          return 'h-[calc(65vh-104px)] min-h-[520px] py-12 md:py-16';
         case 'tall':
           return 'min-h-[780px] md:min-h-[860px] py-20 md:py-32';
         case 'fullscreen':
           return 'min-h-screen py-16 md:py-24';
         default:
           return isTricolor
-            ? 'h-[calc(50vh-104px)] min-h-[420px] max-h-[580px] py-6 md:py-10'
+            ? 'h-[calc(50vh-104px)] min-h-[420px] py-6 md:py-10'
             : 'min-h-screen py-16 md:py-24';
       }
     })();

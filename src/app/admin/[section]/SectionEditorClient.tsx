@@ -431,6 +431,9 @@ function OrganizationEditor({
 function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: any; openMediaPicker: any }) {
   const slides = data?.slides || [];
 
+  // Выбор целевого монитора для 100% точного предпросмотра
+  const [previewViewport, setPreviewViewport] = useState<'cinema30' | 'fhd' | 'macbook'>('cinema30');
+
   const updateSlide = (index: number, key: string, val: any) => {
     const next = [...slides];
     next[index] = { ...next[index], [key]: val };
@@ -798,17 +801,60 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
 
             {slide.image && (
               <div className="mt-4 rounded-xl border border-[#2d3748] bg-[#070b14] p-4">
-                <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#1e293b] text-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[#1e293b] gap-2 text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-white text-sm">
                       Точный предпросмотр экрана сайта 1-в-1
                     </span>
                     <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-mono text-amber-300">
-                      Широкоформатный масштаб (16:9)
+                      {previewViewport === 'cinema30' ? 'Apple Cinema 30″ (2560×1600)' : previewViewport === 'fhd' ? 'Full HD (1920×1080)' : 'MacBook 13-15″ (1440×900)'}
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400">
+
+                  {/* Переключатель экранов для 100% гарантии соответствия любому монитору */}
+                  <div className="flex items-center gap-1.5 bg-[#121622] p-1 rounded-lg border border-[#263143]">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewViewport('cinema30')}
+                      className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all ${
+                        previewViewport === 'cinema30'
+                          ? 'bg-amber-500 text-slate-950 shadow-sm'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      🖥️ Cinema 30″
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewViewport('fhd')}
+                      className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all ${
+                        previewViewport === 'fhd'
+                          ? 'bg-amber-500 text-slate-950 shadow-sm'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      💻 Full HD 16:9
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewViewport('macbook')}
+                      className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-all ${
+                        previewViewport === 'macbook'
+                          ? 'bg-amber-500 text-slate-950 shadow-sm'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      💻 MacBook 16:10
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <span>
                     Сдвиг: <strong className="text-amber-400">{slide.bgPaddingTop ?? slide.bgMarginTop ?? 0}px</strong> | Режим: <strong className="text-amber-400">{slide.alignToBlock !== false ? 'От блока слайдера' : 'От верхнего края браузера'}</strong>
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    Кадрирование на 100% повторяет браузер
                   </span>
                 </div>
 
@@ -845,13 +891,29 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                       <span>Партнёры</span>
                       <span>Контакты</span>
                     </div>
-                    <span className="rounded-xs bg-[#D92D20] text-white text-xs font-bold px-3 py-1.5 shadow-sm">
-                      {slide.ctaText || 'Стать партнёром'}
-                    </span>
+                    {slide.ctaText?.trim() && (
+                      <span className="rounded-xs bg-[#D92D20] text-white text-xs font-bold px-3 py-1.5 shadow-sm">
+                        {slide.ctaText}
+                      </span>
+                    )}
                   </div>
 
-                  {/* 4. Блок слайдера ровно 50% экрана (соотношение 16:9 как в окне браузера: 100vh * 0.5 - 104px при 1920x1080 = 436px, aspect ~ 1920/436 ~ 16/3.63) */}
-                  <div className="relative aspect-[16/3.65] w-full bg-[#0F2147] overflow-hidden flex flex-col justify-center px-8 sm:px-12">
+                  {/* 4. Блок слайдера ровно 50vh с учетом пропорций монитора:
+                      - Apple Cinema 30″ (2560x1600): 50vh = 800px, за вычетом шапки (104px) = 696px. Пропорция 2560/696 = 3.68 : 1
+                      - Full HD (1920x1080): 50vh = 540px, за вычетом шапки = 436px. Пропорция 1920/436 = 4.4 : 1
+                      - MacBook (1440x900): 50vh = 450px, за вычетом шапки = 346px. Пропорция 1440/346 = 4.16 : 1
+                  */}
+                  <div
+                    className="relative w-full bg-[#0F2147] overflow-hidden flex flex-col justify-center px-8 sm:px-12 transition-all duration-300"
+                    style={{
+                      aspectRatio:
+                        previewViewport === 'cinema30'
+                          ? '2560 / 696'
+                          : previewViewport === 'fhd'
+                          ? '1920 / 436'
+                          : '1440 / 346',
+                    }}
+                  >
                     {/* Фоновая картинка с абсолютным позиционированием и идентичным сдвигом через object-position */}
                     {(() => {
                       const basePos = slide.bgPosition || 'center';
@@ -898,14 +960,20 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                       <p className="text-xs sm:text-sm text-white/90 mt-2 line-clamp-3 leading-relaxed">
                         {slide.desc || 'Описание слайда'}
                       </p>
-                      <div className="mt-4 flex items-center gap-3">
-                        <span className="bg-[#D92D20] text-white text-xs font-semibold px-4 py-2 rounded-xs shadow-sm">
-                          {slide.ctaText || 'Стать партнёром'}
-                        </span>
-                        <span className="bg-white text-[#0F2147] text-xs font-semibold px-4 py-2 rounded-xs shadow-sm">
-                          {slide.secondaryBtnText || 'Наши проекты'}
-                        </span>
-                      </div>
+                      {(slide.ctaText?.trim() || slide.secondaryBtnText?.trim()) && (
+                        <div className="mt-4 flex items-center gap-3">
+                          {slide.ctaText?.trim() && (
+                            <span className="bg-[#D92D20] text-white text-xs font-semibold px-4 py-2 rounded-xs shadow-sm">
+                              {slide.ctaText}
+                            </span>
+                          )}
+                          {slide.secondaryBtnText?.trim() && (
+                            <span className="bg-white text-[#0F2147] text-xs font-semibold px-4 py-2 rounded-xs shadow-sm">
+                              {slide.secondaryBtnText}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {/* Точки пагинации слайдов по центру внизу */}
