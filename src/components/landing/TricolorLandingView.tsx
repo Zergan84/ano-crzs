@@ -18,11 +18,13 @@ import {
   Clock, 
   Check, 
   X, 
-  Menu 
+  Menu,
+  Calendar,
 } from 'lucide-react';
 import { HeroSlider } from '@/components/HeroSlider';
 import { resolveMediaUrl } from '@/lib/content';
 import { ColorTintedLogo } from '@/components/ui/ColorTintedLogo';
+import { CustomSectionRenderer } from './CustomSectionRenderer';
 
 interface TricolorLandingProps {
   header: any;
@@ -36,6 +38,8 @@ interface TricolorLandingProps {
   footer: any;
   activeTheme: any;
   scrolled: boolean;
+  sectionOrder?: string[];
+  customSections?: any[];
 }
 
 export function TricolorLandingView({
@@ -50,6 +54,8 @@ export function TricolorLandingView({
   footer,
   activeTheme,
   scrolled,
+  sectionOrder,
+  customSections = [],
 }: TricolorLandingProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [partnerModalOpen, setPartnerModalOpen] = useState(false);
@@ -182,7 +188,501 @@ export function TricolorLandingView({
 
   const footerLogoUrl = resolveMediaUrl(footer?.logoUrl) || logoUrl;
 
+
+  const defaultOrder = ['hero', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'];
+  const activeOrder = Array.isArray(sectionOrder) && sectionOrder.length > 0 ? sectionOrder : defaultOrder;
+
+  const renderSectionById = (secId: string) => {
+    if (secId.startsWith('custom-')) {
+      const customBlock = (customSections || []).find((c: any) => c.id === secId);
+      if (!customBlock) return null;
+      return <CustomSectionRenderer key={secId} section={customBlock} theme="tricolor" />;
+    }
+
+    switch (secId) {
+      case 'hero':
+        return (
+          <div key="hero" id="hero">
+            <HeroSlider />
+          </div>
+        );
+
+      case 'about':
+        return (
+          <section key="about" id="about" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
+            <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+              <div>
+                <div className="mb-10 max-w-3xl">
+                  <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                    <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                    {aboutEyebrow}
+                  </div>
+                  <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                    {aboutTitle}
+                  </h2>
+                  <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
+                    {aboutDescription}
+                  </p>
+                </div>
+
+                <ul className="space-y-4">
+                  {aboutBullets.map((bullet, idx) => (
+                    <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed md:text-base text-[#1B263B]">
+                      <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-[#1447E6]/10 text-[#1447E6]">
+                        <Check className="h-3.5 w-3.5 stroke-[2.5]" />
+                      </div>
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="relative">
+                <div className="overflow-hidden rounded-sm border border-[#E2E8F0] bg-white shadow-sm">
+                  <img
+                    src={aboutImgUrl}
+                    alt="О центре развития спорта"
+                    className="h-[360px] w-full object-cover sm:h-[420px]"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'projects':
+        return (
+          <section key="projects" id="projects" className="bg-[#EFF3F8] py-16 md:py-24">
+            <div className="mx-auto max-w-7xl px-5 md:px-6">
+              <div className="mb-10 max-w-3xl">
+                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                  {projectsEyebrow}
+                </div>
+                <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                  {projectsTitle}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
+                  {projectsSubtitle}
+                </p>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {directions.map((item, idx) => {
+                  const Icon = projectIconList[idx % projectIconList.length];
+                  return (
+                    <div
+                      key={item.id || idx}
+                      className="group flex flex-col justify-between rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md"
+                    >
+                      <div>
+                        <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-sm bg-[#0F2147] text-white transition-colors group-hover:bg-[#1447E6]">
+                          <Icon className="h-6 w-6" />
+                        </div>
+                        <h3 className="text-lg font-bold text-[#0F2147] transition-colors group-hover:text-[#1447E6]">
+                          {item.title}
+                        </h3>
+                        <p className="mt-3 text-sm leading-relaxed text-[#606E85]">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6]">
+                        <span>Подробнее о проекте</span>
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'news':
+        return (
+          <section key="news" id="news" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
+            <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                  Новости и события
+                </div>
+                <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                  Пресс-центр
+                </h2>
+              </div>
+              <a
+                href="#contacts"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#1447E6] hover:text-[#0F2147]"
+              >
+                <span>Все публикации</span>
+                <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {newsList.slice(0, 3).map((item, idx) => (
+                <article
+                  key={item.id || idx}
+                  className="flex flex-col overflow-hidden rounded-sm border border-[#E2E8F0] bg-white shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md"
+                >
+                  {item.imageUrl && (
+                    <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                      <img
+                        src={resolveMediaUrl(item.imageUrl)}
+                        alt={item.title}
+                        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-1 flex-col justify-between p-6">
+                    <div>
+                      <div className="mb-3 flex items-center gap-3 text-xs text-[#606E85]">
+                        <span className="inline-flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" />
+                          {item.date || 'Недавно'}
+                        </span>
+                        {item.category && (
+                          <span className="rounded-sm bg-[#EFF3F8] px-2 py-0.5 font-medium text-[#0F2147]">
+                            {item.category}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-base font-bold leading-snug text-[#0F2147]">
+                        {item.title}
+                      </h3>
+                      {item.summary && (
+                        <p className="mt-2 text-sm leading-relaxed text-[#606E85]">
+                          {item.summary}
+                        </p>
+                      )}
+                    </div>
+                    <div className="mt-5 border-t border-[#E2E8F0] pt-4">
+                      <a
+                        href="#contacts"
+                        className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#1447E6] hover:text-[#0F2147]"
+                      >
+                        <span>Читать полностью</span>
+                        <ArrowRight className="h-3.5 w-3.5" />
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+
+      case 'documents':
+        return (
+          <section key="documents" id="documents" className="bg-[#EFF3F8] py-16 md:py-24">
+            <div className="mx-auto max-w-7xl px-5 md:px-6">
+              <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+                <div>
+                  <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                    <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                    Документы и отчёты
+                  </div>
+                  <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                    Официальные документы
+                  </h2>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {docCategories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setDocCategoryFilter(cat)}
+                      className={`rounded-sm px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                        docCategoryFilter === cat
+                          ? 'bg-[#0F2147] text-white'
+                          : 'bg-white text-[#606E85] hover:bg-[#E2E8F0]'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {filteredDocs.slice(0, 8).map((doc, idx) => (
+                  <a
+                    key={doc.id || idx}
+                    href={doc.fileUrl ? resolveMediaUrl(doc.fileUrl) : '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-col justify-between rounded-sm border border-[#E2E8F0] bg-white p-5 shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md"
+                  >
+                    <div>
+                      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-sm bg-[#1447E6]/10 text-[#1447E6] transition-colors group-hover:bg-[#1447E6] group-hover:text-white">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <span className="text-[11px] font-semibold uppercase text-[#606E85]">
+                        {doc.category || 'Документ'}
+                      </span>
+                      <h3 className="mt-1 text-sm font-bold leading-snug text-[#0F2147] group-hover:text-[#1447E6]">
+                        {doc.title}
+                      </h3>
+                    </div>
+                    <div className="mt-4 flex items-center justify-between border-t border-[#E2E8F0] pt-3 text-xs text-[#606E85]">
+                      <span>{doc.size || 'PDF'}</span>
+                      <Download className="h-4 w-4 text-[#1447E6] transition-transform group-hover:translate-y-0.5" />
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'partners':
+        return (
+          <section key="partners" id="partners" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
+            <div className="mb-10 text-center">
+              <div className="mb-3 inline-flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                Партнёры
+                <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+              </div>
+              <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                С нами сотрудничают
+              </h2>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              {partnerGroups.map((group, idx) => {
+                const Icon = group.icon;
+                return (
+                  <div key={idx} className="rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm">
+                    <div className="mb-5 flex items-center gap-3 border-b border-[#E2E8F0] pb-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-[#0F2147] text-white">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <h3 className="text-base font-bold text-[#0F2147]">{group.title}</h3>
+                    </div>
+                    <ul className="space-y-3">
+                      {group.members.map((m: string, mIdx: number) => (
+                        <li key={mIdx} className="flex items-center gap-2 text-sm text-[#1B263B]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#1447E6]" />
+                          <span>{m}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+
+      case 'partnership':
+        return (
+          <section key="partnership" id="partnership" className="bg-[#0F2147] py-16 text-white md:py-24">
+            <div className="mx-auto max-w-7xl px-5 md:px-6">
+              <div className="mb-12 max-w-3xl">
+                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                  {partnershipBadge}
+                </div>
+                <h2 className="text-3xl font-bold leading-tight md:text-4xl">
+                  {partnershipTitle}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-white/80 md:text-lg">
+                  {partnershipSubtitle}
+                </p>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {partnershipItems.map((item: any, idx: number) => {
+                  const Icon = item.icon;
+                  return (
+                    <div
+                      key={idx}
+                      className="rounded-sm border border-white/10 bg-white/5 p-6 backdrop-blur transition-all hover:bg-white/10"
+                    >
+                      <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-sm bg-[#D92D20] text-white">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <h3 className="text-base font-bold">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-white/70">{item.text}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-12 text-center">
+                <button
+                  type="button"
+                  onClick={() => setPartnerModalOpen(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-8 py-4 text-sm font-semibold text-white shadow-lg transition-colors hover:bg-[#b92419]"
+                >
+                  <span>{partnershipCtaText}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </section>
+        );
+
+      case 'contacts':
+        return (
+          <section key="contacts" id="contacts" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
+            <div className="grid gap-12 lg:grid-cols-2">
+              <div>
+                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
+                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+                  {contactsEyebrow}
+                </div>
+                <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
+                  {contactsTitle}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-[#606E85]">
+                  {contactsSubtitle}
+                </p>
+
+                <div className="mt-10 space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-[#0F2147] text-white">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase text-[#606E85]">Телефон приёмной</div>
+                      <a
+                        href={`tel:${topBarPhone.replace(/[^+\d]/g, '')}`}
+                        className="mt-1 text-base font-bold text-[#0F2147] hover:text-[#1447E6]"
+                      >
+                        {topBarPhone}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-[#0F2147] text-white">
+                      <Mail className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase text-[#606E85]">Электронная почта</div>
+                      <a
+                        href={`mailto:${topBarEmail}`}
+                        className="mt-1 text-base font-bold text-[#0F2147] hover:text-[#1447E6]"
+                      >
+                        {topBarEmail}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-[#0F2147] text-white">
+                      <MapPin className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase text-[#606E85]">Адрес</div>
+                      <div className="mt-1 text-sm leading-relaxed text-[#1B263B]">
+                        {org?.address || footer?.address || 'Россия, г. Москва'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-[#0F2147] text-white">
+                      <Clock className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold uppercase text-[#606E85]">Режим работы</div>
+                      <div className="mt-1 text-sm text-[#1B263B]">
+                        {org?.workingHours || 'Пн-Пт: 09:00 - 18:00'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-sm border border-[#E2E8F0] bg-[#EFF3F8] p-8 md:p-10">
+                <h3 className="text-xl font-bold text-[#0F2147]">
+                  {org?.contactsFormTitle || 'Направить официальное обращение'}
+                </h3>
+                <p className="mt-2 text-sm text-[#606E85]">
+                  {org?.contactsFormSubtitle || 'Заполните форму, и специалисты центра свяжутся с вами в течение одного рабочего дня.'}
+                </p>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    alert('Ваше обращение принято!');
+                  }}
+                  className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
+                >
+                  <div className="sm:col-span-2">
+                    <label className="text-sm font-semibold text-[#0F2147]">
+                      Ваше имя или наименование организации <span className="text-[#D92D20]">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Иван Петров или ООО «Компания»"
+                      className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-[#0F2147]">
+                      Телефон для связи <span className="text-[#D92D20]">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+7 (___) ___-__-__"
+                      className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-semibold text-[#0F2147]">
+                      Электронная почта <span className="text-[#D92D20]">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="name@example.ru"
+                      className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="text-sm font-semibold text-[#0F2147]">
+                      {org?.contactsFormMessageLabel || 'Ваше обращение *'}
+                    </label>
+                    <textarea
+                      rows={4}
+                      required
+                      placeholder={org?.contactsFormMessagePlaceholder || 'Опишите вопрос или предложение о сотрудничестве...'}
+                      className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#b92419]"
+                    >
+                      <span>{org?.contactsFormSubmitLabel || 'Отправить обращение'}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   return (
+
     <div className="min-h-screen bg-[#F8FAFC] text-[#1B263B] font-sans selection:bg-[#D92D20]/20 selection:text-[#0F2147]">
       {/* 1. TOPMOST TRICOLOR BAR */}
       <div
@@ -296,392 +796,7 @@ export function TricolorLandingView({
       </header>
 
       <main>
-        {/* 2. HERO SLIDER */}
-        <div id="hero">
-          <HeroSlider />
-        </div>
-
-        {/* 3. ABOUT (#about) */}
-        <section id="about" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-            <div>
-              <div className="mb-10 max-w-3xl">
-                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                  {aboutEyebrow}
-                </div>
-                <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-                  {aboutTitle}
-                </h2>
-                <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-                  {aboutDescription}
-                </p>
-              </div>
-
-              <ul className="space-y-4">
-                {aboutBullets.map((bullet, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed md:text-base text-[#1B263B]">
-                    <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-[#1447E6]/10 text-[#1447E6]">
-                      <Check className="h-3.5 w-3.5 stroke-[2.5]" />
-                    </div>
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="relative">
-              <div className="overflow-hidden rounded-sm border border-[#E2E8F0] bg-white shadow-sm">
-                <img
-                  src={aboutImgUrl}
-                  alt="О центре развития спорта"
-                  className="h-[360px] w-full object-cover sm:h-[420px]"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 4. PROJECTS (#projects) */}
-        <section id="projects" className="bg-[#EFF3F8] py-16 md:py-24">
-          <div className="mx-auto max-w-7xl px-5 md:px-6">
-            <div className="mb-10 max-w-3xl">
-              <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-                <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                {projectsEyebrow}
-              </div>
-              <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-                {projectsTitle}
-              </h2>
-              <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-                {projectsSubtitle}
-              </p>
-            </div>
-
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {(Array.isArray(directions) && directions.length > 0 ? directions : []).map((dir: any, idx: number) => {
-                const IconComp = projectIconList[idx % projectIconList.length];
-                return (
-                  <article
-                    key={dir.id || idx}
-                    className="group rounded-sm border-t-4 border-[#1447E6] bg-white p-7 shadow-sm transition-all hover:border-[#D92D20] hover:shadow-md"
-                  >
-                    <div className="mb-6 flex items-center justify-between">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-sm bg-[#1447E6]/10 text-[#1447E6] transition-colors group-hover:bg-[#D92D20]/10 group-hover:text-[#D92D20]">
-                        <IconComp className="h-5 w-5" />
-                      </div>
-                      <span className="text-xs font-semibold text-[#606E85]">
-                        {dir.category || 'Программа'}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold leading-snug text-[#0F2147]">
-                      {dir.title}
-                    </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-[#606E85]">
-                      {dir.description}
-                    </p>
-                  </article>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* 5. NEWS (#news) */}
-        <section id="news" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
-          <div className="mb-10 max-w-3xl">
-            <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-              <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-              Новости
-            </div>
-            <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-              Лента новостей и пресс-релизов
-            </h2>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {newsList.map((item: any, idx: number) => (
-              <article key={item.id || idx} className="flex flex-col rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <span className="font-semibold text-[#D92D20]">{item.category || 'Новость'}</span>
-                  <time className="text-[#606E85]">{item.date}</time>
-                </div>
-                <h3 className="mt-4 text-lg font-bold leading-snug text-[#0F2147]">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-[#606E85]">
-                  {item.excerpt || item.summary || item.content}
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        {/* 6. DOCUMENTS (#documents) */}
-        <section id="documents" className="bg-[#EFF3F8] py-16 md:py-24">
-          <div className="mx-auto max-w-7xl px-5 md:px-6">
-            <div className="mb-10 max-w-3xl">
-              <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-                <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                Документы и отчёты
-              </div>
-              <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-                Открытость в каждой детали
-              </h2>
-              <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-                Устав, отчётность и внутренние положения центра. Все документы доступны для ознакомления.
-              </p>
-            </div>
-
-            <div role="group" aria-label="Категория документов" className="mb-7 flex flex-wrap gap-2">
-              {docCategories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setDocCategoryFilter(cat)}
-                  className={`rounded-sm px-4 py-2 text-xs font-semibold transition-colors ${
-                    docCategoryFilter === cat
-                      ? 'bg-[#1447E6] text-white shadow-sm'
-                      : 'bg-white text-[#1B263B] border border-[#E2E8F0] hover:bg-slate-50'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredDocs.map((doc: any, idx: number) => (
-                <article
-                  key={doc.id || idx}
-                  className="flex flex-col justify-between rounded-sm border border-[#E2E8F0] bg-white p-6 shadow-sm"
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-2 text-xs text-[#606E85]">
-                      <span className="font-semibold text-[#1447E6]">{doc.category || 'Документ'}</span>
-                      <span>{doc.year || doc.date || '2026'}</span>
-                    </div>
-                    <h3 className="mt-3 text-base font-bold text-[#0F2147] leading-snug">
-                      {doc.title}
-                    </h3>
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-[#E2E8F0] flex items-center justify-between text-xs">
-                    <span className="font-mono text-[#606E85]">PDF</span>
-                    <a
-                      href={doc.fileUrl || '#'}
-                      className="inline-flex items-center gap-1.5 font-semibold text-[#1447E6] hover:text-[#D92D20] transition-colors"
-                    >
-                      <Download className="h-3.5 w-3.5" />
-                      <span>Скачать</span>
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 7. PARTNERS (#partners) */}
-        <section id="partners" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
-          <div className="mb-10 max-w-3xl">
-            <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-              <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-              Партнёры
-            </div>
-            <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-              Министерства, федерации и спонсоры
-            </h2>
-            <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-              Мы работаем с органами власти, спортивными федерациями и бизнесом, чтобы программы доходили до каждого региона.
-            </p>
-          </div>
-
-          <div className="grid gap-6 lg:grid-cols-3">
-            {partnerGroups.map((grp, idx) => {
-              const IconComp = grp.icon;
-              return (
-                <article key={idx} className="rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm">
-                  <IconComp className="h-8 w-8 text-[#1447E6]" />
-                  <h3 className="mt-5 text-xl font-bold text-[#0F2147]">{grp.title}</h3>
-                  <ul className="mt-5 space-y-3 text-sm text-[#1B263B]">
-                    {grp.members.map((m: string, mIdx: number) => (
-                      <li key={mIdx} className="flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#D92D20]" />
-                        <span>{m}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* 8. PARTNERSHIP (#partnership) */}
-        <section id="partnership" className="bg-[#0F2147] py-16 text-white md:py-24">
-          <div className="mx-auto max-w-7xl px-5 md:px-6">
-            <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-start">
-              <div>
-                <div className="mb-8 max-w-3xl">
-                  <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-white/75">
-                    <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                    {partnershipBadge}
-                  </div>
-                  <h2 className="text-3xl font-bold leading-tight md:text-4xl text-white">
-                    {partnershipTitle}
-                  </h2>
-                  <p className="mt-4 text-base leading-relaxed md:text-lg text-white/80">
-                    {partnershipSubtitle}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setPartnerModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-7 py-3.5 text-base font-semibold text-white shadow-sm transition-colors hover:bg-[#b92419]"
-                >
-                  <span>{partnershipCtaText}</span>
-                  <ArrowRight className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                {partnershipItems.map((item: any, idx: number) => {
-                  const IconComp = item.icon || Landmark;
-                  return (
-                    <div key={idx} className="rounded-sm border border-white/15 bg-white/5 p-6 backdrop-blur-xs">
-                      <IconComp className="h-6 w-6 text-[#D92D20]" />
-                      <h3 className="mt-4 text-base font-bold text-white">{item.title}</h3>
-                      <p className="mt-2 text-xs leading-relaxed text-white/75">{item.text}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 9. CONTACTS (#contacts) */}
-        <section id="contacts" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
-          <div className="grid gap-8 lg:grid-cols-5 lg:gap-16">
-            <div className="lg:col-span-2">
-              <div className="mb-10 max-w-3xl">
-                <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
-                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                  {contactsEyebrow}
-                </div>
-                <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-                  {contactsTitle}
-                </h2>
-                <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-                  {contactsSubtitle}
-                </p>
-              </div>
-
-              <div className="space-y-4 text-sm text-[#1B263B]">
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-5 w-5 shrink-0 text-[#1447E6] mt-0.5" />
-                  <span className="whitespace-pre-line">{org?.legalAddress || 'г. Москва, ул. Спортивная, д. 12, оф. 304'}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 shrink-0 text-[#1447E6]" />
-                  <a href={`tel:${(org?.phone || '+7 (495) 000-00-00').replace(/[^+\d]/g, '')}`} className="hover:text-[#1447E6] font-medium">
-                    {org?.phone || '+7 (495) 000-00-00'}
-                  </a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 shrink-0 text-[#1447E6]" />
-                  <a href={`mailto:${org?.receptionEmail || 'info@crzs-sport.ru'}`} className="hover:text-[#1447E6] font-medium">
-                    {org?.receptionEmail || 'info@crzs-sport.ru'}
-                  </a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Clock className="h-5 w-5 shrink-0 text-[#1447E6]" />
-                  <span>{org?.workHours || 'Пн–Пт, 09:00–18:00 (МСК)'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-3">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  alert('Обращение успешно отправлено!');
-                }}
-                className="grid gap-5 rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm sm:grid-cols-2"
-              >
-                <div>
-                  <label className="text-sm font-semibold text-[#0F2147]">
-                    Имя и фамилия <span className="text-[#D92D20]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Иван Иванов"
-                    className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold text-[#0F2147]">
-                    Организация
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Спортивная федерация / НКО"
-                    className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold text-[#0F2147]">
-                    Телефон <span className="text-[#D92D20]">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+7 (999) 000-00-00"
-                    className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-semibold text-[#0F2147]">
-                    Электронная почта <span className="text-[#D92D20]">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="name@example.ru"
-                    className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="text-sm font-semibold text-[#0F2147]">
-                    {org?.contactsFormMessageLabel || 'Ваше обращение *'}
-                  </label>
-                  <textarea
-                    rows={4}
-                    required
-                    placeholder={org?.contactsFormMessagePlaceholder || 'Опишите вопрос или предложение о сотрудничестве...'}
-                    className="mt-1.5 flex w-full rounded-sm border border-[#E2E8F0] bg-white px-3 py-2 text-sm text-[#1B263B] placeholder:text-[#606E85] focus:border-[#1447E6] focus:outline-none"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center justify-center gap-2 rounded-sm bg-[#D92D20] px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#b92419]"
-                  >
-                    <span>{org?.contactsFormSubmitLabel || 'Отправить обращение'}</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </section>
+        {activeOrder.map((secId: string) => renderSectionById(secId))}
       </main>
 
       {/* 10. FOOTER WITH RUSSIAN TRICOLOR BAR */}

@@ -45,31 +45,33 @@ const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Дашборд', icon: LayoutDashboard, href: '/admin', modes: ['landing', 'portal'] },
   { id: 'settings', label: 'Настройки', icon: Settings, href: '/admin/settings', modes: ['landing', 'portal'] },
   { id: 'themes', label: 'Темы', icon: Palette, href: '/admin/themes', modes: ['landing', 'portal'] },
-  // 1. Шапка сайта (Лендинг)
-  { id: 'landing-hero', label: '1. Шапка сайта', icon: SlidersHorizontal, href: '/admin/landing-hero', modes: ['landing', 'portal'], badge: 'Шапка' },
+  // Шапка сайта (Лендинг)
+  { id: 'landing-hero', label: 'Шапка сайта', icon: SlidersHorizontal, href: '/admin/landing-hero', modes: ['landing', 'portal'], badge: 'Шапка' },
   // Меню сайта (общее для шапки и подвала)
   { id: 'menu', label: 'Меню сайта', icon: Menu, href: '/admin/menu', modes: ['landing', 'portal'], badge: 'Навигация' },
-  // 2. Главный экран (Main Hero / Слайдер)
-  { id: 'hero', label: '2. Главный экран (Hero)', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
-  // 3. О центре (#about)
-  { id: 'organization', label: '3. О центре (#about)', icon: Building2, href: '/admin/organization', modes: ['landing', 'portal'] },
-  // 4. Проекты и программы (#projects)
-  { id: 'directions', label: '4. Проекты и программы', icon: Compass, href: '/admin/directions', modes: ['landing', 'portal'] },
-  // 5. Новости (#news)
-  { id: 'news', label: '5. Новости (#news)', icon: Newspaper, href: '/admin/news', modes: ['landing', 'portal'] },
-  // 6. Документы и отчёты (#documents)
-  { id: 'documents', label: '6. Документы и отчёты', icon: FileText, href: '/admin/documents', modes: ['landing', 'portal'] },
-  // 7. Партнёры (#partners)
-  { id: 'partners', label: '7. Партнёры (#partners)', icon: Handshake, href: '/admin/partners', modes: ['landing', 'portal'] },
-  // 8. Сотрудничество (#partnership)
-  { id: 'landing-ideology', label: '8. Сотрудничество', icon: Landmark, href: '/admin/landing-ideology', modes: ['landing'], badge: 'Лендинг' },
-  // 9. Контакты (#contacts)
-  { id: 'contacts', label: '9. Контакты (#contacts)', icon: Phone, href: '/admin/contacts', modes: ['landing', 'portal'] },
-  // 10. Подвал (Footer)
-  { id: 'footer', label: '10. Подвал (Footer)', icon: LayoutTemplate, href: '/admin/footer', modes: ['landing', 'portal'] },
+  // Главный экран (Main Hero / Слайдер)
+  { id: 'hero', label: 'Главный экран', icon: Sliders, href: '/admin/hero', modes: ['landing', 'portal'] },
+  // Порядок и Разделы
+  { id: 'section-order', label: 'Порядок', icon: SlidersHorizontal, href: '/admin/section-order', modes: ['landing', 'portal'], badge: 'Структура' },
+  { id: 'sections', label: 'Разделы', icon: Layers, href: '/admin/sections', modes: ['landing', 'portal'], badge: 'Конструктор' },
+  // О центре (#about)
+  { id: 'organization', label: 'О центре', icon: Building2, href: '/admin/organization', modes: ['landing', 'portal'] },
+  // Проекты и программы (#projects)
+  { id: 'directions', label: 'Проекты и программы', icon: Compass, href: '/admin/directions', modes: ['landing', 'portal'] },
+  // Новости (#news)
+  { id: 'news', label: 'Новости', icon: Newspaper, href: '/admin/news', modes: ['landing', 'portal'] },
+  // Документы и отчёты (#documents)
+  { id: 'documents', label: 'Документы и отчёты', icon: FileText, href: '/admin/documents', modes: ['landing', 'portal'] },
+  // Партнёры (#partners)
+  { id: 'partners', label: 'Партнёры', icon: Handshake, href: '/admin/partners', modes: ['landing', 'portal'] },
+  // Сотрудничество (#partnership)
+  { id: 'landing-ideology', label: 'Сотрудничество', icon: Landmark, href: '/admin/landing-ideology', modes: ['landing'], badge: 'Лендинг' },
+  // Контакты (#contacts)
+  { id: 'contacts', label: 'Контакты', icon: Phone, href: '/admin/contacts', modes: ['landing', 'portal'] },
+  // Подвал (Footer)
+  { id: 'footer', label: 'Подвал', icon: LayoutTemplate, href: '/admin/footer', modes: ['landing', 'portal'] },
   // Portal-only blocks (скрыты в режиме Лендинга)
   { id: 'header', label: 'Меню портала', icon: Menu, href: '/admin/header', modes: ['portal'], badge: 'Портал' },
-  { id: 'section-order', label: 'Порядок разделов', icon: SlidersHorizontal, href: '/admin/section-order', modes: ['portal'], badge: 'Портал' },
   { id: 'pages', label: 'Страницы портала', icon: Layers, href: '/admin/pages', modes: ['portal'], badge: 'Портал' },
   { id: 'specialists', label: 'Реестр кадров', icon: Users, href: '/admin/specialists', modes: ['portal'], badge: 'Портал' },
   { id: 'events', label: 'Мероприятия', icon: Calendar, href: '/admin/events', modes: ['portal'], badge: 'Портал' },
@@ -88,7 +90,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const siteMode: 'landing' | 'portal' = content?.settings?.siteMode || 'landing';
-  const visibleNavItems = navItems.filter((item) => item.modes.includes(siteMode));
+  
+  // Custom modules created dynamically in "Разделы"
+  const customSections = (content?.landing as any)?.customSections || [];
+  const customNavItems: NavItem[] = customSections.map((cs: any) => ({
+    id: `custom-${cs.id}`,
+    label: cs.title || cs.anchor || 'Новый раздел',
+    icon: Layers,
+    href: `/admin/sections?edit=${encodeURIComponent(cs.id)}`,
+    modes: ['landing', 'portal'],
+    badge: 'Модуль',
+  }));
+
+  const baseNavItems = navItems.filter((item) => item.modes.includes(siteMode));
+  // Insert custom sections right after 'sections' or 'section-order'
+  const sectionsIdx = baseNavItems.findIndex(i => i.id === 'sections');
+  const visibleNavItems = [...baseNavItems];
+  if (sectionsIdx !== -1 && customNavItems.length > 0) {
+    visibleNavItems.splice(sectionsIdx + 1, 0, ...customNavItems);
+  } else if (customNavItems.length > 0) {
+    visibleNavItems.push(...customNavItems);
+  }
 
   useEffect(() => {
     checkAuth();

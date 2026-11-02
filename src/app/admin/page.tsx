@@ -77,16 +77,16 @@ export default function AdminDashboardPage() {
       modes: ['landing', 'portal'],
       scopeTag: 'Общий блок',
     },
-    // 1. Шапка сайта (Лендинг)
+    // Шапка сайта (Лендинг)
     {
       id: 'landing-hero',
-      title: '1. Шапка сайта (Header)',
+      title: 'Шапка сайта (Header)',
       description: 'Верхняя строка контактов (телефон, email, статус), логотип Центра с эффектами и цветом подложки, кнопка действия в шапке',
       countLabel: 'Шапка и контакты',
       href: '/admin/landing-hero',
       icon: SlidersHorizontal,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 01 • Шапка',
+      scopeTag: 'Шапка',
     },
     // Меню сайта (общее)
     {
@@ -99,104 +99,126 @@ export default function AdminDashboardPage() {
       modes: ['landing', 'portal'],
       scopeTag: 'Навигация',
     },
-    // 2. Главный экран (Main Hero / Слайдер)
+    // Главный экран (Main Hero / Слайдер)
     {
       id: 'hero',
-      title: '2. Главный экран — Слайдер (Main Hero)',
-      description: 'Первый экран 100% ширины и высоты. Сейчас отображается 1 слайд. При добавлении 2-го и 3-го слайдов автоматически включается слайдер.',
+      title: 'Главный экран — Слайдер (Hero)',
+      description: 'Первый экран 100% ширины и высоты. Точный предпросмотр экрана, смещение фона, зум, эффекты и оверлеи.',
       countLabel: `${content.hero.slides.length} ${content.hero.slides.length === 1 ? 'слайд' : 'слайда'}`,
       href: '/admin/hero',
       icon: Sliders,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 02 • Main Hero',
+      scopeTag: 'Main Hero',
     },
-    // 3. О центре (#about)
+    // Порядок отображения
+    {
+      id: 'section-order',
+      title: 'Порядок модулей',
+      description: 'Drag & Drop перемещение модулей лендинга сверху вниз, стрелки вверх/вниз и сохранение структуры сайта.',
+      countLabel: 'Сортировка модулей',
+      href: '/admin/section-order',
+      icon: SlidersHorizontal,
+      modes: ['landing', 'portal'],
+      scopeTag: 'Структура',
+    },
+    // Разделы
+    {
+      id: 'sections',
+      title: 'Разделы и модули (Конструктор)',
+      description: 'Карточки модулей, копирование существующих и создание новых 1, 2 или 3 колоночных разделов с мгновенным добавлением в сайдбар.',
+      countLabel: `${((content.landing as any)?.customSections || []).length} кастомных`,
+      href: '/admin/sections',
+      icon: Layout,
+      modes: ['landing', 'portal'],
+      scopeTag: 'Конструктор',
+    },
+    // О центре (#about)
     {
       id: 'organization',
-      title: '3. О центре (#about)',
+      title: 'О центре (#about)',
       description: 'Заголовок «Миссия: спорт доступен каждому», описание центра, 4 пункта преимуществ с галочками и фотография зала справа',
       countLabel: `${(content.organization.principles || []).length} пункта • Фото`,
       href: '/admin/organization',
       icon: Building2,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 03 • #about',
+      scopeTag: '#about',
     },
-    // 4. Проекты и программы (#projects)
+    // Проекты и программы (#projects)
     {
       id: 'directions',
-      title: '4. Проекты и программы (#projects)',
+      title: 'Проекты и программы (#projects)',
       description: 'Спортивные и социальные проекты центра: «Спорт для всех», «Здоровое поколение», «Юные таланты», «Тренеры будущего», «Активный регион», «Семейный спорт»',
       countLabel: `${content.organization.directions.length} проектов`,
       href: '/admin/directions',
       icon: Compass,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 04 • #projects',
+      scopeTag: '#projects',
     },
-    // 5. Новости (#news)
+    // Новости (#news)
     {
       id: 'news',
-      title: '5. Лента новостей и пресс-релизов (#news)',
+      title: 'Лента новостей и пресс-релизов (#news)',
       description: 'Публикация новостей, пресс-релизов, событий и отчётов с категориями, датами и краткими анонсами',
       countLabel: `${content.news.items.length} публикаций`,
       href: '/admin/news',
       icon: Newspaper,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 05 • #news',
+      scopeTag: '#news',
     },
-    // 6. Документы и отчёты (#documents)
+    // Документы и отчёты (#documents)
     {
       id: 'documents',
-      title: '6. Документы и отчёты (#documents)',
+      title: 'Документы и отчёты (#documents)',
       description: 'Устав, свидетельство о регистрации, годовые отчёты и положения с фильтром по категориям и PDF-файлами',
       countLabel: `${content.documents.items.length} документов`,
       href: '/admin/documents',
       icon: FileText,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 06 • #documents',
+      scopeTag: '#documents',
     },
-    // 7. Партнёры (#partners)
+    // Партнёры (#partners)
     {
       id: 'partners',
-      title: '7. Партнёры (#partners)',
+      title: 'Партнёры (#partners)',
       description: '3 колонки партнёров: «Министерства и ведомства», «Федерации» и «Спонсоры и партнёры»',
       countLabel: `${content.partners.items.length} организаций`,
       href: '/admin/partners',
       icon: Handshake,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 07 • #partners',
+      scopeTag: '#partners',
     },
-    // 8. Сотрудничество (#partnership)
+    // Сотрудничество (#partnership)
     {
       id: 'landing-ideology',
-      title: '8. Сотрудничество — Станьте партнёром (#partnership)',
+      title: 'Сотрудничество — Станьте партнёром (#partnership)',
       description: 'Тёмно-синий блок партнёрства: 4 преимущества («Гранты и субсидии», «Совместные программы», «Открытая отчётность», «Социальный эффект») и кнопка заявки',
       countLabel: '4 пункта • Модальное окно',
       href: '/admin/landing-ideology',
       icon: Landmark,
       modes: ['landing'],
-      scopeTag: 'Блок 08 • #partnership',
+      scopeTag: '#partnership',
     },
-    // 9. Контакты (#contacts)
+    // Контакты (#contacts)
     {
       id: 'contacts',
-      title: '9. Контакты и форма связи (#contacts)',
+      title: 'Контакты и форма связи (#contacts)',
       description: 'Заголовок и подзаголовок секции «Свяжитесь с нами», настройки формы обращения, телефон, email, часы работы и адрес',
       countLabel: 'Форма и контакты',
       href: '/admin/contacts',
       icon: Phone,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 09 • #contacts',
+      scopeTag: '#contacts',
     },
-    // 10. Подвал сайта (Footer)
+    // Подвал сайта (Footer)
     {
       id: 'footer',
-      title: '10. Подвал сайта (Footer)',
+      title: 'Подвал сайта (Footer)',
       description: 'Логотип в подвале, описание организации, колонка контактов (адрес, телефон, email, часы работы) и копирайт',
       countLabel: 'Подвал сайта',
       href: '/admin/footer',
       icon: Building2,
       modes: ['landing', 'portal'],
-      scopeTag: 'Блок 10 • Footer',
+      scopeTag: 'Footer',
     },
     // Portal-only blocks (отображаются только в режиме ПОРТАЛ)
     {
