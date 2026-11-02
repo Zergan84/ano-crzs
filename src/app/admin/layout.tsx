@@ -102,13 +102,76 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }));
 
   const baseNavItems = navItems.filter((item) => item.modes.includes(siteMode));
-  const modulesIdx = baseNavItems.findIndex(i => i.id === 'footer');
-  const visibleNavItems = [...baseNavItems];
-  if (modulesIdx !== -1 && customNavItems.length > 0) {
-    visibleNavItems.splice(modulesIdx, 0, ...customNavItems);
-  } else if (customNavItems.length > 0) {
-    visibleNavItems.push(...customNavItems);
-  }
+
+  // Actual section order on site (from landing.sectionOrder)
+  const siteSectionOrder: string[] = (content?.landing as any)?.sectionOrder || [
+    'hero', 'widgets', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'
+  ];
+
+  // Map internal sectionOrder keys to sidebar item IDs:
+  // 'hero' -> 'hero'
+  // 'widgets' -> 'widgets'
+  // 'about' -> 'organization'
+  // 'projects' -> 'directions'
+  // 'news' -> 'news'
+  // 'documents' -> 'documents'
+  // 'partners' -> 'partners'
+  // 'partnership' -> 'landing-ideology'
+  // 'contacts' -> 'contacts'
+  // 'custom-xxx' -> 'custom-xxx'
+  const sectionKeyToNavId: Record<string, string> = {
+    hero: 'hero',
+    widgets: 'widgets',
+    about: 'organization',
+    projects: 'directions',
+    news: 'news',
+    documents: 'documents',
+    partners: 'partners',
+    partnership: 'landing-ideology',
+    contacts: 'contacts',
+  };
+
+  // Build the list of modules ordered EXACTLY as on the site:
+  // Start with 'landing-hero' (Header is always on top)
+  const orderedModuleNavItems: NavItem[] = [];
+  const headerItem = baseNavItems.find(i => i.id === 'landing-hero');
+  if (headerItem) orderedModuleNavItems.push(headerItem);
+
+  // Pool of all available module items (standard + custom)
+  const allModuleItems = [
+    ...baseNavItems.filter(i => i.category === 'modules' && i.id !== 'landing-hero' && i.id !== 'footer' && i.id !== 'privacy-policy'),
+    ...customNavItems
+  ];
+
+  // Follow siteSectionOrder precisely
+  siteSectionOrder.forEach((secKey) => {
+    const targetNavId = secKey.startsWith('custom-') ? secKey : sectionKeyToNavId[secKey] || secKey;
+    const found = allModuleItems.find(i => i.id === targetNavId);
+    if (found && !orderedModuleNavItems.some(i => i.id === found.id)) {
+      orderedModuleNavItems.push(found);
+    }
+  });
+
+  // Any module items in pool not yet in ordered list:
+  allModuleItems.forEach(item => {
+    if (!orderedModuleNavItems.some(i => i.id === item.id)) {
+      orderedModuleNavItems.push(item);
+    }
+  });
+
+  // Finally add Footer and Privacy Policy at the bottom of modules
+  const footerItem = baseNavItems.find(i => i.id === 'footer');
+  if (footerItem) orderedModuleNavItems.push(footerItem);
+  const privacyItem = baseNavItems.find(i => i.id === 'privacy-policy');
+  if (privacyItem) orderedModuleNavItems.push(privacyItem);
+
+  // Assemble full visibleNavItems list:
+  // 1. System items
+  // 2. Ordered modules
+  // 3. Other items (portal, media, etc.)
+  const systemItems = baseNavItems.filter(i => i.category === 'system');
+  const otherItems = baseNavItems.filter(i => i.category !== 'system' && i.category !== 'modules');
+  const visibleNavItems = [...systemItems, ...orderedModuleNavItems, ...otherItems];
 
   useEffect(() => {
     checkAuth();

@@ -21,9 +21,11 @@ import {
   HeartHandshake,
   Compass,
   SlidersVertical,
+  Image as ImageIcon,
 } from 'lucide-react';
-import { useSiteContent, updateSection } from '@/lib/content';
+import { useSiteContent, updateSection, resolveMediaUrl } from '@/lib/content';
 import { DEFAULT_WIDGETS, WidgetItem } from '@/components/landing/WidgetsBar';
+import { MediaPickerModal } from '@/components/admin/MediaPickerModal';
 
 const ICON_OPTIONS = [
   { id: 'mountain', label: 'Горы / Зима', icon: Mountain },
@@ -42,14 +44,22 @@ const ICON_OPTIONS = [
 export default function AdminWidgetsPage() {
   const { content, refresh } = useSiteContent();
   const [widgets, setWidgets] = useState<WidgetItem[]>(DEFAULT_WIDGETS);
+  const [showWidgets, setShowWidgets] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Media Picker
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [activeMediaIndex, setActiveMediaIndex] = useState<number | null>(null);
 
   useEffect(() => {
     if (content?.landing) {
       const saved = (content.landing as any)?.widgets;
       if (Array.isArray(saved) && saved.length > 0) {
         setWidgets(saved);
+      }
+      if (typeof (content.landing as any)?.showWidgets === 'boolean') {
+        setShowWidgets((content.landing as any).showWidgets);
       }
     }
   }, [content]);
@@ -68,8 +78,9 @@ export default function AdminWidgetsPage() {
     const newW: WidgetItem = {
       id: `w-${Date.now()}`,
       title: 'Новый виджет',
-      subtitle: 'Краткое пояснение',
+      subtitle: 'Краткое пояснение\nв две строчки',
       icon: 'sparkles',
+      customIcon: '',
     };
     setWidgets([...widgets, newW]);
   };
@@ -106,6 +117,7 @@ export default function AdminWidgetsPage() {
       const updatedLanding = {
         ...currentLanding,
         widgets,
+        showWidgets,
         sectionOrder: nextOrder,
       };
 
@@ -142,7 +154,7 @@ export default function AdminWidgetsPage() {
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Траст-бар с иконками и акцентными тезисами (от 3 до 5 элементов). По умолчанию располагается сразу после слайдера.
+            Траст-бар с иконками и акцентными тезисами (от 3 до 5 элементов). Расположение меняется в модуле «Порядок».
           </p>
         </div>
 
@@ -173,6 +185,31 @@ export default function AdminWidgetsPage() {
             )}
           </button>
         </div>
+      </div>
+
+      {/* Visibility Checkbox Toggle */}
+      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <LayoutGrid className="h-4 w-4 text-amber-400" />
+            <span>Отображение виджетов на сайте</span>
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Включите или отключите отображение полосы виджетов (Trust Bar) на лендинге
+          </p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showWidgets}
+            onChange={(e) => setShowWidgets(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+          <span className="ml-3 text-xs font-semibold text-slate-200">
+            {showWidgets ? 'Отображается' : 'Скрыт'}
+          </span>
+        </label>
       </div>
 
       {/* Widgets list */}
@@ -211,7 +248,7 @@ export default function AdminWidgetsPage() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="admin-label">Основной заголовок</label>
                   <input
@@ -224,18 +261,7 @@ export default function AdminWidgetsPage() {
                 </div>
 
                 <div>
-                  <label className="admin-label">Подзаголовок / тезис</label>
-                  <input
-                    type="text"
-                    value={w.subtitle}
-                    onChange={(e) => updateItem(idx, 'subtitle', e.target.value)}
-                    placeholder="Например: Наш приоритет"
-                    className="admin-input"
-                  />
-                </div>
-
-                <div>
-                  <label className="admin-label">Иконка</label>
+                  <label className="admin-label">Иконка (стандартный набор)</label>
                   <select
                     value={w.icon || 'mountain'}
                     onChange={(e) => updateItem(idx, 'icon', e.target.value)}
@@ -248,11 +274,72 @@ export default function AdminWidgetsPage() {
                     ))}
                   </select>
                 </div>
+
+                <div className="sm:col-span-2">
+                  <label className="admin-label">Кастомная иконка (URL или из медиатеки)</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={w.customIcon || ''}
+                      onChange={(e) => updateItem(idx, 'customIcon', e.target.value)}
+                      placeholder="Оставьте пустым для стандартной иконки или выберите PNG/SVG..."
+                      className="admin-input font-mono text-xs flex-1 text-amber-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActiveMediaIndex(idx);
+                        setMediaPickerOpen(true);
+                      }}
+                      className="flex items-center gap-1.5 rounded bg-slate-800 hover:bg-slate-700 px-3 py-1.5 text-xs text-white"
+                    >
+                      <ImageIcon className="h-3.5 w-3.5" />
+                      <span>Обзор</span>
+                    </button>
+                    {w.customIcon && (
+                      <button
+                        type="button"
+                        onClick={() => updateItem(idx, 'customIcon', '')}
+                        className="rounded border border-red-500/40 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10"
+                        title="Сбросить кастомную иконку"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="admin-label">
+                    Тезис / подзаголовок (текстовое поле в 2-3 строчки)
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={w.subtitle}
+                    onChange={(e) => updateItem(idx, 'subtitle', e.target.value)}
+                    placeholder="Например: Наш приоритет&#10;Развиваем спортивные базы"
+                    className="admin-textarea"
+                  />
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Media Picker */}
+      {mediaPickerOpen && (
+        <MediaPickerModal
+          isOpen={mediaPickerOpen}
+          onClose={() => setMediaPickerOpen(false)}
+          onSelect={(url) => {
+            if (activeMediaIndex !== null) {
+              updateItem(activeMediaIndex, 'customIcon', url);
+            }
+            setMediaPickerOpen(false);
+          }}
+        />
+      )}
     </div>
   );
 }

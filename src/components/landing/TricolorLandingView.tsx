@@ -43,6 +43,7 @@ interface TricolorLandingProps {
   sectionOrder?: string[];
   customSections?: any[];
   widgets?: WidgetItem[];
+  showWidgets?: boolean;
 }
 
 export function TricolorLandingView({
@@ -60,6 +61,7 @@ export function TricolorLandingView({
   sectionOrder,
   customSections = [],
   widgets = [],
+  showWidgets = true,
 }: TricolorLandingProps) {
   const [showAllNews, setShowAllNews] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -195,7 +197,19 @@ export function TricolorLandingView({
 
 
   const defaultOrder = ['hero', 'widgets', 'about', 'projects', 'news', 'documents', 'partners', 'partnership', 'contacts'];
-  const activeOrder = Array.isArray(sectionOrder) && sectionOrder.length > 0 ? sectionOrder : defaultOrder;
+  const activeOrder = (() => {
+    let order = Array.isArray(sectionOrder) && sectionOrder.length > 0 ? [...sectionOrder] : [...defaultOrder];
+    // If widgets is not in order and showWidgets !== false, insert it right after hero
+    if (!order.includes('widgets') && showWidgets !== false) {
+      const heroIdx = order.indexOf('hero');
+      if (heroIdx !== -1) {
+        order.splice(heroIdx + 1, 0, 'widgets');
+      } else {
+        order.unshift('widgets');
+      }
+    }
+    return order;
+  })();
 
   const renderSectionById = (secId: string) => {
     if (secId.startsWith('custom-')) {
@@ -213,6 +227,7 @@ export function TricolorLandingView({
         );
 
       case 'widgets':
+        if (showWidgets === false) return null;
         return (
           <div key="widgets" id="widgets">
             <WidgetsBar widgets={widgets} theme="tricolor" />

@@ -34,6 +34,10 @@ interface CustomSection {
   subtitle: string;
   columnsCount: 1 | 2 | 3;
   textAlign: 'left' | 'center' | 'right';
+  verticalAlign?: 'top' | 'center' | 'bottom';
+  col1VAlign?: 'top' | 'center' | 'bottom';
+  col2VAlign?: 'top' | 'center' | 'bottom';
+  col3VAlign?: 'top' | 'center' | 'bottom';
   col1Text: string;
   col1Image?: string;
   col2Text?: string;
@@ -86,6 +90,10 @@ export default function SectionsManagerPage() {
       subtitle: 'Краткое описание назначения и основных тезисов этого модуля',
       columnsCount: 3,
       textAlign: 'center',
+      verticalAlign: 'center',
+      col1VAlign: 'center',
+      col2VAlign: 'center',
+      col3VAlign: 'center',
       col1Text: 'Текст первой колонки с описанием ключевых преимуществ или сервисов.',
       col1Image: '',
       col2Text: 'Текст второй колонки с деталями проекта или подробным описанием.',
@@ -110,6 +118,10 @@ export default function SectionsManagerPage() {
       subtitle: source.subtitle || 'Дополнительный модуль на основе существующего шаблона',
       columnsCount: source.colCount || 2,
       textAlign: (source.colCount || 2) === 3 ? 'center' : 'left',
+      verticalAlign: 'center',
+      col1VAlign: 'center',
+      col2VAlign: 'center',
+      col3VAlign: 'center',
       col1Text: 'Контент первой колонки. Вы можете разместить здесь подробный текст или тезисы.',
       col1Image: '',
       col2Text: 'Контент второй колонки (или изображение в противоположной колонке).',
@@ -449,6 +461,27 @@ export default function SectionsManagerPage() {
               </div>
             </div>
 
+            {/* Vertical Alignment (По высоте) */}
+            <div>
+              <label className="block text-xs font-medium text-slate-300 mb-1">
+                Вертикальное равнение по высоте (Top, Center, Bottom)
+              </label>
+              <select
+                value={selectedSection.verticalAlign || 'center'}
+                onChange={(e) =>
+                  setSelectedSection({
+                    ...selectedSection,
+                    verticalAlign: e.target.value as any,
+                  })
+                }
+                className="w-full rounded-lg border border-slate-800 bg-[#0a0a0c] px-3 py-2 text-xs text-white focus:border-amber-500 focus:outline-none"
+              >
+                <option value="top">По верху (Top)</option>
+                <option value="center">По центру (Center)</option>
+                <option value="bottom">По низу (Bottom)</option>
+              </select>
+            </div>
+
             {/* Subtitle */}
             <div className="md:col-span-3">
               <label className="block text-xs font-medium text-slate-300 mb-1">
@@ -484,8 +517,18 @@ export default function SectionsManagerPage() {
             >
               {/* Column 1 */}
               <div className="rounded-lg border border-slate-800 bg-[#0a0a0c] p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                   <span className="text-xs font-bold text-amber-400">Колонка 1</span>
+                  <select
+                    value={selectedSection.col1VAlign || selectedSection.verticalAlign || 'center'}
+                    onChange={(e) => setSelectedSection({ ...selectedSection, col1VAlign: e.target.value as any })}
+                    className="rounded bg-[#14151b] border border-slate-800 text-[10px] text-slate-300 px-2 py-0.5"
+                    title="Выравнивание по высоте для колонки 1"
+                  >
+                    <option value="top">По верху</option>
+                    <option value="center">По центру</option>
+                    <option value="bottom">По низу</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-[11px] text-slate-400 mb-1">Текст</label>
@@ -537,10 +580,20 @@ export default function SectionsManagerPage() {
               {/* Column 2 */}
               {selectedSection.columnsCount >= 2 && (
                 <div className="rounded-lg border border-slate-800 bg-[#0a0a0c] p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                     <span className="text-xs font-bold text-amber-400">
                       Колонка 2 {selectedSection.columnsCount === 2 ? '(Противоположная)' : ''}
                     </span>
+                    <select
+                      value={selectedSection.col2VAlign || selectedSection.verticalAlign || 'center'}
+                      onChange={(e) => setSelectedSection({ ...selectedSection, col2VAlign: e.target.value as any })}
+                      className="rounded bg-[#14151b] border border-slate-800 text-[10px] text-slate-300 px-2 py-0.5"
+                      title="Выравнивание по высоте для колонки 2"
+                    >
+                      <option value="top">По верху</option>
+                      <option value="center">По центру</option>
+                      <option value="bottom">По низу</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 mb-1">Текст</label>
@@ -593,8 +646,18 @@ export default function SectionsManagerPage() {
               {/* Column 3 */}
               {selectedSection.columnsCount === 3 && (
                 <div className="rounded-lg border border-slate-800 bg-[#0a0a0c] p-4 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                     <span className="text-xs font-bold text-amber-400">Колонка 3</span>
+                    <select
+                      value={selectedSection.col3VAlign || selectedSection.verticalAlign || 'center'}
+                      onChange={(e) => setSelectedSection({ ...selectedSection, col3VAlign: e.target.value as any })}
+                      className="rounded bg-[#14151b] border border-slate-800 text-[10px] text-slate-300 px-2 py-0.5"
+                      title="Выравнивание по высоте для колонки 3"
+                    >
+                      <option value="top">По верху</option>
+                      <option value="center">По центру</option>
+                      <option value="bottom">По низу</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block text-[11px] text-slate-400 mb-1">Текст</label>

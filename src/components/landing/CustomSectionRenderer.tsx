@@ -10,12 +10,16 @@ export interface CustomSectionBlock {
   subtitle?: string;
   columnsCount: 1 | 2 | 3;
   textAlign: 'left' | 'center' | 'right';
+  verticalAlign?: 'top' | 'center' | 'bottom'; // выравнивание по высоте
   col1Text?: string;
   col1Image?: string;
+  col1VAlign?: 'top' | 'center' | 'bottom';
   col2Text?: string;
   col2Image?: string;
+  col2VAlign?: 'top' | 'center' | 'bottom';
   col3Text?: string;
   col3Image?: string;
+  col3VAlign?: 'top' | 'center' | 'bottom';
   ctaText?: string;
   ctaHref?: string;
 }
@@ -37,6 +41,25 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
 
   const cols = Number(section.columnsCount) || 1;
 
+  // Global vertical align for the row grid
+  const rowVAlign = section.verticalAlign || 'center';
+  const rowVAlignClass =
+    rowVAlign === 'top'
+      ? 'items-start'
+      : rowVAlign === 'bottom'
+      ? 'items-end'
+      : 'items-center';
+
+  // Per-column vertical flex align
+  const getColVAlignClass = (valign?: 'top' | 'center' | 'bottom') => {
+    const v = valign || rowVAlign;
+    return v === 'top'
+      ? 'justify-start'
+      : v === 'bottom'
+      ? 'justify-end'
+      : 'justify-center';
+  };
+
   // Темы стилизации
   const isTricolor = theme === 'tricolor';
   const isBolt = theme === 'bolt';
@@ -53,7 +76,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
   return (
     <section id={cleanAnchor} className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
       {/* Header блока */}
-      <div className={`mb-12 max-w-3xl ${alignClasses}`}>
+      <div className={`mb-12 max-w-4xl ${alignClasses}`}>
         {section.eyebrow && (
           <div className={`mb-3 flex items-center gap-3 text-xs font-semibold uppercase ${eyebrowColor} ${align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-start'}`}>
             <span className={`h-0.5 w-8 ${eyebrowLineColor}`} aria-hidden="true" />
@@ -75,7 +98,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
 
       {/* Колонки */}
       {cols === 1 && (
-        <div className="max-w-4xl mx-auto space-y-6">
+        <div className={`max-w-4xl mx-auto flex flex-col ${getColVAlignClass(section.col1VAlign)} space-y-6`}>
           {section.col1Image && (
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
               <img
@@ -94,9 +117,9 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
       )}
 
       {cols === 2 && (
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+        <div className={`grid gap-10 lg:grid-cols-2 lg:gap-16 ${rowVAlignClass}`}>
           {/* Колонка 1 */}
-          <div className="space-y-4">
+          <div className={`flex flex-col ${getColVAlignClass(section.col1VAlign)} space-y-4 h-full`}>
             {section.col1Image && (
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <img
@@ -114,7 +137,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
           </div>
 
           {/* Колонка 2 */}
-          <div className="space-y-4">
+          <div className={`flex flex-col ${getColVAlignClass(section.col2VAlign)} space-y-4 h-full`}>
             {section.col2Image && (
               <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                 <img
@@ -134,9 +157,9 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
       )}
 
       {cols === 3 && (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className={`grid gap-6 md:grid-cols-2 lg:grid-cols-3 ${rowVAlignClass}`}>
           {/* Колонка 1 */}
-          <div className={`rounded-xl border p-6 shadow-sm ${cardBg} space-y-4 flex flex-col justify-between`}>
+          <div className={`rounded-xl border p-6 shadow-sm ${cardBg} flex flex-col ${getColVAlignClass(section.col1VAlign)} space-y-4 h-full`}>
             {section.col1Image && (
               <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 mb-2">
                 <img
@@ -154,7 +177,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
           </div>
 
           {/* Колонка 2 */}
-          <div className={`rounded-xl border p-6 shadow-sm ${cardBg} space-y-4 flex flex-col justify-between`}>
+          <div className={`rounded-xl border p-6 shadow-sm ${cardBg} flex flex-col ${getColVAlignClass(section.col2VAlign)} space-y-4 h-full`}>
             {section.col2Image && (
               <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 mb-2">
                 <img
@@ -172,7 +195,7 @@ export function CustomSectionRenderer({ section, theme = 'tricolor' }: CustomSec
           </div>
 
           {/* Колонка 3 */}
-          <div className={`rounded-xl border p-6 shadow-sm ${cardBg} space-y-4 flex flex-col justify-between`}>
+          <div className={`rounded-xl border p-6 shadow-sm ${cardBg} flex flex-col ${getColVAlignClass(section.col3VAlign)} space-y-4 h-full`}>
             {section.col3Image && (
               <div className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 mb-2">
                 <img

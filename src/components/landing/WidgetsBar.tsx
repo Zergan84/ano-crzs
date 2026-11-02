@@ -13,12 +13,14 @@ import {
   Flame, 
   Mountain 
 } from 'lucide-react';
+import { resolveMediaUrl } from '@/lib/content';
 
 export interface WidgetItem {
   id: string;
   title: string;
   subtitle: string;
   icon?: string;
+  customIcon?: string; // Кастомная иконка (URL из медиатеки / SVG)
 }
 
 interface WidgetsBarProps {
@@ -68,21 +70,30 @@ export function WidgetsBar({ widgets, theme = 'tricolor' }: WidgetsBarProps) {
           }`}
         >
           {items.map((item, idx) => {
+            const hasCustomIcon = Boolean(item.customIcon && item.customIcon.trim());
             const Icon = (item.icon && ICON_MAP[item.icon.toLowerCase()]) || [Mountain, Activity, Zap, Users, Trophy][idx % 5];
 
             return (
               <div 
                 key={item.id || idx} 
-                className="flex items-center gap-4 rounded-xl border border-slate-100 bg-[#F8FAFC] p-4 transition-all hover:border-[#1447E6]/40 hover:bg-white hover:shadow-md group"
+                className="flex items-start gap-4 rounded-xl border border-slate-100 bg-[#F8FAFC] p-4 transition-all hover:border-[#1447E6]/40 hover:bg-white hover:shadow-md group"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0F2147] text-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:bg-[#1447E6]">
-                  <Icon className="h-6 w-6 stroke-[2.2]" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0F2147] text-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:bg-[#1447E6] overflow-hidden p-2.5">
+                  {hasCustomIcon ? (
+                    <img 
+                      src={resolveMediaUrl(item.customIcon)} 
+                      alt={item.title} 
+                      className="h-full w-full object-contain filter invert"
+                    />
+                  ) : (
+                    <Icon className="h-6 w-6 stroke-[2.2]" />
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="text-sm font-bold text-[#0F2147] leading-snug group-hover:text-[#1447E6] transition-colors">
                     {item.title}
                   </h4>
-                  <p className="text-xs text-[#606E85] leading-tight mt-0.5 font-medium">
+                  <p className="text-xs text-[#606E85] leading-relaxed mt-1 font-medium whitespace-pre-line">
                     {item.subtitle}
                   </p>
                 </div>
