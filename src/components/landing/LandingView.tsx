@@ -526,11 +526,15 @@ export function LandingView() {
   const newsItems =
     Array.isArray(content?.news?.items) && content.news.items.length > 0
       ? content.news.items.map((n: any, idx: number) => ({
+          ...n,
           id: n.id || `news-${idx}`,
           date: n.date || '',
           category: n.category || 'Новости',
           title: n.title || '',
           excerpt: n.excerpt || n.summary || (Array.isArray(n.content) ? n.content[0] : n.content) || '',
+          link: n.externalUrl || n.link || '',
+          externalUrl: n.externalUrl || n.link || '',
+          imageUrl: n.imageUrl || n.image || '',
         }))
       : BOLT_NEWS;
 
