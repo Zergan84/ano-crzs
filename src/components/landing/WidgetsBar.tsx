@@ -23,9 +23,12 @@ export interface WidgetItem {
   customIcon?: string; // Кастомная иконка (URL из медиатеки / SVG)
 }
 
+export type WidgetLayout = 'left' | 'center' | 'right';
+
 interface WidgetsBarProps {
   widgets?: WidgetItem[];
   theme?: 'tricolor' | 'bolt' | 'light';
+  layout?: WidgetLayout;
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -50,7 +53,7 @@ export const DEFAULT_WIDGETS: WidgetItem[] = [
   { id: 'w-4', title: 'Сообщество', subtitle: 'Объединяем людей', icon: 'users' },
 ];
 
-export function WidgetsBar({ widgets, theme = 'tricolor' }: WidgetsBarProps) {
+export function WidgetsBar({ widgets, theme = 'tricolor', layout = 'left' }: WidgetsBarProps) {
   const items = Array.isArray(widgets) && widgets.length >= 3 ? widgets.slice(0, 5) : DEFAULT_WIDGETS;
 
   return (
@@ -73,10 +76,23 @@ export function WidgetsBar({ widgets, theme = 'tricolor' }: WidgetsBarProps) {
             const hasCustomIcon = Boolean(item.customIcon && item.customIcon.trim());
             const Icon = (item.icon && ICON_MAP[item.icon.toLowerCase()]) || [Mountain, Activity, Zap, Users, Trophy][idx % 5];
 
+            // Layout variations:
+            // 'left' - icon on left, text left-aligned
+            // 'center' - centered icon at top, text center-aligned
+            // 'right' - icon on right (row-reverse), text right-aligned
+            const isCenter = layout === 'center';
+            const isRight = layout === 'right';
+
             return (
               <div 
                 key={item.id || idx} 
-                className="flex items-start gap-4 rounded-xl border border-slate-100 bg-[#F8FAFC] p-4 transition-all hover:border-[#1447E6]/40 hover:bg-white hover:shadow-md group"
+                className={`rounded-xl border border-slate-100 bg-[#F8FAFC] p-4 transition-all hover:border-[#1447E6]/40 hover:bg-white hover:shadow-md group ${
+                  isCenter
+                    ? 'flex flex-col items-center text-center gap-3'
+                    : isRight
+                    ? 'flex flex-row-reverse items-start text-right gap-4'
+                    : 'flex items-start text-left gap-4'
+                }`}
               >
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#0F2147] text-white shadow-sm transition-transform duration-300 group-hover:scale-105 group-hover:bg-[#1447E6] overflow-hidden p-2.5">
                   {hasCustomIcon ? (

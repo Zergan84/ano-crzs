@@ -22,9 +22,12 @@ import {
   Compass,
   SlidersVertical,
   Image as ImageIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
 } from 'lucide-react';
 import { useSiteContent, updateSection, resolveMediaUrl } from '@/lib/content';
-import { DEFAULT_WIDGETS, WidgetItem } from '@/components/landing/WidgetsBar';
+import { DEFAULT_WIDGETS, WidgetItem, WidgetLayout } from '@/components/landing/WidgetsBar';
 import { MediaPickerModal } from '@/components/admin/MediaPickerModal';
 
 const ICON_OPTIONS = [
@@ -45,6 +48,7 @@ export default function AdminWidgetsPage() {
   const { content, refresh } = useSiteContent();
   const [widgets, setWidgets] = useState<WidgetItem[]>(DEFAULT_WIDGETS);
   const [showWidgets, setShowWidgets] = useState(true);
+  const [widgetsLayout, setWidgetsLayout] = useState<WidgetLayout>('left');
   const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -60,6 +64,9 @@ export default function AdminWidgetsPage() {
       }
       if (typeof (content.landing as any)?.showWidgets === 'boolean') {
         setShowWidgets((content.landing as any).showWidgets);
+      }
+      if ((content.landing as any)?.widgetsLayout) {
+        setWidgetsLayout((content.landing as any).widgetsLayout);
       }
     }
   }, [content]);
@@ -118,6 +125,7 @@ export default function AdminWidgetsPage() {
         ...currentLanding,
         widgets,
         showWidgets,
+        widgetsLayout,
         sectionOrder: nextOrder,
       };
 
@@ -187,29 +195,70 @@ export default function AdminWidgetsPage() {
         </div>
       </div>
 
-      {/* Visibility Checkbox Toggle */}
-      <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-bold text-white flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4 text-amber-400" />
-            <span>Отображение виджетов на сайте</span>
-          </h3>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Включите или отключите отображение полосы виджетов (Trust Bar) на лендинге
-          </p>
+      {/* Visibility Checkbox & Layout Selector */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Visibility */}
+        <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <LayoutGrid className="h-4 w-4 text-amber-400" />
+              <span>Отображение виджетов</span>
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Включить или скрыть блок виджетов на главной
+            </p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showWidgets}
+              onChange={(e) => setShowWidgets(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+            <span className="ml-3 text-xs font-semibold text-slate-200">
+              {showWidgets ? 'Виден' : 'Скрыт'}
+            </span>
+          </label>
         </div>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showWidgets}
-            onChange={(e) => setShowWidgets(e.target.checked)}
-            className="sr-only peer"
-          />
-          <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
-          <span className="ml-3 text-xs font-semibold text-slate-200">
-            {showWidgets ? 'Отображается' : 'Скрыт'}
-          </span>
-        </label>
+
+        {/* Layout Orientation */}
+        <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <SlidersVertical className="h-4 w-4 text-amber-400" />
+              <span>Ориентация карточек виджетов</span>
+            </h3>
+          </div>
+          <p className="text-xs text-slate-400">
+            Расположение иконки и выравнивание текста внутри каждого виджета
+          </p>
+          <div className="grid grid-cols-3 gap-2 pt-1">
+            {[
+              { id: 'left', label: 'Слева', icon: AlignLeft },
+              { id: 'center', label: 'По центру', icon: AlignCenter },
+              { id: 'right', label: 'Справа', icon: AlignRight },
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = widgetsLayout === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setWidgetsLayout(item.id as WidgetLayout)}
+                  className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-bold border transition-all ${
+                    isActive
+                      ? 'border-amber-500 bg-amber-500/10 text-amber-400'
+                      : 'border-slate-800 bg-[#0a0a0c] text-slate-400 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Widgets list */}

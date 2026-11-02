@@ -26,6 +26,13 @@ import {
 import { useSiteContent, updateSection } from '@/lib/content';
 import { MediaPickerModal } from '@/components/admin/MediaPickerModal';
 
+interface CustomSectionPrinciple {
+  id: string;
+  title: string;
+  icon?: string;
+  customIcon?: string;
+}
+
 interface CustomSection {
   id: string;
   anchor: string;
@@ -33,6 +40,10 @@ interface CustomSection {
   title: string;
   subtitle: string;
   columnsCount: 1 | 2 | 3;
+  layoutMode?: 'split' | 'stacked';
+  headerSide?: 'left' | 'right';
+  bgType?: 'white' | 'light' | 'slate' | 'dark' | 'navy';
+  customBg?: string;
   textAlign: 'left' | 'center' | 'right';
   verticalAlign?: 'top' | 'center' | 'bottom';
   col1VAlign?: 'top' | 'center' | 'bottom';
@@ -44,6 +55,7 @@ interface CustomSection {
   col2Image?: string;
   col3Text?: string;
   col3Image?: string;
+  principles?: CustomSectionPrinciple[];
   ctaText?: string;
   ctaHref?: string;
 }
@@ -88,8 +100,12 @@ export default function SectionsManagerPage() {
       eyebrow: 'НОВЫЙ РАЗДЕЛ',
       title: 'Заголовок нового раздела',
       subtitle: 'Краткое описание назначения и основных тезисов этого модуля',
-      columnsCount: 3,
-      textAlign: 'center',
+      columnsCount: 2,
+      layoutMode: 'split',
+      headerSide: 'left',
+      bgType: 'white',
+      customBg: '',
+      textAlign: 'left',
       verticalAlign: 'center',
       col1VAlign: 'center',
       col2VAlign: 'center',
@@ -117,6 +133,10 @@ export default function SectionsManagerPage() {
       title: `${source.title} (Копия)`,
       subtitle: source.subtitle || 'Дополнительный модуль на основе существующего шаблона',
       columnsCount: source.colCount || 2,
+      layoutMode: (source.colCount || 2) === 2 ? 'split' : 'stacked',
+      headerSide: 'left',
+      bgType: 'white',
+      customBg: '',
       textAlign: (source.colCount || 2) === 3 ? 'center' : 'left',
       verticalAlign: 'center',
       col1VAlign: 'center',
@@ -338,6 +358,140 @@ export default function SectionsManagerPage() {
           </div>
 
           {/* Configuration Form */}
+          {/* 1. Layout Mode & Background Full-Width Controls */}
+          <div className="space-y-4 rounded-xl border border-amber-500/30 bg-[#121622] p-4 mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-3 gap-2">
+              <div>
+                <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider">
+                  Макет секции (Layout) и цвет заливки на всю ширину экрана (Background)
+                </h4>
+                <p className="text-[11px] text-slate-400 mt-0.5">
+                  Полный контроль расположения заголовка: внутри колонки 50%/50% или отдельный сквозной блок на 100% ширины
+                </p>
+              </div>
+            </div>
+
+            {/* Layout Mode Selector (Split vs Stacked) */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-200 block">
+                Расположение заголовка и колонок (Layout)
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSection({ ...selectedSection, layoutMode: 'split', columnsCount: 2 })}
+                  className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${
+                    (selectedSection.layoutMode || 'split') === 'split'
+                      ? 'border-amber-500 bg-amber-500/10 text-white shadow-sm'
+                      : 'border-slate-800 bg-[#0a0a0c] text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <div className="mt-0.5 h-4 w-4 rounded-full border border-current flex items-center justify-center shrink-0">
+                    {(selectedSection.layoutMode || 'split') === 'split' && <div className="h-2 w-2 rounded-full bg-amber-400" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-white">Колонки 50% / 50% (Внутри колонки)</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                      Надзаголовок, заголовок и подзаголовок находятся внутри одной из колонок на том же уровне, что и фото. Доступны ключевые принципы с иконками.
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedSection({ ...selectedSection, layoutMode: 'stacked' })}
+                  className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${
+                    selectedSection.layoutMode === 'stacked'
+                      ? 'border-amber-500 bg-amber-500/10 text-white shadow-sm'
+                      : 'border-slate-800 bg-[#0a0a0c] text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <div className="mt-0.5 h-4 w-4 rounded-full border border-current flex items-center justify-center shrink-0">
+                    {selectedSection.layoutMode === 'stacked' && <div className="h-2 w-2 rounded-full bg-amber-400" />}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-white">Отдельный сквозной блок (100% ширины)</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                      Заголовок размещается отдельным блоком сверху на всю ширину страницы, а колонки контента располагаются ниже.
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              {(selectedSection.layoutMode || 'split') === 'split' && (
+                <div className="flex flex-wrap items-center gap-4 pt-2">
+                  <span className="text-xs text-slate-300 font-medium">Сторона заголовка в блоке 50%/50%:</span>
+                  <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="customHeaderSide"
+                      value="left"
+                      checked={selectedSection.headerSide !== 'right'}
+                      onChange={() => setSelectedSection({ ...selectedSection, headerSide: 'left' })}
+                      className="text-amber-500 focus:ring-amber-500"
+                    />
+                    <span>В левой колонке (справа фото/контент)</span>
+                  </label>
+                  <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="customHeaderSide"
+                      value="right"
+                      checked={selectedSection.headerSide === 'right'}
+                      onChange={() => setSelectedSection({ ...selectedSection, headerSide: 'right' })}
+                      className="text-amber-500 focus:ring-amber-500"
+                    />
+                    <span>В правой колонке (слева фото/контент)</span>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            {/* Background Full Width Selector */}
+            <div className="space-y-2 pt-2 border-t border-slate-800">
+              <label className="text-xs font-semibold text-slate-200 block">
+                Цвет заливки модуля на всю ширину экрана (Background)
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                {[
+                  { id: 'white', label: 'Белый (Стандарт)', color: '#FFFFFF', border: '#cbd5e1' },
+                  { id: 'light', label: 'Светло-серый (EFF3F8)', color: '#EFF3F8', border: '#cbd5e1' },
+                  { id: 'slate', label: 'Холодный (F8FAFC)', color: '#F8FAFC', border: '#cbd5e1' },
+                  { id: 'dark', label: 'Тёмный (#12161F)', color: '#12161F', border: '#334155' },
+                  { id: 'navy', label: 'Глубокий синий (#0F2147)', color: '#0F2147', border: '#1e293b' },
+                ].map((bg) => (
+                  <button
+                    key={bg.id}
+                    type="button"
+                    onClick={() => setSelectedSection({ ...selectedSection, bgType: bg.id as any, customBg: '' })}
+                    className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition-all ${
+                      (selectedSection.bgType || 'white') === bg.id && !selectedSection.customBg
+                        ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500'
+                        : 'border-slate-800 bg-[#0a0a0c] text-slate-300 hover:border-slate-600'
+                    }`}
+                  >
+                    <span className="h-4 w-4 rounded-full shrink-0 border" style={{ backgroundColor: bg.color, borderColor: bg.border }} />
+                    <span className="truncate">{bg.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <span className="text-xs text-slate-400">Или свой Hex-код цвета:</span>
+                <input
+                  type="text"
+                  value={selectedSection.customBg || ''}
+                  onChange={(e) => setSelectedSection({ ...selectedSection, customBg: e.target.value })}
+                  placeholder="#F4F6F9"
+                  className="rounded border border-slate-800 bg-[#0a0a0c] px-3 py-1 text-xs font-mono text-amber-300 max-w-[140px] focus:border-amber-500 focus:outline-none"
+                />
+                {selectedSection.customBg && (
+                  <span className="h-6 w-6 rounded border border-white/20" style={{ backgroundColor: selectedSection.customBg }} />
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {/* Anchor & Title */}
             <div>
@@ -575,6 +729,60 @@ export default function SectionsManagerPage() {
                     </div>
                   )}
                 </div>
+
+                {/* Ключевые принципы с иконками для Split Layout */}
+                {(selectedSection.layoutMode || 'split') === 'split' && (
+                  <div className="pt-3 border-t border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                        Ключевые принципы / преимущества
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const principles = [...(selectedSection.principles || [])];
+                          principles.push({
+                            id: `p-${Date.now()}`,
+                            title: 'Новый ключевой принцип',
+                          });
+                          setSelectedSection({ ...selectedSection, principles });
+                        }}
+                        className="text-[10px] bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 px-2 py-0.5 rounded font-bold"
+                      >
+                        + Добавить
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {(selectedSection.principles || []).map((p, pIdx) => (
+                        <div key={p.id || pIdx} className="flex items-center gap-2">
+                          <span className="text-[10px] text-amber-400 font-bold shrink-0">✓</span>
+                          <input
+                            type="text"
+                            value={p.title || ''}
+                            onChange={(e) => {
+                              const principles = [...(selectedSection.principles || [])];
+                              principles[pIdx] = { ...principles[pIdx], title: e.target.value };
+                              setSelectedSection({ ...selectedSection, principles });
+                            }}
+                            className="w-full rounded border border-slate-800 bg-[#14151b] px-2 py-1 text-xs text-white focus:border-amber-500 focus:outline-none"
+                            placeholder="Текст принципа..."
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const principles = (selectedSection.principles || []).filter((_, i) => i !== pIdx);
+                              setSelectedSection({ ...selectedSection, principles });
+                            }}
+                            className="text-red-400 hover:text-red-300 text-xs px-1"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Column 2 */}

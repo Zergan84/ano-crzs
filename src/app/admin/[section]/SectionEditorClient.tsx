@@ -300,9 +300,143 @@ function OrganizationEditor({
   return (
     <div className="space-y-6">
       <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
-        <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-          Заголовок, описание и фото секции «О центре» (#about)
-        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#222] pb-3 gap-2">
+          <h3 className="text-base font-bold text-white">
+            Макет (Layout), заголовки и оформление секции «О центре» (#about)
+          </h3>
+          <span className="text-xs font-mono text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded">
+            Модуль #about
+          </span>
+        </div>
+
+        {/* Выбор Layout для модуля (Сквозной 100% заголовок vs Внутри колонки 50%/50%) */}
+        <div className="rounded-lg border border-slate-700/60 bg-[#171c28] p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-amber-300 uppercase tracking-wider">
+              Выбор макета блока (Layout)
+            </label>
+            <span className="text-[11px] text-slate-400">
+              {(data.aboutLayoutMode || 'split') === 'split' ? 'Колонки 50%/50% (Заголовок в колонке)' : 'Заголовок на 100% ширины сверху'}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => updateField('aboutLayoutMode', 'split')}
+              className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${
+                (data.aboutLayoutMode || 'split') === 'split'
+                  ? 'border-amber-500 bg-amber-500/10 text-white shadow-sm'
+                  : 'border-slate-800 bg-[#0d1017] text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <div className="mt-0.5 h-4 w-4 rounded-full border border-current flex items-center justify-center shrink-0">
+                {(data.aboutLayoutMode || 'split') === 'split' && <div className="h-2 w-2 rounded-full bg-amber-400" />}
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Колонки 50% / 50% (Рекомендуемый)</div>
+                <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                  Надзаголовок, заголовок и описание находятся внутри левой (или правой) колонки на одном уровне с фото.
+                </div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => updateField('aboutLayoutMode', 'stacked')}
+              className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${
+                data.aboutLayoutMode === 'stacked'
+                  ? 'border-amber-500 bg-amber-500/10 text-white shadow-sm'
+                  : 'border-slate-800 bg-[#0d1017] text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <div className="mt-0.5 h-4 w-4 rounded-full border border-current flex items-center justify-center shrink-0">
+                {data.aboutLayoutMode === 'stacked' && <div className="h-2 w-2 rounded-full bg-amber-400" />}
+              </div>
+              <div>
+                <div className="text-xs font-bold text-white">Отдельный блок на 100% ширины</div>
+                <div className="text-[11px] text-slate-400 mt-0.5 leading-snug">
+                  Заголовок занимает всю полезную ширину страницы сверху, а колонки с текстом и фото идут ниже.
+                </div>
+              </div>
+            </button>
+          </div>
+
+          {(data.aboutLayoutMode || 'split') === 'split' && (
+            <div className="flex items-center gap-4 pt-1">
+              <span className="text-xs text-slate-300 font-medium">Расположение заголовка:</span>
+              <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="radio"
+                  name="aboutHeaderSide"
+                  value="left"
+                  checked={data.aboutHeaderSide !== 'right'}
+                  onChange={() => updateField('aboutHeaderSide', 'left')}
+                  className="text-amber-500 focus:ring-amber-500"
+                />
+                <span>В левой колонке (справа фото)</span>
+              </label>
+              <label className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer">
+                <input
+                  type="radio"
+                  name="aboutHeaderSide"
+                  value="right"
+                  checked={data.aboutHeaderSide === 'right'}
+                  onChange={() => updateField('aboutHeaderSide', 'right')}
+                  className="text-amber-500 focus:ring-amber-500"
+                />
+                <span>В правой колонке (слева фото)</span>
+              </label>
+            </div>
+          )}
+        </div>
+
+        {/* Выбор фона блока на всю ширину (Background) */}
+        <div className="rounded-lg border border-slate-700/60 bg-[#171c28] p-4 space-y-3">
+          <label className="text-xs font-bold text-amber-300 uppercase tracking-wider block">
+            Цвет заливки блока на всю ширину экрана (Background)
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+            {[
+              { id: 'white', label: 'Белый (Стандарт)', color: '#FFFFFF', border: '#cbd5e1' },
+              { id: 'light', label: 'Светло-серый (EFF3F8)', color: '#EFF3F8', border: '#cbd5e1' },
+              { id: 'slate', label: 'Холодный (F8FAFC)', color: '#F8FAFC', border: '#cbd5e1' },
+              { id: 'dark', label: 'Тёмный (#12161F)', color: '#12161F', border: '#334155' },
+              { id: 'navy', label: 'Глубокий синий (#0F2147)', color: '#0F2147', border: '#1e293b' },
+            ].map(bg => (
+              <button
+                key={bg.id}
+                type="button"
+                onClick={() => {
+                  updateField('aboutBgType', bg.id);
+                  updateField('aboutCustomBg', '');
+                }}
+                className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition-all ${
+                  (data.aboutBgType || 'white') === bg.id && !data.aboutCustomBg
+                    ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500'
+                    : 'border-slate-800 bg-[#0d1017] text-slate-300 hover:border-slate-600'
+                }`}
+              >
+                <span className="h-4 w-4 rounded-full shrink-0 border" style={{ backgroundColor: bg.color, borderColor: bg.border }} />
+                <span className="truncate">{bg.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 pt-1">
+            <span className="text-xs text-slate-400">Или свой Hex-код цвета:</span>
+            <input
+              type="text"
+              value={data.aboutCustomBg || ''}
+              onChange={(e) => updateField('aboutCustomBg', e.target.value)}
+              placeholder="#F4F6F9"
+              className="admin-input max-w-[140px] text-xs font-mono text-amber-300"
+            />
+            {data.aboutCustomBg && (
+              <span className="h-6 w-6 rounded border border-white/20" style={{ backgroundColor: data.aboutCustomBg }} />
+            )}
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
@@ -1696,8 +1830,51 @@ function DirectionsEditor({ data, setData }: { data: any; setData: any }) {
       {!Array.isArray(data) && (
         <div className="rounded-xl border border-[#222] bg-[#12161f] p-5 space-y-4">
           <h3 className="text-base font-bold text-white border-b border-[#222] pb-3">
-            Заголовок секции «Проекты и программы» (#projects)
+            Заголовок и параметры секции «Проекты и программы» (#projects)
           </h3>
+
+          {/* Background selector for Projects */}
+          <div className="rounded-lg border border-slate-700/60 bg-[#171c28] p-4 space-y-3">
+            <label className="text-xs font-bold text-amber-300 uppercase tracking-wider block">
+              Цвет заливки блока на всю ширину экрана (Background)
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {[
+                { id: 'light', label: 'Светло-серый (По умолч.)', color: '#EFF3F8', border: '#cbd5e1' },
+                { id: 'white', label: 'Чистый белый', color: '#FFFFFF', border: '#cbd5e1' },
+                { id: 'slate', label: 'Холодный (F8FAFC)', color: '#F8FAFC', border: '#cbd5e1' },
+                { id: 'dark', label: 'Тёмный (#12161F)', color: '#12161F', border: '#334155' },
+                { id: 'navy', label: 'Глубокий синий (#0F2147)', color: '#0F2147', border: '#1e293b' },
+              ].map(bg => (
+                <button
+                  key={bg.id}
+                  type="button"
+                  onClick={() => {
+                    updateField('projectsBgType', bg.id);
+                    updateField('projectsCustomBg', '');
+                  }}
+                  className={`flex items-center gap-2 p-2 rounded-lg border text-xs font-medium transition-all ${
+                    (data.projectsBgType || 'light') === bg.id && !data.projectsCustomBg
+                      ? 'border-amber-500 bg-amber-500/20 text-amber-300 ring-1 ring-amber-500'
+                      : 'border-slate-800 bg-[#0d1017] text-slate-300 hover:border-slate-600'
+                  }`}
+                >
+                  <span className="h-4 w-4 rounded-full shrink-0 border" style={{ backgroundColor: bg.color, borderColor: bg.border }} />
+                  <span className="truncate">{bg.label}</span>
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <span className="text-xs text-slate-400">Или свой Hex-код цвета:</span>
+              <input
+                type="text"
+                value={data.projectsCustomBg || ''}
+                onChange={(e) => updateField('projectsCustomBg', e.target.value)}
+                placeholder="#EFF3F8"
+                className="admin-input max-w-[140px] text-xs font-mono text-amber-300"
+              />
+            </div>
+          </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="admin-label">Надзаголовок секции</label>

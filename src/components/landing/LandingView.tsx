@@ -585,6 +585,7 @@ export function LandingView() {
         customSections={customSections}
         widgets={widgets}
         showWidgets={showWidgets}
+        widgetsLayout={(landing as any)?.widgetsLayout || 'left'}
       />
     );
   }
@@ -913,8 +914,9 @@ export function LandingView() {
                   return (
                     <article
                       key={proj.id || idx}
-                      className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_1px_2px_rgba(7,26,51,0.04),0_8px_24px_-12px_rgba(7,26,51,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-[#0F7B7A]/40 hover:shadow-[0_2px_4px_rgba(7,26,51,0.06),0_20px_40px_-16px_rgba(7,26,51,0.25)]"
+                      className="group relative flex flex-col rounded-2xl border border-slate-200 bg-white p-7 shadow-[0_1px_2px_rgba(7,26,51,0.04),0_8px_24px_-12px_rgba(7,26,51,0.12)] transition-all duration-300 hover:-translate-y-1 hover:border-[#0F7B7A]/40 hover:shadow-[0_2px_4px_rgba(7,26,51,0.06),0_20px_40px_-16px_rgba(7,26,51,0.25)] overflow-hidden pt-8"
                     >
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-[#D92D20] transition-colors duration-300 group-hover:bg-[#FF3B30] group-hover:h-1.5" />
                       <div className="flex items-start justify-between gap-4">
                         <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#071A33] text-[#F0CF6A] transition-colors group-hover:bg-[#0B6160]">
                           <IconComp className="h-6 w-6" aria-hidden="true" />

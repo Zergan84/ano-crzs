@@ -44,6 +44,7 @@ interface TricolorLandingProps {
   customSections?: any[];
   widgets?: WidgetItem[];
   showWidgets?: boolean;
+  widgetsLayout?: 'left' | 'center' | 'right';
 }
 
 export function TricolorLandingView({
@@ -62,6 +63,7 @@ export function TricolorLandingView({
   customSections = [],
   widgets = [],
   showWidgets = true,
+  widgetsLayout = 'left',
 }: TricolorLandingProps) {
   const [showAllNews, setShowAllNews] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -230,7 +232,7 @@ export function TricolorLandingView({
         if (showWidgets === false) return null;
         return (
           <div key="widgets" id="widgets">
-            <WidgetsBar widgets={widgets} theme="tricolor" />
+            <WidgetsBar widgets={widgets} theme="tricolor" layout={widgetsLayout} />
           </div>
         );
 
@@ -300,9 +302,24 @@ export function TricolorLandingView({
         );
       }
 
-      case 'projects':
+      case 'projects': {
+        const projBgType = (org as any)?.projectsBgType || 'light';
+        const projCustomBg = (org as any)?.projectsCustomBg || '';
+        let projBgClass = 'bg-[#EFF3F8]';
+        let projInlineBgStyle: React.CSSProperties = {};
+        if (projCustomBg && projCustomBg.trim()) {
+          projInlineBgStyle = { backgroundColor: projCustomBg };
+        } else {
+          switch (projBgType) {
+            case 'white': projBgClass = 'bg-white'; break;
+            case 'slate': projBgClass = 'bg-[#F8FAFC]'; break;
+            case 'dark': projBgClass = 'bg-[#12161f] text-white'; break;
+            case 'navy': projBgClass = 'bg-[#0F2147] text-white'; break;
+            default: projBgClass = 'bg-[#EFF3F8]'; break;
+          }
+        }
         return (
-          <section key="projects" id="projects" className="bg-[#EFF3F8] py-16 md:py-24">
+          <section key="projects" id="projects" className={`py-16 md:py-24 transition-colors ${projBgClass}`} style={projInlineBgStyle}>
             <div className="mx-auto max-w-7xl px-5 md:px-6">
               <div className="mb-10 max-w-3xl">
                 <div className="mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20]">
@@ -356,6 +373,7 @@ export function TricolorLandingView({
             </div>
           </section>
         );
+      }
 
       case 'news': {
         const visibleLimit = (org as any)?.newsVisibleCount || (newsItems as any)?.visibleCount || 3;
