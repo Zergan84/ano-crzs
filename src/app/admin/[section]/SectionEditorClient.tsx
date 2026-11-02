@@ -850,8 +850,8 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
                     </span>
                   </div>
 
-                  {/* 4. Блок слайдера ровно 50% экрана (соотношение 16:9 как в окне браузера) */}
-                  <div className="relative aspect-[16/6] w-full bg-[#0F2147] overflow-hidden flex flex-col justify-center px-8 sm:px-12">
+                  {/* 4. Блок слайдера ровно 50% экрана (соотношение 16:9 как в окне браузера: 100vh * 0.5 - 104px при 1920x1080 = 436px, aspect ~ 1920/436 ~ 16/3.63) */}
+                  <div className="relative aspect-[16/3.65] w-full bg-[#0F2147] overflow-hidden flex flex-col justify-center px-8 sm:px-12">
                     {/* Фоновая картинка с абсолютным позиционированием и идентичным сдвигом через object-position */}
                     {(() => {
                       const basePos = slide.bgPosition || 'center';
@@ -861,7 +861,7 @@ function HeroEditor({ data, setData, openMediaPicker }: { data: any; setData: an
 
                       const sOffset = slide.bgPaddingTop ?? slide.bgMarginTop ?? 0;
                       const alignToBlock = slide.alignToBlock !== false;
-                      const netOffset = (alignToBlock ? sOffset : (sOffset - 104)) * 0.65;
+                      const netOffset = alignToBlock ? sOffset : (sOffset - 104);
 
                       return (
                         <img

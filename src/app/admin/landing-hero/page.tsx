@@ -15,6 +15,7 @@ import {
 import { DEFAULT_LANDING } from '@/data/defaultContent';
 import { notifyContentUpdated } from '@/lib/content';
 import { MediaPickerModal } from '@/components/admin/MediaPickerModal';
+import { ColorTintedLogo } from '@/components/ui/ColorTintedLogo';
 
 type LandingContent = typeof DEFAULT_LANDING;
 
@@ -209,13 +210,11 @@ export default function AdminLandingHeroPage() {
             <div className="mt-3 rounded-lg border border-[#2a2a2a] bg-[#0c101a] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="inline-flex items-center rounded-lg border border-[#334155] bg-[#071A33] px-4 py-2.5">
-                  <img
+                  <ColorTintedLogo
                     src={(data.header as any).logoUrl || '/logo.png'}
                     alt="Logo preview"
-                    style={{
-                      opacity: typeof (data.header as any).logoOpacity === 'number' ? (data.header as any).logoOpacity / 100 : 1,
-                      filter: (data.header as any).logoColor ? `drop-shadow(0px 0px 0px ${(data.header as any).logoColor})` : undefined,
-                    }}
+                    color={(data.header as any).logoColor}
+                    opacity={(data.header as any).logoOpacity}
                     className="h-9 w-auto max-w-[200px] object-contain transition-all"
                   />
                 </div>

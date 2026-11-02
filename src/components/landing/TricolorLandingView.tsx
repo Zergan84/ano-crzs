@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { HeroSlider } from '@/components/HeroSlider';
 import { resolveMediaUrl } from '@/lib/content';
+import { ColorTintedLogo } from '@/components/ui/ColorTintedLogo';
 
 interface TricolorLandingProps {
   header: any;
@@ -212,13 +213,11 @@ export function TricolorLandingView({
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-5 md:px-6">
           <a href="#top" aria-label="Центр развития спорта, на главную" className="min-w-0 shrink-0">
-            <img
+            <ColorTintedLogo
               src={logoUrl}
               alt={header?.logoTitle || 'АНО ЦЗСТ — Центр развития спорта'}
-              style={{
-                opacity: typeof logoOpacity === 'number' ? logoOpacity / 100 : undefined,
-                filter: logoColor ? `drop-shadow(0px 0px 0px ${logoColor})` : undefined,
-              }}
+              color={logoColor}
+              opacity={logoOpacity}
               className="brand-logo h-auto w-52 max-w-full md:w-64 transition-all"
             />
           </a>

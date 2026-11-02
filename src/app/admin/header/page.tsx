@@ -20,6 +20,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { DEFAULT_HEADER } from '@/data/defaultContent';
+import { ColorTintedLogo } from '@/components/ui/ColorTintedLogo';
 
 interface NavSubItem {
   label: string;
@@ -539,13 +540,11 @@ export default function HeaderMenuAdminPage() {
           />
           <div className="mt-3 rounded-lg border border-[#2a2a2a] bg-[#0c101a] p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="inline-flex items-center rounded-lg border border-[#334155] bg-[#071A33] px-4 py-2.5">
-              <img
+              <ColorTintedLogo
                 src={data.logoUrl || '/logo.png'}
                 alt="Logo preview"
-                style={{
-                  opacity: typeof data.logoOpacity === 'number' ? data.logoOpacity / 100 : 1,
-                  filter: data.logoColor ? `drop-shadow(0px 0px 0px ${data.logoColor})` : undefined,
-                }}
+                color={data.logoColor}
+                opacity={data.logoOpacity}
                 className="h-9 w-auto max-w-[200px] object-contain transition-all"
               />
             </div>

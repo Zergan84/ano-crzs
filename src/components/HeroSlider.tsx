@@ -576,7 +576,15 @@ export function HeroSlider() {
         <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
           {slidesData.map((s: any, idx: number) => {
             const isSlideActive = currentSlide === idx;
-            const bgUrl = (s.image ? resolveMediaUrl(s.image) : '') || boltHeroBg;
+            const fallbackHeroBg =
+              idx === 0
+                ? boltHeroBg
+                : idx === 1
+                ? '/carve-cup.jpg'
+                : idx === 2
+                ? '/mosreg-gov.jpg'
+                : boltHeroBg;
+            const bgUrl = (s.image ? resolveMediaUrl(s.image) : '') || fallbackHeroBg;
             const sBgPaddingTop = typeof s.bgPaddingTop === 'number' 
               ? s.bgPaddingTop 
               : (typeof s.bgMarginTop === 'number' ? s.bgMarginTop : 0);
@@ -597,6 +605,13 @@ export function HeroSlider() {
                 src={bgUrl}
                 alt=""
                 aria-hidden="true"
+                onError={(e) => {
+                  // Если удаленный сервер недоступен (например, fd-sport.ru), подставляем локальный надежный фолбек
+                  const target = e.currentTarget;
+                  if (target.src !== fallbackHeroBg) {
+                    target.src = fallbackHeroBg;
+                  }
+                }}
                 style={{
                   // Изображение всегда занимает 100% блока и покрывает его полностью без зазоров (cover).
                   // Сдвиг по вертикали задаётся через object-position: center calc(Y% + offset), что перемещает сам срез картинки без смещения границ тэга <img>!

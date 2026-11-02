@@ -38,6 +38,7 @@ import { ORGANIZATION } from '@/data/organization';
 import { DEFAULT_LANDING, DEFAULT_FOOTER, DEFAULT_SETTINGS } from '@/data/defaultContent';
 import { HeroSlider } from '@/components/HeroSlider';
 import { TricolorLandingView } from './TricolorLandingView';
+import { ColorTintedLogo } from '@/components/ui/ColorTintedLogo';
 
 const BOLT_NAV_LINKS = [
   { label: 'О центре', href: '#about' },
@@ -757,13 +758,11 @@ export function LandingView() {
               className="flex shrink-0 items-center"
               aria-label={`${header.logoTitle || 'Центр развития спорта'}, на главную`}
             >
-              <img
+              <ColorTintedLogo
                 src={boltLogoUrl}
                 alt={header.logoTitle || 'Центр развития спорта'}
-                style={{
-                  opacity: typeof boltLogoOpacity === 'number' ? boltLogoOpacity / 100 : undefined,
-                  filter: boltLogoColor ? `drop-shadow(0px 0px 0px ${boltLogoColor})` : undefined,
-                }}
+                color={boltLogoColor}
+                opacity={boltLogoOpacity}
                 className="h-9 w-auto sm:h-10 transition-all"
               />
             </a>
