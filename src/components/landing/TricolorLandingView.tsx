@@ -239,6 +239,32 @@ export function TricolorLandingView({
       case 'about': {
         const aboutAlign = org?.aboutHeaderAlign || 'left';
         const aboutVAlign = org?.aboutVerticalAlign || 'center';
+        const isSplitLayout = (org as any)?.aboutLayoutMode === 'split'; // 50%/50% заголовок в колонке наравне с фото
+        const isHeaderOnRight = (org as any)?.aboutHeaderSide === 'right';
+
+        // Background styling
+        const aboutBgType = (org as any)?.aboutBgType || 'white';
+        const aboutCustomBg = (org as any)?.aboutCustomBg || '';
+        const isDarkBg = aboutBgType === 'dark' || aboutBgType === 'navy';
+
+        let aboutBgClass = 'bg-white';
+        let aboutInlineBgStyle: React.CSSProperties = {};
+        if (aboutCustomBg && aboutCustomBg.trim()) {
+          aboutInlineBgStyle = { backgroundColor: aboutCustomBg };
+        } else {
+          switch (aboutBgType) {
+            case 'light': aboutBgClass = 'bg-[#EFF3F8]'; break;
+            case 'slate': aboutBgClass = 'bg-[#F8FAFC]'; break;
+            case 'dark': aboutBgClass = 'bg-[#12161f] text-white'; break;
+            case 'navy': aboutBgClass = 'bg-[#0F2147] text-white'; break;
+            default: aboutBgClass = 'bg-white'; break;
+          }
+        }
+
+        const headingColor = isDarkBg ? 'text-white' : 'text-[#0F2147]';
+        const subtitleColor = isDarkBg ? 'text-slate-300' : 'text-[#606E85]';
+        const textColor = isDarkBg ? 'text-slate-200' : 'text-[#1B263B]';
+
         const vAlignClass = 
           aboutVAlign === 'top' 
             ? 'items-start' 
@@ -252,49 +278,67 @@ export function TricolorLandingView({
           right: 'text-right items-end ml-auto',
         }[aboutAlign as 'left' | 'center' | 'right'] || 'text-left items-start';
 
-        return (
-          <section key="about" id="about" className="mx-auto max-w-7xl px-5 py-16 md:px-6 md:py-24">
-            {/* 100% ширина для надзаголовка, заголовка и подзаголовка с поддержкой двойного тире по центру */}
-            <div className={`mb-12 max-w-4xl ${alignClasses}`}>
-              <div className={`mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20] ${aboutAlign === 'center' ? 'justify-center' : aboutAlign === 'right' ? 'justify-end' : 'justify-start'}`}>
+        // Header element
+        const renderAboutHeader = (isCompact = false) => (
+          <div className={`${isCompact ? 'mb-6' : 'mb-12 max-w-4xl'} ${alignClasses}`}>
+            <div className={`mb-3 flex items-center gap-3 text-xs font-semibold uppercase text-[#D92D20] ${aboutAlign === 'center' ? 'justify-center' : aboutAlign === 'right' ? 'justify-end' : 'justify-start'}`}>
+              <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
+              <span>{aboutEyebrow}</span>
+              {aboutAlign === 'center' && (
                 <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                <span>{aboutEyebrow}</span>
-                {aboutAlign === 'center' && (
-                  <span className="h-0.5 w-8 bg-[#D92D20]" aria-hidden="true" />
-                )}
-              </div>
-              <h2 className="text-3xl font-bold leading-tight md:text-4xl text-[#0F2147]">
-                {aboutTitle}
-              </h2>
-              {aboutDescription && (
-                <p className="mt-4 text-base leading-relaxed md:text-lg text-[#606E85]">
-                  {aboutDescription}
-                </p>
               )}
             </div>
+            <h2 className={`text-3xl font-bold leading-tight md:text-4xl ${headingColor}`}>
+              {aboutTitle}
+            </h2>
+            {aboutDescription && (
+              <p className={`mt-4 text-base leading-relaxed md:text-lg ${subtitleColor}`}>
+                {aboutDescription}
+              </p>
+            )}
+          </div>
+        );
 
-            {/* Колонки контента с настраиваемым вертикальным выравниванием */}
-            <div className={`grid gap-10 lg:grid-cols-2 lg:gap-16 ${vAlignClass}`}>
-              <div>
-                <ul className="space-y-4">
-                  {aboutBullets.map((bullet, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed md:text-base text-[#1B263B]">
-                      <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-[#1447E6]/10 text-[#1447E6]">
-                        <Check className="h-3.5 w-3.5 stroke-[2.5]" />
-                      </div>
-                      <span>{bullet}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        return (
+          <section 
+            key="about" 
+            id="about" 
+            className={`w-full py-16 md:py-24 transition-colors ${aboutBgClass}`}
+            style={aboutInlineBgStyle}
+          >
+            <div className="mx-auto max-w-7xl px-5 md:px-6">
+              {/* Если НЕ split 50/50, то заголовок выводится сверху отдельным рядом на 100% ширины */}
+              {!isSplitLayout && renderAboutHeader(false)}
 
-              <div className="relative">
-                <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
-                  <img
-                    src={aboutImgUrl}
-                    alt="О центре развития спорта"
-                    className="h-[360px] w-full object-cover sm:h-[420px]"
-                  />
+              {/* 2 колонки */}
+              <div className={`grid gap-10 lg:grid-cols-2 lg:gap-16 ${vAlignClass}`}>
+                {/* Колонка 1 */}
+                <div className={`flex flex-col space-y-6 ${isHeaderOnRight ? 'order-2 lg:order-2' : 'order-1 lg:order-1'}`}>
+                  {/* В Split 50/50 заголовок рендерится внутри этой колонки */}
+                  {isSplitLayout && !isHeaderOnRight && renderAboutHeader(true)}
+
+                  <ul className="space-y-4">
+                    {aboutBullets.map((bullet, idx) => (
+                      <li key={idx} className={`flex items-start gap-3 text-sm leading-relaxed md:text-base ${textColor}`}>
+                        <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-sm bg-[#1447E6]/10 text-[#1447E6]">
+                          <Check className="h-3.5 w-3.5 stroke-[2.5]" />
+                        </div>
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Колонка 2 с изображением */}
+                <div className={`relative ${isHeaderOnRight ? 'order-1 lg:order-1' : 'order-2 lg:order-2'}`}>
+                  {isSplitLayout && isHeaderOnRight && renderAboutHeader(true)}
+                  <div className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
+                    <img
+                      src={aboutImgUrl}
+                      alt="О центре развития спорта"
+                      className="h-[360px] w-full object-cover sm:h-[460px]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
