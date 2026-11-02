@@ -397,7 +397,7 @@ export function TricolorLandingView({
                       className="group relative flex flex-col justify-between rounded-sm border border-[#E2E8F0] bg-white p-7 shadow-sm transition-all hover:border-[#1447E6] hover:shadow-md overflow-hidden"
                     >
                       {/* Верхняя акцентная полоса: по умолчанию тёмно-синяя #0F2147 или с красной полоской при ховере/активном как на скриншоте */}
-                      <div className="absolute top-0 left-0 right-0 h-1 bg-[#0F2147] group-hover:bg-[#D92D20] transition-colors" />
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-[#D92D20] group-hover:bg-[#FF3B30] transition-colors" />
 
                       <div>
                         {/* Верхняя строка: иконка слева и номер справа */}
